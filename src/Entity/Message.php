@@ -1,0 +1,81 @@
+<?php
+
+namespace App\Entity;
+
+use ApiPlatform\Core\Annotation\ApiResource;
+use Doctrine\ORM\Mapping as ORM;
+use Symfony\Component\Validator\Constraints as Assert;
+
+#[ApiResource]
+#[ORM\Entity]
+class Message
+{
+    /**
+     * Identifiant unique du message
+     */
+    #[ORM\Id]
+    #[ORM\GeneratedValue]
+    #[ORM\Column(type: 'integer')]
+    private ?int $id = null;
+
+    /**
+     * Titre du message
+     */
+    #[ORM\Column(type: 'string', length: 100)]
+    #[Assert\NotBlank]
+    #[Assert\Length(min: 2, max: 100)]
+    private string $title;
+
+    /**
+     * Corps du message
+     */
+    #[ORM\Column(type: 'string', length: 1000)]
+    #[Assert\NotBlank]
+    #[Assert\Length(min: 1, max: 1000)]
+    private string $body;
+
+    /**
+     * Auteur du message (utilisateur)
+     */
+    #[ORM\ManyToOne(targetEntity: User::class)]
+    #[ORM\JoinColumn(nullable: false)]
+    private ?User $by = null;
+
+    public function getId(): ?int
+    {
+        return $this->id;
+    }
+
+    public function getTitle(): string
+    {
+        return $this->title;
+    }
+
+    public function setTitle(string $title): self
+    {
+        $this->title = $title;
+        return $this;
+    }
+
+    public function getBody(): string
+    {
+        return $this->body;
+    }
+
+    public function setBody(string $body): self
+    {
+        $this->body = $body;
+        return $this;
+    }
+
+    public function getBy(): ?User
+    {
+        return $this->by;
+    }
+
+    public function setBy(?User $by): self
+    {
+        $this->by = $by;
+        return $this;
+    }
+} 

@@ -1,0 +1,209 @@
+<?php
+
+namespace App\Entity;
+
+use ApiPlatform\Core\Annotation\ApiResource;
+use Doctrine\ORM\Mapping as ORM;
+use Symfony\Component\Validator\Constraints as Assert;
+use Doctrine\Common\Collections\ArrayCollection;
+use Doctrine\Common\Collections\Collection;
+
+#[ApiResource]
+#[ORM\Entity]
+class Mission
+{
+    /**
+     * Identifiant unique de la mission
+     */
+    #[ORM\Id]
+    #[ORM\GeneratedValue]
+    #[ORM\Column(type: 'integer')]
+    private ?int $id = null;
+
+    /**
+     * Nom de la mission
+     */
+    #[ORM\Column(type: 'string', length: 100)]
+    #[Assert\NotBlank]
+    #[Assert\Length(min: 3, max: 100)]
+    private string $name;
+
+    /**
+     * Niveau de danger de la mission
+     */
+    #[ORM\Column(enumType: DangerLevel::class)]
+    #[Assert\NotNull]
+    private DangerLevel $danger;
+
+    /**
+     * Statut de la mission
+     */
+    #[ORM\Column(enumType: MissionStatus::class)]
+    #[Assert\NotNull]
+    private MissionStatus $status;
+
+    /**
+     * Description de la mission
+     */
+    #[ORM\Column(type: 'string', length: 500)]
+    #[Assert\NotBlank]
+    #[Assert\Length(max: 500)]
+    private string $description;
+
+    /**
+     * Objectifs de la mission
+     */
+    #[ORM\Column(type: 'string', length: 500)]
+    #[Assert\NotBlank]
+    #[Assert\Length(max: 500)]
+    private string $objectives;
+
+    /**
+     * Date de début de la mission
+     */
+    #[ORM\Column(type: 'date_immutable')]
+    #[Assert\NotNull]
+    private \DateTimeImmutable $startDate;
+
+    /**
+     * Date de fin de la mission
+     */
+    #[ORM\Column(type: 'date_immutable', nullable: true)]
+    private ?\DateTimeImmutable $endDate = null;
+
+    /**
+     * Agents participant à la mission
+     */
+    #[ORM\ManyToMany(targetEntity: User::class, inversedBy: 'missions')]
+    private Collection $agents;
+
+    /**
+     * Résultat final de la mission
+     */
+    #[ORM\OneToOne(mappedBy: 'mission', targetEntity: MissionResult::class, cascade: ['persist', 'remove'])]
+    private ?MissionResult $missionResult = null;
+
+    /**
+     * Pays où se déroule la mission
+     */
+    #[ORM\ManyToOne(targetEntity: Country::class, inversedBy: 'missions')]
+    #[Assert\NotNull]
+    private ?Country $country = null;
+
+    public function __construct()
+    {
+        $this->agents = new ArrayCollection();
+    }
+
+    public function getId(): ?int
+    {
+        return $this->id;
+    }
+
+    public function getName(): string
+    {
+        return $this->name;
+    }
+
+    public function setName(string $name): self
+    {
+        $this->name = $name;
+        return $this;
+    }
+
+    public function getDanger(): DangerLevel
+    {
+        return $this->danger;
+    }
+
+    public function setDanger(DangerLevel $danger): self
+    {
+        $this->danger = $danger;
+        return $this;
+    }
+
+    public function getStatus(): MissionStatus
+    {
+        return $this->status;
+    }
+
+    public function setStatus(MissionStatus $status): self
+    {
+        $this->status = $status;
+        return $this;
+    }
+
+    public function getDescription(): string
+    {
+        return $this->description;
+    }
+
+    public function setDescription(string $description): self
+    {
+        $this->description = $description;
+        return $this;
+    }
+
+    public function getObjectives(): string
+    {
+        return $this->objectives;
+    }
+
+    public function setObjectives(string $objectives): self
+    {
+        $this->objectives = $objectives;
+        return $this;
+    }
+
+    public function getStartDate(): \DateTimeImmutable
+    {
+        return $this->startDate;
+    }
+
+    public function setStartDate(\DateTimeImmutable $startDate): self
+    {
+        $this->startDate = $startDate;
+        return $this;
+    }
+
+    public function getEndDate(): ?\DateTimeImmutable
+    {
+        return $this->endDate;
+    }
+
+    public function setEndDate(?\DateTimeImmutable $endDate): self
+    {
+        $this->endDate = $endDate;
+        return $this;
+    }
+
+    /**
+     * @return Collection<int, User>
+     */
+    public function getAgents(): Collection
+    {
+        return $this->agents;
+    }
+
+    public function getMissionResult(): ?MissionResult
+    {
+        return $this->missionResult;
+    }
+
+    public function setMissionResult(?MissionResult $missionResult): self
+    {
+        $this->missionResult = $missionResult;
+        return $this;
+    }
+
+    public function getCountry(): ?Country
+    {
+        return $this->country;
+    }
+
+    public function setCountry(?Country $country): self
+    {
+        $this->country = $country;
+        return $this;
+    }
+} 
