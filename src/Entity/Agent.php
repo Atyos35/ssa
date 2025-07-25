@@ -2,14 +2,35 @@
 
 namespace App\Entity;
 
-use ApiPlatform\Core\Annotation\ApiResource;
+use ApiPlatform\Metadata\ApiResource;
 use Doctrine\ORM\Mapping as ORM;
 use Symfony\Component\Validator\Constraints as Assert;
 use Doctrine\Common\Collections\ArrayCollection;
 use Doctrine\Common\Collections\Collection;
-use ApiPlatform\Core\Annotation\ApiProperty;
+use Symfony\Component\Serializer\Annotation\Groups;
+use Symfony\Component\Serializer\Annotation\MaxDepth;
+use ApiPlatform\Metadata\GetCollection;
+use ApiPlatform\Metadata\Get;
+use ApiPlatform\Metadata\Post;
+use ApiPlatform\Metadata\Patch;
 
-#[ApiResource]
+#[ApiResource(
+    description: "Agent secret de la SSA.",
+    operations: [
+        new GetCollection(
+            description: "Liste des agents (noms/prénoms non exposés)."
+        ),
+        new Get(
+            description: "Détail d’un agent (missions, messages, mentor, pays, etc.)."
+        ),
+        new Post(
+            description: "Créer un nouvel agent. Un agent doit être infiltré dans un pays pour participer à une mission."
+        ),
+        new Patch(
+            description: "Modifier un agent. Lors du passage au statut 'Killed in Action', tous les agents sont notifiés par message."
+        ),
+    ]
+)]
 #[ORM\Entity]
 class Agent extends User
 {
@@ -19,6 +40,7 @@ class Agent extends User
     #[ORM\Column(type: 'string', length: 50)]
     #[Assert\NotBlank]
     #[Assert\Length(min: 3, max: 50)]
+    #[Groups(['agent:read:collection', 'agent:read:item', 'agent:write'])]
     private string $codeName;
 
     /**
@@ -26,6 +48,7 @@ class Agent extends User
      */
     #[ORM\Column(type: 'integer')]
     #[Assert\PositiveOrZero]
+    #[Groups(['agent:read:item', 'agent:write'])]
     private int $yearsOfExperience;
 
     /**
@@ -33,6 +56,7 @@ class Agent extends User
      */
     #[ORM\Column(enumType: AgentStatus::class)]
     #[Assert\NotNull]
+    #[Groups(['agent:read:item', 'agent:write'])]
     private AgentStatus $status;
 
     /**
@@ -40,36 +64,47 @@ class Agent extends User
      */
     #[ORM\Column(type: 'date_immutable')]
     #[Assert\NotNull]
+    #[Groups(['agent:read:item', 'agent:write'])]
     private \DateTimeImmutable $enrolementDate;
 
     /**
      * Mission en cours de l'agent
      */
     #[ORM\ManyToOne(targetEntity: Mission::class, inversedBy: 'agents')]
+    #[Groups(['agent:read:item', 'agent:write'])]
+    #[MaxDepth(1)]
     private ?Mission $currentMission = null;
 
     /**
      * Mentor de l'agent (autre agent)
      */
     #[ORM\ManyToOne(targetEntity: User::class)]
+    #[Groups(['agent:read:item', 'agent:write'])]
+    #[MaxDepth(1)]
     private ?Agent $mentor = null;
 
     /**
      * Messages envoyés par l'agent (composition)
      */
     #[ORM\OneToMany(mappedBy: 'by', targetEntity: Message::class, cascade: ['remove'])]
+    #[Groups(['agent:read:item', 'agent:write'])]
+    #[MaxDepth(1)]
     private Collection $messages;
 
     /**
      * Missions auxquelles participe l'agent
      */
     #[ORM\ManyToMany(targetEntity: Mission::class, mappedBy: 'agents')]
+    #[Groups(['agent:read:item'])]
+    #[MaxDepth(1)]
     private Collection $missions;
 
     /**
      * Pays infiltré par l'agent
      */
     #[ORM\ManyToOne(targetEntity: Country::class, inversedBy: 'agents')]
+    #[Groups(['agent:read:item', 'agent:write'])]
+    #[MaxDepth(1)]
     private ?Country $infiltratedCountry = null;
 
     public function __construct()
@@ -79,13 +114,13 @@ class Agent extends User
         $this->missions = new ArrayCollection();
     }
 
-    #[ApiProperty(readable: false, operations: ['get_collection'])]
+    #[Groups(['agent:read:item'])]
     public function getFirstName(): string
     {
         return parent::getFirstName();
     }
 
-    #[ApiProperty(readable: false, operations: ['get_collection'])]
+    #[Groups(['agent:read:item'])]
     public function getLastName(): string
     {
         return parent::getLastName();

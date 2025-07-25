@@ -2,13 +2,35 @@
 
 namespace App\Entity;
 
-use ApiPlatform\Core\Annotation\ApiResource;
+use ApiPlatform\Metadata\ApiResource;
 use Doctrine\ORM\Mapping as ORM;
 use Symfony\Component\Validator\Constraints as Assert;
 use Doctrine\Common\Collections\ArrayCollection;
 use Doctrine\Common\Collections\Collection;
+use Symfony\Component\Serializer\Annotation\Groups;
+use Symfony\Component\Serializer\Annotation\MaxDepth;
+use ApiPlatform\Metadata\Get;
+use ApiPlatform\Metadata\Post;
+use ApiPlatform\Metadata\Patch;
+use ApiPlatform\Metadata\GetCollection;
 
-#[ApiResource]
+#[ApiResource(
+    description: "Pays infiltré.",
+    operations: [
+        new GetCollection(
+            description: "Liste des pays."
+        ),
+        new Get(
+            description: "Détail d’un pays (niveau de danger, agents, missions, chef de cellule, etc.)."
+        ),
+        new Post(
+            description: "Créer un nouveau pays."
+        ),
+        new Patch(
+            description: "Modifier un pays."
+        ),
+    ]
+)]
 #[ORM\Entity]
 class Country
 {
@@ -26,6 +48,7 @@ class Country
     #[ORM\Column(type: 'string', length: 100)]
     #[Assert\NotBlank]
     #[Assert\Length(min: 2, max: 100)]
+    #[Groups(['country:read', 'agent:read:item', 'mission:read:item', 'country:write'])]
     private string $name;
 
     /**
@@ -33,6 +56,7 @@ class Country
      */
     #[ORM\Column(enumType: DangerLevel::class)]
     #[Assert\NotNull]
+    #[Groups(['country:read', 'agent:read:item', 'mission:read:item', 'country:write'])]
     private DangerLevel $danger;
 
     /**
@@ -40,6 +64,7 @@ class Country
      */
     #[ORM\Column(type: 'integer')]
     #[Assert\PositiveOrZero]
+    #[Groups(['country:read', 'country:write'])]
     private int $numberOfAgents;
 
     /**
@@ -47,18 +72,24 @@ class Country
      */
     #[ORM\OneToOne(targetEntity: User::class)]
     #[Assert\NotNull]
+    #[Groups(['country:read', 'country:write'])]
+    #[MaxDepth(1)]
     private ?Agent $cellLeader = null;
 
     /**
      * Missions se déroulant dans ce pays
      */
     #[ORM\OneToMany(mappedBy: 'country', targetEntity: Mission::class)]
+    #[Groups(['country:read'])]
+    #[MaxDepth(1)]
     private Collection $missions;
 
     /**
      * Agents infiltrés dans ce pays
      */
     #[ORM\OneToMany(mappedBy: 'infiltratedCountry', targetEntity: Agent::class)]
+    #[Groups(['country:read'])]
+    #[MaxDepth(1)]
     private Collection $agents;
 
     public function __construct()

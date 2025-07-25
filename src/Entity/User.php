@@ -2,15 +2,26 @@
 
 namespace App\Entity;
 
-use ApiPlatform\Core\Annotation\ApiResource;
+use ApiPlatform\Metadata\ApiResource;
 use Doctrine\ORM\Mapping as ORM;
 use Symfony\Component\Validator\Constraints as Assert;
 use Symfony\Component\Uid\Uuid;
 use Doctrine\Common\Collections\Collection;
 use Doctrine\Common\Collections\ArrayCollection;
 use Symfony\Component\Security\Core\User\PasswordAuthenticatedUserInterface;
+use Symfony\Component\Serializer\Annotation\Groups;
+use Symfony\Component\Serializer\Annotation\MaxDepth;
+use ApiPlatform\Metadata\Get;
+use ApiPlatform\Metadata\Post;
+use ApiPlatform\Metadata\Patch;
 
-#[ApiResource]
+#[ApiResource(
+    operations: [
+        new Get(normalizationContext: ['groups' => ['user:read']]),
+        new Post(denormalizationContext: ['groups' => ['user:write']]),
+        new Patch(denormalizationContext: ['groups' => ['user:write']]),
+    ]
+)]
 #[ORM\Entity]
 #[ORM\Table(name: '`user`')]
 #[ORM\InheritanceType('JOINED')]
@@ -48,6 +59,7 @@ class User implements PasswordAuthenticatedUserInterface
      */
     #[ORM\Column(type: 'json')]
     #[Assert\NotNull]
+    #[Groups(['user:read', 'user:write', 'agent:read:item'])]
     private array $roles = [];
 
     /**
@@ -56,6 +68,7 @@ class User implements PasswordAuthenticatedUserInterface
     #[ORM\Column(type: 'string', length: 180, unique: true)]
     #[Assert\NotBlank]
     #[Assert\Email]
+    #[Groups(['user:read', 'user:write', 'agent:read:item'])]
     private string $email;
 
     /**
@@ -71,6 +84,8 @@ class User implements PasswordAuthenticatedUserInterface
      */
     #[ORM\ManyToMany(targetEntity: Country::class, inversedBy: 'agents')]
     #[ORM\JoinTable(name: 'agent_country')]
+    #[Groups(['user:read', 'user:write', 'agent:read:item'])]
+    #[MaxDepth(1)]
     protected Collection $infiltratedCountries;
 
     public function __construct()
