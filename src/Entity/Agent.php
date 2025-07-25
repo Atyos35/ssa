@@ -2,12 +2,11 @@
 
 namespace App\Entity;
 
-use ApiPlatform\Core\Annotation\ApiResource;
+use ApiPlatform\Metadata\ApiResource;
 use Doctrine\ORM\Mapping as ORM;
 use Symfony\Component\Validator\Constraints as Assert;
 use Doctrine\Common\Collections\ArrayCollection;
 use Doctrine\Common\Collections\Collection;
-use ApiPlatform\Core\Annotation\ApiProperty;
 
 #[ApiResource]
 #[ORM\Entity]
@@ -79,13 +78,13 @@ class Agent extends User
         $this->missions = new ArrayCollection();
     }
 
-    #[ApiProperty(readable: false, operations: ['get_collection'])]
+    #[ApiResource(readable: false, operations: ['get_collection'])]
     public function getFirstName(): string
     {
         return parent::getFirstName();
     }
 
-    #[ApiProperty(readable: false, operations: ['get_collection'])]
+    #[ApiResource(readable: false, operations: ['get_collection'])]
     public function getLastName(): string
     {
         return parent::getLastName();
