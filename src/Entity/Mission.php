@@ -15,7 +15,7 @@ use ApiPlatform\Metadata\Post;
 use ApiPlatform\Metadata\Patch;
 
 #[ApiResource(
-    description: "Mission secrète. Règles métiers :\n- Lors du début d’une Mission, un Message est envoyé à tous les Agents du pays sauf ceux qui participent à cette mission.\n- À la fin d’une Mission, un Résultat de mission est créé pour décrire son succès ou son échec.",
+    description: "Mission secrète.",
     operations: [
         new GetCollection(
             description: "Liste des missions et leurs résultats."

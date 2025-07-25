@@ -13,7 +13,7 @@ use ApiPlatform\Metadata\Patch;
 use ApiPlatform\Metadata\GetCollection;
 
 #[ApiResource(
-    description: "Résultat d’une mission. Règles métiers :\n- À la fin d’une Mission, un Résultat de mission est créé pour décrire son succès ou son échec.",
+    description: "Résultat d’une mission.",
     operations: [
         new GetCollection(
             description: "Liste des résultats de mission."

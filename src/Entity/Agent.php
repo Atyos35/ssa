@@ -15,7 +15,7 @@ use ApiPlatform\Metadata\Post;
 use ApiPlatform\Metadata\Patch;
 
 #[ApiResource(
-    description: "Agent secret de la SSA. Règles métiers :\n- Lors de la mort d’un Agent, tous les Agents sont informés par Message.\n- Un Agent ne peut pas participer à une Mission s’il n’est pas infiltré dans le Pays de cette dernière.\n- Chaque Agent peut avoir un autre Agent comme mentor.\n- Chaque Agent peut infiltrer un seul pays à la fois.",
+    description: "Agent secret de la SSA.",
     operations: [
         new GetCollection(
             description: "Liste des agents (noms/prénoms non exposés)."

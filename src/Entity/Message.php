@@ -12,7 +12,7 @@ use ApiPlatform\Metadata\Get;
 use ApiPlatform\Metadata\Post;
 
 #[ApiResource(
-    description: "Message interne SSA. Règles métiers :\n- Lors de la mort d’un Agent, tous les Agents sont informés par Message.\n- Lors du début d’une Mission, un Message est envoyé à tous les Agents du pays sauf ceux qui participent à cette mission.\n- Lors de la mort d’un Agent tous ses Messages sont supprimés.",
+    description: "Message interne SSA.",
     normalizationContext: ['groups' => ['message:read']],
     denormalizationContext: ['groups' => ['message:write']],
     operations: [

@@ -15,7 +15,7 @@ use ApiPlatform\Metadata\Patch;
 use ApiPlatform\Metadata\GetCollection;
 
 #[ApiResource(
-    description: "Pays infiltré. Règles métiers :\n- Le niveau de danger d’un Pays dépend du plus haut niveau de danger des Missions actives dans ce pays.",
+    description: "Pays infiltré.",
     operations: [
         new GetCollection(
             description: "Liste des pays."
