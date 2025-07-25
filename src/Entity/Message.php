@@ -5,8 +5,28 @@ namespace App\Entity;
 use ApiPlatform\Metadata\ApiResource;
 use Doctrine\ORM\Mapping as ORM;
 use Symfony\Component\Validator\Constraints as Assert;
+use Symfony\Component\Serializer\Annotation\Groups;
+use Symfony\Component\Serializer\Annotation\MaxDepth;
+use ApiPlatform\Metadata\GetCollection;
+use ApiPlatform\Metadata\Get;
+use ApiPlatform\Metadata\Post;
 
-#[ApiResource]
+#[ApiResource(
+    description: "Message interne SSA. Règles métiers :\n- Lors de la mort d’un Agent, tous les Agents sont informés par Message.\n- Lors du début d’une Mission, un Message est envoyé à tous les Agents du pays sauf ceux qui participent à cette mission.\n- Lors de la mort d’un Agent tous ses Messages sont supprimés.",
+    normalizationContext: ['groups' => ['message:read']],
+    denormalizationContext: ['groups' => ['message:write']],
+    operations: [
+        new GetCollection(
+            description: "Liste des messages."
+        ),
+        new Get(
+            description: "Détail d’un message."
+        ),
+        new Post(
+            description: "Créer un nouveau message."
+        ),
+    ]
+)]
 #[ORM\Entity]
 class Message
 {
@@ -24,6 +44,7 @@ class Message
     #[ORM\Column(type: 'string', length: 100)]
     #[Assert\NotBlank]
     #[Assert\Length(min: 2, max: 100)]
+    #[Groups(['message:read', 'agent:read:item'])]
     private string $title;
 
     /**
@@ -32,6 +53,7 @@ class Message
     #[ORM\Column(type: 'string', length: 1000)]
     #[Assert\NotBlank]
     #[Assert\Length(min: 1, max: 1000)]
+    #[Groups(['message:read', 'agent:read:item'])]
     private string $body;
 
     /**
@@ -39,7 +61,13 @@ class Message
      */
     #[ORM\ManyToOne(targetEntity: User::class)]
     #[ORM\JoinColumn(nullable: false)]
+    #[Groups(['message:read', 'agent:read:item'])]
+    #[MaxDepth(1)]
     private ?User $by = null;
+
+    #[Groups(['message:read', 'agent:read:item'])]
+    #[MaxDepth(1)]
+    private ?Agent $recipient = null;
 
     public function getId(): ?int
     {

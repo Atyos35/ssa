@@ -5,8 +5,30 @@ namespace App\Entity;
 use ApiPlatform\Metadata\ApiResource;
 use Doctrine\ORM\Mapping as ORM;
 use Symfony\Component\Validator\Constraints as Assert;
+use Symfony\Component\Serializer\Annotation\Groups;
+use Symfony\Component\Serializer\Annotation\MaxDepth;
+use ApiPlatform\Metadata\Get;
+use ApiPlatform\Metadata\Post;
+use ApiPlatform\Metadata\Patch;
+use ApiPlatform\Metadata\GetCollection;
 
-#[ApiResource]
+#[ApiResource(
+    description: "Résultat d’une mission. Règles métiers :\n- À la fin d’une Mission, un Résultat de mission est créé pour décrire son succès ou son échec.",
+    operations: [
+        new GetCollection(
+            description: "Liste des résultats de mission."
+        ),
+        new Get(
+            description: "Détail d’un résultat de mission."
+        ),
+        new Post(
+            description: "Créer un résultat de mission."
+        ),
+        new Patch(
+            description: "Modifier un résultat de mission."
+        ),
+    ]
+)]
 #[ORM\Entity]
 class MissionResult
 {
@@ -23,6 +45,7 @@ class MissionResult
      */
     #[ORM\Column(enumType: MissionStatus::class)]
     #[Assert\NotNull]
+    #[Groups(['missionresult:read', 'mission:read:item', 'missionresult:write'])]
     private MissionStatus $status;
 
     /**
@@ -31,6 +54,7 @@ class MissionResult
     #[ORM\Column(type: 'string', length: 500)]
     #[Assert\NotBlank]
     #[Assert\Length(max: 500)]
+    #[Groups(['missionresult:read', 'mission:read:item', 'missionresult:write'])]
     private string $summary;
 
     /**
@@ -38,6 +62,8 @@ class MissionResult
      */
     #[ORM\OneToOne(inversedBy: 'missionResult', targetEntity: Mission::class)]
     #[ORM\JoinColumn(nullable: false)]
+    #[Groups(['missionresult:read', 'mission:read:item', 'missionresult:write'])]
+    #[MaxDepth(1)]
     private ?Mission $mission = null;
 
     public function getId(): ?int

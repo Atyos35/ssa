@@ -7,8 +7,30 @@ use Doctrine\ORM\Mapping as ORM;
 use Symfony\Component\Validator\Constraints as Assert;
 use Doctrine\Common\Collections\ArrayCollection;
 use Doctrine\Common\Collections\Collection;
+use Symfony\Component\Serializer\Annotation\Groups;
+use Symfony\Component\Serializer\Annotation\MaxDepth;
+use ApiPlatform\Metadata\GetCollection;
+use ApiPlatform\Metadata\Get;
+use ApiPlatform\Metadata\Post;
+use ApiPlatform\Metadata\Patch;
 
-#[ApiResource]
+#[ApiResource(
+    description: "Mission secrète. Règles métiers :\n- Lors du début d’une Mission, un Message est envoyé à tous les Agents du pays sauf ceux qui participent à cette mission.\n- À la fin d’une Mission, un Résultat de mission est créé pour décrire son succès ou son échec.",
+    operations: [
+        new GetCollection(
+            description: "Liste des missions et leurs résultats."
+        ),
+        new Get(
+            description: "Détail d’une mission (agents, pays, résultat, etc.)."
+        ),
+        new Post(
+            description: "Créer une nouvelle mission. Les agents doivent être infiltrés dans le pays pour pouvoir participer."
+        ),
+        new Patch(
+            description: "Clôturer une mission et remplir le résultat."
+        ),
+    ]
+)]
 #[ORM\Entity]
 class Mission
 {
@@ -26,6 +48,7 @@ class Mission
     #[ORM\Column(type: 'string', length: 100)]
     #[Assert\NotBlank]
     #[Assert\Length(min: 3, max: 100)]
+    #[Groups(['mission:read:collection', 'mission:read:item', 'mission:write'])]
     private string $name;
 
     /**
@@ -33,6 +56,7 @@ class Mission
      */
     #[ORM\Column(enumType: DangerLevel::class)]
     #[Assert\NotNull]
+    #[Groups(['mission:read:item', 'mission:write'])]
     private DangerLevel $danger;
 
     /**
@@ -40,6 +64,7 @@ class Mission
      */
     #[ORM\Column(enumType: MissionStatus::class)]
     #[Assert\NotNull]
+    #[Groups(['mission:read:item', 'mission:write'])]
     private MissionStatus $status;
 
     /**
@@ -48,6 +73,7 @@ class Mission
     #[ORM\Column(type: 'string', length: 500)]
     #[Assert\NotBlank]
     #[Assert\Length(max: 500)]
+    #[Groups(['mission:read:item', 'mission:write'])]
     private string $description;
 
     /**
@@ -56,6 +82,7 @@ class Mission
     #[ORM\Column(type: 'string', length: 500)]
     #[Assert\NotBlank]
     #[Assert\Length(max: 500)]
+    #[Groups(['mission:read:item', 'mission:write'])]
     private string $objectives;
 
     /**
@@ -63,24 +90,30 @@ class Mission
      */
     #[ORM\Column(type: 'date_immutable')]
     #[Assert\NotNull]
+    #[Groups(['mission:read:item', 'mission:write'])]
     private \DateTimeImmutable $startDate;
 
     /**
      * Date de fin de la mission
      */
     #[ORM\Column(type: 'date_immutable', nullable: true)]
+    #[Groups(['mission:read:item', 'mission:write'])]
     private ?\DateTimeImmutable $endDate = null;
 
     /**
      * Agents participant à la mission
      */
     #[ORM\ManyToMany(targetEntity: User::class, inversedBy: 'missions')]
+    #[Groups(['mission:read:item'])]
+    #[MaxDepth(1)]
     private Collection $agents;
 
     /**
      * Résultat final de la mission
      */
     #[ORM\OneToOne(mappedBy: 'mission', targetEntity: MissionResult::class, cascade: ['persist', 'remove'])]
+    #[Groups(['mission:read:item'])]
+    #[MaxDepth(1)]
     private ?MissionResult $missionResult = null;
 
     /**
@@ -88,6 +121,8 @@ class Mission
      */
     #[ORM\ManyToOne(targetEntity: Country::class, inversedBy: 'missions')]
     #[Assert\NotNull]
+    #[Groups(['mission:read:item', 'mission:write'])]
+    #[MaxDepth(1)]
     private ?Country $country = null;
 
     public function __construct()
