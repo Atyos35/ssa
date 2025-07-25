@@ -108,9 +108,9 @@ class AppFixtures extends Fixture
         $agents[4]->setMentor($agents[0]);
 
         // --- Définition des chefs ---
-        $countries[0]->setCellLeader($agents[0]);nd
-        $countries[1]->setCellLeader($agents[1]);rne
-        $countries[2]->setCellLeader($agents[4]);an
+        $countries[0]->setCellLeader($agents[0]);
+        $countries[1]->setCellLeader($agents[1]);
+        $countries[2]->setCellLeader($agents[4]);
         $countries[3]->setCellLeader($agents[2]);
         $countries[4]->setCellLeader($agents[3]);
 
