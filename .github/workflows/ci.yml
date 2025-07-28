@@ -39,16 +39,8 @@ jobs:
           extensions: mbstring, pdo, pdo_pgsql, apcu, intl, opcache, zip
           coverage: xdebug
 
-      - name: Create .env
-        run: |
-          cat <<EOF > .env
-          APP_ENV=test
-          APP_SECRET=${{ secrets.APP_SECRET }}
-          POSTGRES_USER=${{ secrets.POSTGRES_USER }}
-          POSTGRES_PASSWORD=${{ secrets.POSTGRES_PASSWORD }}
-          POSTGRES_DB=${{ secrets.POSTGRES_DB }}
-          DATABASE_URL=postgresql://${POSTGRES_USER}:${POSTGRES_PASSWORD}@127.0.0.1:5432/${POSTGRES_DB}?serverVersion=16&charset=utf8
-          EOF
+      - name: Install Composer dependencies
+        run: composer install --no-interaction --prefer-dist
 
       - name: Create .env.test
         run: |
@@ -61,9 +53,6 @@ jobs:
           DATABASE_URL=postgresql://${POSTGRES_USER}:${POSTGRES_PASSWORD}@127.0.0.1:5432/${POSTGRES_DB}?serverVersion=16&charset=utf8
           EOF
 
-      - name: Install Composer dependencies
-        run: composer install --no-interaction --prefer-dist
-
       - name: Wait for PostgreSQL
         run: |
           until pg_isready -h 127.0.0.1 -p 5432 -U ${{ secrets.POSTGRES_USER }}; do
@@ -72,10 +61,14 @@ jobs:
           done
 
       - name: Create test database
-        run: php bin/console doctrine:database:create --env=test --no-interaction
+        run: |
+          export DATABASE_URL="postgresql://${{ secrets.POSTGRES_USER }}:${{ secrets.POSTGRES_PASSWORD }}@127.0.0.1:5432/${{ secrets.POSTGRES_DB }}?serverVersion=16&charset=utf8"
+          php bin/console doctrine:database:create --env=test --no-interaction
 
       - name: Create test schema
-        run: php bin/console doctrine:schema:create --env=test --no-interaction
+        run: |
+          export DATABASE_URL="postgresql://${{ secrets.POSTGRES_USER }}:${{ secrets.POSTGRES_PASSWORD }}@127.0.0.1:5432/${{ secrets.POSTGRES_DB }}?serverVersion=16&charset=utf8"
+          php bin/console doctrine:schema:create --env=test --no-interaction
 
       - name: Run PHPUnit with coverage
         run: ./vendor/bin/phpunit --coverage-text --coverage-clover=coverage.xml -v
