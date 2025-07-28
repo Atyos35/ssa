@@ -79,18 +79,8 @@ class User implements PasswordAuthenticatedUserInterface
     #[Assert\Length(min: 8, max: 255)]
     private string $password;
 
-    /**
-     * Pays infiltrés par l'utilisateur (agent)
-     */
-    #[ORM\ManyToMany(targetEntity: Country::class, inversedBy: 'agents')]
-    #[ORM\JoinTable(name: 'agent_country')]
-    #[Groups(['user:read', 'user:write', 'agent:read:item'])]
-    #[MaxDepth(1)]
-    protected Collection $infiltratedCountries;
-
     public function __construct()
     {
-        $this->infiltratedCountries = new ArrayCollection();
     }
 
     public function getId(): ?Uuid
@@ -151,13 +141,5 @@ class User implements PasswordAuthenticatedUserInterface
     {
         $this->password = $password;
         return $this;
-    }
-
-    /**
-     * @return Collection<int, Country>
-     */
-    public function getInfiltratedCountries(): Collection
-    {
-        return $this->infiltratedCountries;
     }
 } 

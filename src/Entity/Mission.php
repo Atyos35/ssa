@@ -125,6 +125,12 @@ class Mission
     #[MaxDepth(1)]
     private ?Country $country = null;
 
+    /**
+     * Agent actuellement en mission
+     */
+    #[ORM\ManyToOne(targetEntity: Agent::class, inversedBy: 'missions')]
+    private ?Agent $currentAgent = null;
+
     public function __construct()
     {
         $this->agents = new ArrayCollection();

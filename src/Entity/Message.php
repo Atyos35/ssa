@@ -57,17 +57,22 @@ class Message
     private string $body;
 
     /**
-     * Auteur du message (utilisateur)
+     * Destinataire du message (agent)
      */
-    #[ORM\ManyToOne(targetEntity: User::class)]
+    #[ORM\ManyToOne(targetEntity: Agent::class, inversedBy: 'messages')]
     #[ORM\JoinColumn(nullable: false)]
     #[Groups(['message:read', 'agent:read:item'])]
     #[MaxDepth(1)]
-    private ?User $by = null;
+    private ?Agent $recipient = null;
 
+    /**
+     * Auteur du message (agent)
+     */
+    #[ORM\ManyToOne(targetEntity: Agent::class)]
+    #[ORM\JoinColumn(nullable: false)]
     #[Groups(['message:read', 'agent:read:item'])]
     #[MaxDepth(1)]
-    private ?Agent $recipient = null;
+    private ?Agent $by = null;
 
     public function getId(): ?int
     {
@@ -96,14 +101,25 @@ class Message
         return $this;
     }
 
-    public function getBy(): ?User
+    public function getBy(): ?Agent
     {
         return $this->by;
     }
 
-    public function setBy(?User $by): self
+    public function setBy(?Agent $by): self
     {
         $this->by = $by;
+        return $this;
+    }
+
+    public function getRecipient(): ?Agent
+    {
+        return $this->recipient;
+    }
+
+    public function setRecipient(?Agent $recipient): self
+    {
+        $this->recipient = $recipient;
         return $this;
     }
 } 

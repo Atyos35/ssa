@@ -1,0 +1,93 @@
+name: Run PHPUnit Tests with Coverage
+
+on:
+  pull_request:
+    branches:
+      - master
+
+jobs:
+  test:
+    runs-on: ubuntu-latest
+
+    services:
+      postgres:
+        image: postgres:16-alpine
+        env:
+          POSTGRES_PASSWORD: ${{ secrets.POSTGRES_PASSWORD }}
+          POSTGRES_USER: ${{ secrets.POSTGRES_USER }}
+          POSTGRES_DB: ${{ secrets.POSTGRES_DB }}
+        ports:
+          - 5432:5432
+        options: >-
+          --health-cmd pg_isready
+          --health-interval 10s
+          --health-timeout 5s
+          --health-retries 5
+
+    env:
+      APP_ENV: test
+      APP_SECRET: ${{ secrets.APP_SECRET }}
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Setup PHP
+        uses: shivammathur/setup-php@v2
+        with:
+          php-version: 8.3.19
+          extensions: mbstring, pdo, pdo_pgsql, apcu, intl, opcache, zip
+          coverage: xdebug
+
+      - name: Install Composer dependencies
+        run: composer install --no-interaction --prefer-dist
+
+      - name: Create .env.test
+        run: |
+          cat <<EOF > .env.test
+          APP_ENV=test
+          APP_SECRET=${{ secrets.APP_SECRET }}
+          POSTGRES_USER=${{ secrets.POSTGRES_USER }}
+          POSTGRES_PASSWORD=${{ secrets.POSTGRES_PASSWORD }}
+          POSTGRES_DB=${{ secrets.POSTGRES_DB }}
+          DATABASE_URL=postgresql://${POSTGRES_USER}:${POSTGRES_PASSWORD}@127.0.0.1:5432/${POSTGRES_DB}?serverVersion=16&charset=utf8
+          EOF
+
+      - name: Wait for PostgreSQL
+        run: |
+          until pg_isready -h 127.0.0.1 -p 5432 -U ${{ secrets.POSTGRES_USER }}; do
+            echo "Waiting for PostgreSQL..."
+            sleep 5
+          done
+
+      - name: Create test database
+        run: php bin/console doctrine:database:create --env=test --no-interaction
+
+      - name: Create test schema
+        run: php bin/console doctrine:schema:create --env=test --no-interaction
+
+      - name: Run PHPUnit with coverage
+        run: ./vendor/bin/phpunit --coverage-text --coverage-clover=coverage.xml -v
+
+      - name: Check coverage threshold
+        run: |
+          COVERAGE=$(php -r '
+            $xml = simplexml_load_file("coverage.xml");
+            $metrics = $xml->project->metrics;
+            $covered = (int)$metrics["coveredstatements"];
+            $total = (int)$metrics["statements"];
+            echo round(($covered / $total) * 100, 2);
+          ')
+          echo "Coverage: $COVERAGE%"
+          if (( $(echo "$COVERAGE < 80" | bc -l) )); then
+            echo "Test coverage is below 80% ($COVERAGE%)"
+            exit 1
+          fi
+
+      - name: Upload coverage to Codecov
+        uses: codecov/codecov-action@v3
+        with:
+          file: ./coverage.xml
+          flags: unittests
+          name: codecov-umbrella
+          fail_ci_if_error: true 
