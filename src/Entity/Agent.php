@@ -13,6 +13,7 @@ use ApiPlatform\Metadata\GetCollection;
 use ApiPlatform\Metadata\Get;
 use ApiPlatform\Metadata\Post;
 use ApiPlatform\Metadata\Patch;
+use App\Application\AgentDataPersister;
 
 #[ApiResource(
     description: "Agent secret de la SSA.",
@@ -27,6 +28,7 @@ use ApiPlatform\Metadata\Patch;
             description: "Créer un nouvel agent. Un agent doit être infiltré dans un pays pour participer à une mission."
         ),
         new Patch(
+            processor: AgentDataPersister::class,
             description: "Modifier un agent. Lors du passage au statut 'Killed in Action', tous les agents sont notifiés par message."
         ),
     ]
@@ -76,27 +78,15 @@ class Agent extends User
     private ?Mission $currentMission = null;
 
     /**
-     * Mentor de l'agent (autre agent)
+     * Messages reçus par l'agent (destinataire)
      */
-    #[ORM\ManyToOne(targetEntity: User::class)]
-    #[Groups(['agent:read:item', 'agent:write'])]
-    #[MaxDepth(1)]
-    private ?Agent $mentor = null;
-
-    /**
-     * Messages envoyés par l'agent (composition)
-     */
-    #[ORM\OneToMany(mappedBy: 'by', targetEntity: Message::class, cascade: ['remove'])]
-    #[Groups(['agent:read:item', 'agent:write'])]
-    #[MaxDepth(1)]
+    #[ORM\OneToMany(mappedBy: 'recipient', targetEntity: Message::class, cascade: ['remove'])]
     private Collection $messages;
 
     /**
      * Missions auxquelles participe l'agent
      */
-    #[ORM\ManyToMany(targetEntity: Mission::class, mappedBy: 'agents')]
-    #[Groups(['agent:read:item'])]
-    #[MaxDepth(1)]
+    #[ORM\OneToMany(mappedBy: 'currentAgent', targetEntity: Mission::class)]
     private Collection $missions;
 
     /**
@@ -106,6 +96,14 @@ class Agent extends User
     #[Groups(['agent:read:item', 'agent:write'])]
     #[MaxDepth(1)]
     private ?Country $infiltratedCountry = null;
+
+    /**
+     * Mentor de l'agent (autre agent)
+     */
+    #[ORM\ManyToOne(targetEntity: Agent::class)]
+    #[Groups(['agent:read:item', 'agent:write'])]
+    #[MaxDepth(1)]
+    private ?Agent $mentor = null;
 
     public function __construct()
     {

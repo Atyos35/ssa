@@ -88,8 +88,6 @@ class Country
      * Agents infiltrés dans ce pays
      */
     #[ORM\OneToMany(mappedBy: 'infiltratedCountry', targetEntity: Agent::class)]
-    #[Groups(['country:read'])]
-    #[MaxDepth(1)]
     private Collection $agents;
 
     public function __construct()
