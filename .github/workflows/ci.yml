@@ -39,6 +39,17 @@ jobs:
           extensions: mbstring, pdo, pdo_pgsql, apcu, intl, opcache, zip
           coverage: xdebug
 
+      - name: Create .env
+        run: |
+          cat <<EOF > .env
+          APP_ENV=dev
+          APP_SECRET=${{ secrets.APP_SECRET }}
+          POSTGRES_USER=${{ secrets.POSTGRES_USER }}
+          POSTGRES_PASSWORD=${{ secrets.POSTGRES_PASSWORD }}
+          POSTGRES_DB=${{ secrets.POSTGRES_DB }}
+          DATABASE_URL=postgresql://${POSTGRES_USER}:${POSTGRES_PASSWORD}@127.0.0.1:5432/${POSTGRES_DB}?serverVersion=16&charset=utf8
+          EOF
+
       - name: Install Composer dependencies
         run: composer install --no-interaction --prefer-dist
 
