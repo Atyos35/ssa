@@ -199,15 +199,16 @@ class AppFixtures extends Fixture
 
         // --- Création de messages entre agents ---
         $messagesData = [
-            ['title' => 'Briefing', 'body' => 'Mission à haut risque, soyez prudents.', 'by' => $agents[0]],
-            ['title' => 'Contact', 'body' => 'Point de rendez-vous à Paris.', 'by' => $agents[2]],
-            ['title' => 'Rapport', 'body' => 'Mission accomplie, extraction en cours.', 'by' => $agents[1]],
+            ['title' => 'Briefing', 'body' => 'Mission à haut risque, soyez prudents.', 'by' => $agents[0], 'recipient' => $agents[1]],
+            ['title' => 'Contact', 'body' => 'Point de rendez-vous à Paris.', 'by' => $agents[2], 'recipient' => $agents[3]],
+            ['title' => 'Rapport', 'body' => 'Mission accomplie, extraction en cours.', 'by' => $agents[1], 'recipient' => $agents[0]],
         ];
         foreach ($messagesData as $data) {
             $message = new Message();
             $message->setTitle($data['title']);
             $message->setBody($data['body']);
             $message->setBy($data['by']);
+            $message->setRecipient($data['recipient']);
             $manager->persist($message);
         }
 
