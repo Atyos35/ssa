@@ -7,20 +7,38 @@ use App\Entity\Agent;
 use App\Entity\AgentStatus;
 use App\Entity\Message;
 use Doctrine\ORM\EntityManagerInterface;
+use Doctrine\Common\DataFixtures\Purger\ORMPurger;
 
 class AgentProcessFunctionalTest extends WebTestCase
 {
+    private ?\Symfony\Bundle\FrameworkBundle\KernelBrowser $client = null;
     private EntityManagerInterface $em;
-    private $client;
 
     protected function setUp(): void
     {
         $this->client = static::createClient();
-        $this->em = self::getContainer()->get('doctrine')->getManager();
-        // On nettoie la base de test
-        $this->em->createQuery('DELETE FROM App\\Entity\\Country c')->execute();
-        $this->em->createQuery('DELETE FROM App\\Entity\\Message m')->execute();
-        $this->em->createQuery('DELETE FROM App\\Entity\\Agent a')->execute();
+        parent::setUp();
+        $em = static::getContainer()->get(\Doctrine\ORM\EntityManagerInterface::class);
+        $purger = new ORMPurger($em);
+        $purger->setPurgeMode(ORMPurger::PURGE_MODE_TRUNCATE);
+        $purger->purge();
+        $this->em = $em;
+    }
+
+    protected function tearDown(): void
+    {
+        parent::tearDown();
+        $em = static::getContainer()->get(\Doctrine\ORM\EntityManagerInterface::class);
+        $em->createQuery('DELETE FROM App\\Entity\\Message')->execute();
+        $em->createQuery('DELETE FROM App\\Entity\\Mission')->execute();
+        // Mettre à null le mentor de tous les agents
+        foreach ($em->getRepository(\App\Entity\Agent::class)->findAll() as $agent) {
+            $agent->setMentor(null);
+            $agent->setInfiltratedCountry(null);
+            $em->remove($agent);
+        }
+        $em->flush();
+        $em->createQuery('DELETE FROM App\\Entity\\Country')->execute();
     }
 
     public function testAgentDeathNotifiesOtherAgents(): void
