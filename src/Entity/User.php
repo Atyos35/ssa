@@ -76,7 +76,23 @@ class User implements PasswordAuthenticatedUserInterface
      */
     #[ORM\Column(type: 'string', length: 255)]
     #[Assert\NotBlank]
-    #[Assert\Length(min: 8, max: 255)]
+    #[Assert\Length(min: 12, max: 255)]
+    #[Assert\Regex(
+        pattern: '/[a-z].*[a-z]/',
+        message: 'Le mot de passe doit contenir au moins 2 minuscules.'
+    )]
+    #[Assert\Regex(
+        pattern: '/[A-Z].*[A-Z]/',
+        message: 'Le mot de passe doit contenir au moins 2 majuscules.'
+    )]
+    #[Assert\Regex(
+        pattern: '/[0-9].*[0-9]/',
+        message: 'Le mot de passe doit contenir au moins 2 chiffres.'
+    )]
+    #[Assert\Regex(
+        pattern: '/[^a-zA-Z0-9].*[^a-zA-Z0-9]/',
+        message: 'Le mot de passe doit contenir au moins 2 caractères spéciaux.'
+    )]
     private string $password;
 
     public function __construct()

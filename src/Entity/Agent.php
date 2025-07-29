@@ -14,6 +14,8 @@ use ApiPlatform\Metadata\Get;
 use ApiPlatform\Metadata\Post;
 use ApiPlatform\Metadata\Patch;
 use App\Application\AgentDataPersister;
+use App\Application\AgentPasswordHashProcessor;
+use App\Application\AgentKilledInActionNotifier;
 
 #[ApiResource(
     description: "Agent secret de la SSA.",
@@ -25,10 +27,11 @@ use App\Application\AgentDataPersister;
             description: "Détail d’un agent (missions, messages, mentor, pays, etc.)."
         ),
         new Post(
-            description: "Créer un nouvel agent. Un agent doit être infiltré dans un pays pour participer à une mission."
+            processor: AgentPasswordHashProcessor::class,
+            description: "Créer un nouvel agent."
         ),
         new Patch(
-            processor: AgentDataPersister::class,
+            processor: AgentKilledInActionNotifier::class,
             description: "Modifier un agent. Lors du passage au statut 'Killed in Action', tous les agents sont notifiés par message."
         ),
     ]
@@ -101,6 +104,7 @@ class Agent extends User
      * Mentor de l'agent (autre agent)
      */
     #[ORM\ManyToOne(targetEntity: Agent::class)]
+    #[ORM\JoinColumn(nullable: true)]
     #[Groups(['agent:read:item', 'agent:write'])]
     #[MaxDepth(1)]
     private ?Agent $mentor = null;
@@ -110,6 +114,9 @@ class Agent extends User
         parent::__construct();
         $this->messages = new ArrayCollection();
         $this->missions = new ArrayCollection();
+        $this->setRoles(['ROLE_AGENT']);
+        $this->setStatus(AgentStatus::Available);
+        $this->setEnrolementDate(new \DateTimeImmutable());
     }
 
     #[Groups(['agent:read:item'])]

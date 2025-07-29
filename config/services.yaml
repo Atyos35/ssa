@@ -18,7 +18,13 @@ services:
 
     # add more service definitions when explicit configuration is needed
     # please note that last definitions always *replace* previous ones
-    App\Application\AgentDataPersister:
+    App\Application\AgentPasswordHashProcessor:
+        arguments:
+            $em: '@doctrine.orm.entity_manager'
+            $passwordHasher: '@security.user_password_hasher'
+        tags: [ 'api_platform.state_processor' ]
+
+    App\Application\AgentKilledInActionNotifier:
         arguments:
             $em: '@doctrine.orm.entity_manager'
             $notifier: '@App\Application\AgentDeathNotifier'
