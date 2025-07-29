@@ -13,6 +13,7 @@ use ApiPlatform\Metadata\GetCollection;
 use ApiPlatform\Metadata\Get;
 use ApiPlatform\Metadata\Post;
 use ApiPlatform\Metadata\Patch;
+use App\Application\MissionDataPersister;
 
 #[ApiResource(
     description: "Mission secrète.",
@@ -24,6 +25,7 @@ use ApiPlatform\Metadata\Patch;
             description: "Détail d’une mission (agents, pays, résultat, etc.)."
         ),
         new Post(
+            processor: MissionDataPersister::class,
             description: "Créer une nouvelle mission. Les agents doivent être infiltrés dans le pays pour pouvoir participer."
         ),
         new Patch(
@@ -103,7 +105,7 @@ class Mission
     /**
      * Agents participant à la mission
      */
-    #[ORM\ManyToMany(targetEntity: User::class, inversedBy: 'missions')]
+    #[ORM\ManyToMany(targetEntity: Agent::class)]
     #[Groups(['mission:read:item'])]
     #[MaxDepth(1)]
     private Collection $agents;
@@ -219,7 +221,7 @@ class Mission
     }
 
     /**
-     * @return Collection<int, User>
+     * @return Collection<int, Agent>
      */
     public function getAgents(): Collection
     {

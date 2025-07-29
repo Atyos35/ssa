@@ -93,7 +93,7 @@ class Agent extends User
      * Pays infiltré par l'agent
      */
     #[ORM\ManyToOne(targetEntity: Country::class, inversedBy: 'agents')]
-    #[Groups(['agent:read:item', 'agent:write'])]
+    #[Groups(['agent:read:item', 'agent:write', 'mission:write'])]
     #[MaxDepth(1)]
     private ?Country $infiltratedCountry = null;
 

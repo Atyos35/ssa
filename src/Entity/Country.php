@@ -70,7 +70,7 @@ class Country
     /**
      * Chef de cellule du pays (agent)
      */
-    #[ORM\OneToOne(targetEntity: User::class)]
+    #[ORM\OneToOne(targetEntity: Agent::class)]
     #[Assert\NotNull]
     #[Groups(['country:read', 'country:write'])]
     #[MaxDepth(1)]
@@ -159,6 +159,31 @@ class Country
     public function getAgents(): Collection
     {
         return $this->agents;
+    }
+
+    /**
+     * Ajoute un agent à ce pays et synchronise la relation.
+     */
+    public function addAgent(Agent $agent): self
+    {
+        if (!$this->agents->contains($agent)) {
+            $this->agents[] = $agent;
+            $agent->setInfiltratedCountry($this);
+        }
+        return $this;
+    }
+
+    /**
+     * Retire un agent de ce pays et synchronise la relation.
+     */
+    public function removeAgent(Agent $agent): self
+    {
+        if ($this->agents->removeElement($agent)) {
+            if ($agent->getInfiltratedCountry() === $this) {
+                $agent->setInfiltratedCountry(null);
+            }
+        }
+        return $this;
     }
 
     /**

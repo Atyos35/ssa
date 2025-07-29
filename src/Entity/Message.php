@@ -68,7 +68,7 @@ class Message
     /**
      * Auteur du message (agent)
      */
-    #[ORM\ManyToOne(targetEntity: Agent::class)]
+    #[ORM\ManyToOne(targetEntity: User::class)]
     #[ORM\JoinColumn(nullable: false)]
     #[Groups(['message:read', 'agent:read:item'])]
     #[MaxDepth(1)]
@@ -101,12 +101,12 @@ class Message
         return $this;
     }
 
-    public function getBy(): ?Agent
+    public function getBy(): ?User
     {
         return $this->by;
     }
 
-    public function setBy(?Agent $by): self
+    public function setBy(?User $by): self
     {
         $this->by = $by;
         return $this;
