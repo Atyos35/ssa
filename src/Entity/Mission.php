@@ -226,6 +226,25 @@ class Mission
         return $this->agents;
     }
 
+    public function addAgent(Agent $agent): self
+    {
+        if ($agent->getInfiltratedCountry() !== $this->getCountry()) {
+            throw new \DomainException("L'agent ne peut pas participer à cette mission car il n'est pas infiltré dans le pays de la mission.");
+        }
+        if (!$this->agents->contains($agent)) {
+            $this->agents[] = $agent;
+        }
+        return $this;
+    }
+
+    public function removeAgent(Agent $agent): self
+    {
+        if ($this->agents->contains($agent)) {
+            $this->agents->removeElement($agent);
+        }
+        return $this;
+    }
+
     public function getMissionResult(): ?MissionResult
     {
         return $this->missionResult;
