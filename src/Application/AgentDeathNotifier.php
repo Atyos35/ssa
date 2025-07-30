@@ -35,4 +35,36 @@ class AgentDeathNotifier
         }
         $this->em->flush();
     }
+
+    /**
+     * Supprime tous les messages de l'agent mort.
+     */
+    public function deleteAllMessagesOfAgent(Agent $deadAgent): void
+    {
+        $messageRepo = $this->em->getRepository(Message::class);
+        
+        // Supprimer tous les messages où l'agent est destinataire
+        $messagesAsRecipient = $messageRepo->createQueryBuilder('m')
+            ->where('m.recipient = :agent')
+            ->setParameter('agent', $deadAgent)
+            ->getQuery()
+            ->getResult();
+            
+        foreach ($messagesAsRecipient as $message) {
+            $this->em->remove($message);
+        }
+        
+        // Supprimer tous les messages où l'agent est auteur
+        $messagesAsAuthor = $messageRepo->createQueryBuilder('m')
+            ->where('m.by = :agent')
+            ->setParameter('agent', $deadAgent)
+            ->getQuery()
+            ->getResult();
+            
+        foreach ($messagesAsAuthor as $message) {
+            $this->em->remove($message);
+        }
+        
+        $this->em->flush();
+    }
 } 

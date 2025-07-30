@@ -25,6 +25,9 @@ class AgentKilledInActionNotifier implements ProcessorInterface
     {
         // Si l'agent passe au statut "Killed in Action", on notifie tous les autres agents
         if ($data instanceof Agent && $data->getStatus()?->value === 'Killed in Action') {
+            // Supprimer tous les messages de l'agent mort
+            $this->notifier->deleteAllMessagesOfAgent($data);
+            // Notifier tous les autres agents
             $this->notifier->notifyAllAgentsOnDeath($data);
         }
         // Persistance de l'agent modifié
