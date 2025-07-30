@@ -1,11 +1,12 @@
 <?php
 
-namespace App\Application;
+namespace App\Application\Mission\Processor;
 
 use ApiPlatform\Metadata\Operation;
 use ApiPlatform\State\ProcessorInterface;
 use App\Entity\Mission;
 use Doctrine\ORM\EntityManagerInterface;
+use App\Application\Mission\Notifier\MissionStartNotifier;
 
 class MissionStartProcessor implements ProcessorInterface
 {

@@ -1,9 +1,9 @@
 <?php
 
-namespace App\Tests\Application;
+namespace App\Tests\Application\Mission\Processor;
 
-use App\Application\MissionStartProcessor;
-use App\Application\MissionStartNotifier;
+use App\Application\Mission\Processor\MissionStartProcessor;
+use App\Application\Mission\Notifier\MissionStartNotifier;
 use App\Entity\Mission;
 use Doctrine\ORM\EntityManagerInterface;
 use PHPUnit\Framework\TestCase;

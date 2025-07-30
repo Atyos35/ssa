@@ -1,6 +1,6 @@
 <?php
 
-namespace App\Application;
+namespace App\Application\Security\Processor;
 
 use ApiPlatform\State\ProcessorInterface;
 use ApiPlatform\Metadata\Operation;
@@ -33,4 +33,4 @@ class AgentPasswordHashProcessor implements ProcessorInterface
         $this->em->flush();
         return $data;
     }
-}
+} 

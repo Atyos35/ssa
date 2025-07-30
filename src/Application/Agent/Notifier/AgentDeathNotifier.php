@@ -1,6 +1,6 @@
 <?php
 
-namespace App\Application;
+namespace App\Application\Agent\Notifier;
 
 use App\Entity\Agent;
 use App\Entity\Message;

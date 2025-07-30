@@ -1,8 +1,8 @@
 <?php
 
-namespace App\Tests\Application;
+namespace App\Tests\Application\Agent\Notifier;
 
-use App\Application\AgentDeathNotifier;
+use App\Application\Agent\Notifier\AgentDeathNotifier;
 use App\Entity\Agent;
 use App\Entity\Message;
 use Doctrine\ORM\EntityManagerInterface;

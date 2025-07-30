@@ -1,8 +1,8 @@
 <?php
 
-namespace App\Tests\Application;
+namespace App\Tests\Application\Security\Processor;
 
-use App\Application\AgentPasswordHashProcessor;
+use App\Application\Security\Processor\AgentPasswordHashProcessor;
 use App\Entity\Agent;
 use Doctrine\ORM\EntityManagerInterface;
 use Symfony\Component\PasswordHasher\Hasher\UserPasswordHasherInterface;

@@ -23,34 +23,38 @@ services:
     # add more service definitions when explicit configuration is needed
     # please note that last definitions always *replace* previous ones
 
-    App\Application\AgentPasswordHashProcessor:
+    App\Application\Security\Processor\AgentPasswordHashProcessor:
         arguments:
             $em: '@doctrine.orm.entity_manager'
             $passwordHasher: '@security.user_password_hasher'
         tags: [ 'api_platform.state_processor' ]
 
-    App\Application\AgentKilledInActionNotifier:
+    App\Application\Agent\Notifier\AgentKilledInActionNotifier:
         arguments:
             $em: '@doctrine.orm.entity_manager'
-            $notifier: '@App\Application\AgentDeathNotifier'
+            $notifier: '@App\Application\Agent\Notifier\AgentDeathNotifier'
         tags: [ 'api_platform.state_processor' ]
 
-    App\Application\MissionStartNotifier:
+    App\Application\Agent\Notifier\AgentDeathNotifier:
         arguments:
             $em: '@doctrine.orm.entity_manager'
 
-    App\Application\MissionStartProcessor:
+    App\Application\Mission\Notifier\MissionStartNotifier:
         arguments:
             $em: '@doctrine.orm.entity_manager'
-            $notifier: '@App\Application\MissionStartNotifier'
+
+    App\Application\Mission\Processor\MissionStartProcessor:
+        arguments:
+            $em: '@doctrine.orm.entity_manager'
+            $notifier: '@App\Application\Mission\Notifier\MissionStartNotifier'
         tags: [ 'api_platform.state_processor' ]
 
-    App\Application\MissionResultNotifier:
+    App\Application\Mission\Notifier\MissionResultNotifier:
         arguments:
             $em: '@doctrine.orm.entity_manager'
 
-    App\Application\MissionResultProcessor:
+    App\Application\Mission\Processor\MissionResultProcessor:
         arguments:
             $em: '@doctrine.orm.entity_manager'
-            $notifier: '@App\Application\MissionResultNotifier'
+            $notifier: '@App\Application\Mission\Notifier\MissionResultNotifier'
         tags: [ 'api_platform.state_processor' ]
