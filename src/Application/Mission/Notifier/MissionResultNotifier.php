@@ -1,6 +1,6 @@
 <?php
 
-namespace App\Application;
+namespace App\Application\Mission\Notifier;
 
 use App\Entity\Mission;
 use App\Entity\MissionResult;

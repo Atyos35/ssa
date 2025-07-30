@@ -1,9 +1,9 @@
 <?php
 
-namespace App\Tests\Application;
+namespace App\Tests\Application\Agent\Notifier;
 
-use App\Application\AgentKilledInActionNotifier;
-use App\Application\AgentDeathNotifier;
+use App\Application\Agent\Notifier\AgentKilledInActionNotifier;
+use App\Application\Agent\Notifier\AgentDeathNotifier;
 use App\Entity\Agent;
 use App\Entity\AgentStatus;
 use Doctrine\ORM\EntityManagerInterface;

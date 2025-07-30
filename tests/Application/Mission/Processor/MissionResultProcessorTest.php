@@ -1,9 +1,9 @@
 <?php
 
-namespace App\Tests\Application;
+namespace App\Tests\Application\Mission\Processor;
 
-use App\Application\MissionResultProcessor;
-use App\Application\MissionResultNotifier;
+use App\Application\Mission\Processor\MissionResultProcessor;
+use App\Application\Mission\Notifier\MissionResultNotifier;
 use App\Entity\Mission;
 use App\Entity\MissionStatus;
 use Doctrine\ORM\EntityManagerInterface;

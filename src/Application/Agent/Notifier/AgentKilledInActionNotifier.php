@@ -1,11 +1,12 @@
 <?php
 
-namespace App\Application;
+namespace App\Application\Agent\Notifier;
 
 use ApiPlatform\State\ProcessorInterface;
 use ApiPlatform\Metadata\Operation;
 use App\Entity\Agent;
 use Doctrine\ORM\EntityManagerInterface;
+use App\Application\Agent\Notifier\AgentDeathNotifier;
 
 // Processor API Platform qui notifie tous les agents lors du passage d'un agent au statut 'Killed in Action'
 class AgentKilledInActionNotifier implements ProcessorInterface
@@ -35,4 +36,4 @@ class AgentKilledInActionNotifier implements ProcessorInterface
         $this->em->flush();
         return $data;
     }
-}
+} 

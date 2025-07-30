@@ -14,8 +14,8 @@ use ApiPlatform\Metadata\Get;
 use ApiPlatform\Metadata\Post;
 use ApiPlatform\Metadata\Patch;
 use App\Application\AgentDataPersister;
-use App\Application\AgentPasswordHashProcessor;
-use App\Application\AgentKilledInActionNotifier;
+use App\Application\Security\Processor\AgentPasswordHashProcessor;
+use App\Application\Agent\Notifier\AgentKilledInActionNotifier;
 
 #[ApiResource(
     description: "Agent secret de la SSA.",

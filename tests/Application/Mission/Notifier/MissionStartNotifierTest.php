@@ -1,8 +1,8 @@
 <?php
 
-namespace App\Tests\Application;
+namespace App\Tests\Application\Mission\Notifier;
 
-use App\Application\MissionStartNotifier;
+use App\Application\Mission\Notifier\MissionStartNotifier;
 use App\Entity\Agent;
 use App\Entity\Country;
 use App\Entity\Message;
