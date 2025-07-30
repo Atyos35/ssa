@@ -34,3 +34,13 @@ services:
             $em: '@doctrine.orm.entity_manager'
             $notifier: '@App\Application\AgentDeathNotifier'
         tags: [ 'api_platform.state_processor' ]
+
+    App\Application\MissionStartNotifier:
+        arguments:
+            $em: '@doctrine.orm.entity_manager'
+
+    App\Application\MissionStartProcessor:
+        arguments:
+            $em: '@doctrine.orm.entity_manager'
+            $notifier: '@App\Application\MissionStartNotifier'
+        tags: [ 'api_platform.state_processor' ]

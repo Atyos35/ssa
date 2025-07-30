@@ -13,6 +13,7 @@ use ApiPlatform\Metadata\GetCollection;
 use ApiPlatform\Metadata\Get;
 use ApiPlatform\Metadata\Post;
 use ApiPlatform\Metadata\Patch;
+use App\Application\MissionStartProcessor;
 
 #[ApiResource(
     description: "Mission secrète.",
@@ -21,10 +22,11 @@ use ApiPlatform\Metadata\Patch;
             description: "Liste des missions et leurs résultats."
         ),
         new Get(
-            description: "Détail d’une mission (agents, pays, résultat, etc.)."
+            description: "Détail d'une mission (agents, pays, résultat, etc.)."
         ),
         new Post(
-            description: "Créer une nouvelle mission. Les agents doivent être infiltrés dans le pays pour pouvoir participer."
+            processor: MissionStartProcessor::class,
+            description: "Créer une nouvelle mission. Les agents doivent être infiltrés dans le pays pour pouvoir participer. Un message sera envoyé à tous les agents du pays (sauf ceux qui participent)."
         ),
         new Patch(
             description: "Clôturer une mission et remplir le résultat."
@@ -229,7 +231,7 @@ class Mission
     public function addAgent(Agent $agent): self
     {
         if ($agent->getInfiltratedCountry() !== $this->getCountry()) {
-            throw new \DomainException("L'agent ne peut pas participer à cette mission car il n'est pas infiltré dans le pays de la mission.");
+            throw new \DomainException("L'agent {$agent->getCodeName()} ne peut pas participer à cette mission car il n'est pas infiltré dans le pays de la mission.");
         }
         if (!$this->agents->contains($agent)) {
             $this->agents[] = $agent;
