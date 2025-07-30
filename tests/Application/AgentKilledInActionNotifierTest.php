@@ -21,7 +21,8 @@ class AgentKilledInActionNotifierTest extends TestCase
         $agent->method('getStatus')->willReturn(AgentStatus::KilledInAction);
         $operation = $this->createMock(Operation::class);
 
-        // On attend la notification
+        // On attend la suppression des messages puis la notification
+        $notifier->expects($this->once())->method('deleteAllMessagesOfAgent')->with($agent);
         $notifier->expects($this->once())->method('notifyAllAgentsOnDeath')->with($agent);
         $em->expects($this->once())->method('persist')->with($agent);
         $em->expects($this->once())->method('flush');
