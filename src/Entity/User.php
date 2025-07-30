@@ -37,6 +37,7 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface
     #[ORM\GeneratedValue(strategy: 'CUSTOM')]
     #[ORM\Column(type: 'uuid', unique: true)]
     #[ORM\CustomIdGenerator(class: 'doctrine.uuid_generator')]
+    #[Groups(['user:read', 'agent:read:collection', 'agent:read:item'])]
     private ?Uuid $id = null;
 
     /**
@@ -45,6 +46,7 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface
     #[ORM\Column(type: 'string', length: 50)]
     #[Assert\NotBlank]
     #[Assert\Length(min: 2, max: 50)]
+    #[Groups(['user:read', 'user:write', 'agent:read:item', 'agent:write'])]
     private string $firstName;
 
     /**
@@ -53,6 +55,7 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface
     #[ORM\Column(type: 'string', length: 50)]
     #[Assert\NotBlank]
     #[Assert\Length(min: 2, max: 50)]
+    #[Groups(['user:read', 'user:write', 'agent:read:item', 'agent:write'])]
     private string $lastName;
 
     /**
@@ -60,7 +63,7 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface
      */
     #[ORM\Column(type: 'json')]
     #[Assert\NotNull]
-    #[Groups(['user:read', 'user:write', 'agent:read:item'])]
+    #[Groups(['user:read', 'user:write', 'agent:read:collection', 'agent:read:item'])]
     private array $roles = [];
 
     /**
@@ -94,6 +97,7 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface
         pattern: '/[^a-zA-Z0-9].*[^a-zA-Z0-9]/',
         message: 'Le mot de passe doit contenir au moins 2 caractères spéciaux.'
     )]
+    #[Groups(['user:write', 'agent:write'])]
     private string $password;
 
     public function __construct()

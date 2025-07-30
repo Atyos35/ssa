@@ -21,9 +21,11 @@ use App\Application\Agent\Notifier\AgentKilledInActionNotifier;
     description: "Agent secret de la SSA.",
     operations: [
         new GetCollection(
-            description: "Liste des agents (noms/prénoms non exposés)."
+            description: "Liste des agents (noms/prénoms non exposés).",
+            normalizationContext: ['groups' => ['agent:read:collection']]
         ),
         new Get(
+            normalizationContext: ['groups' => ['agent:read:item']],
             description: "Détail d’un agent (missions, messages, mentor, pays, etc.)."
         ),
         new Post(
@@ -53,7 +55,7 @@ class Agent extends User
      */
     #[ORM\Column(type: 'integer')]
     #[Assert\PositiveOrZero]
-    #[Groups(['agent:read:item', 'agent:write'])]
+    #[Groups(['agent:read:collection', 'agent:read:item', 'agent:write'])]
     private int $yearsOfExperience;
 
     /**
@@ -61,7 +63,7 @@ class Agent extends User
      */
     #[ORM\Column(enumType: AgentStatus::class)]
     #[Assert\NotNull]
-    #[Groups(['agent:read:item', 'agent:write'])]
+    #[Groups(['agent:read:collection', 'agent:read:item', 'agent:write'])]
     private AgentStatus $status;
 
     /**
@@ -69,7 +71,7 @@ class Agent extends User
      */
     #[ORM\Column(type: 'date_immutable')]
     #[Assert\NotNull]
-    #[Groups(['agent:read:item', 'agent:write'])]
+    #[Groups(['agent:read:collection', 'agent:read:item', 'agent:write'])]
     private \DateTimeImmutable $enrolementDate;
 
     /**
@@ -119,13 +121,11 @@ class Agent extends User
         $this->setEnrolementDate(new \DateTimeImmutable());
     }
 
-    #[Groups(['agent:read:item'])]
     public function getFirstName(): string
     {
         return parent::getFirstName();
     }
 
-    #[Groups(['agent:read:item'])]
     public function getLastName(): string
     {
         return parent::getLastName();
