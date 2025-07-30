@@ -44,3 +44,13 @@ services:
             $em: '@doctrine.orm.entity_manager'
             $notifier: '@App\Application\MissionStartNotifier'
         tags: [ 'api_platform.state_processor' ]
+
+    App\Application\MissionResultNotifier:
+        arguments:
+            $em: '@doctrine.orm.entity_manager'
+
+    App\Application\MissionResultProcessor:
+        arguments:
+            $em: '@doctrine.orm.entity_manager'
+            $notifier: '@App\Application\MissionResultNotifier'
+        tags: [ 'api_platform.state_processor' ]

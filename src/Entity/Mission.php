@@ -14,6 +14,7 @@ use ApiPlatform\Metadata\Get;
 use ApiPlatform\Metadata\Post;
 use ApiPlatform\Metadata\Patch;
 use App\Application\MissionStartProcessor;
+use App\Application\MissionResultProcessor;
 
 #[ApiResource(
     description: "Mission secrète.",
@@ -29,7 +30,8 @@ use App\Application\MissionStartProcessor;
             description: "Créer une nouvelle mission. Les agents doivent être infiltrés dans le pays pour pouvoir participer. Un message sera envoyé à tous les agents du pays (sauf ceux qui participent)."
         ),
         new Patch(
-            description: "Clôturer une mission et remplir le résultat."
+            processor: MissionResultProcessor::class,
+            description: "Modifier une mission. Si le statut passe à 'Success' ou 'Failure', un résultat de mission sera automatiquement créé."
         ),
     ]
 )]
