@@ -5,20 +5,27 @@ namespace App\Application\Security\Processor;
 use ApiPlatform\State\ProcessorInterface;
 use ApiPlatform\Metadata\Operation;
 use App\Entity\Agent;
+use App\Service\EmailVerificationService;
 use Doctrine\ORM\EntityManagerInterface;
 use Symfony\Component\PasswordHasher\Hasher\UserPasswordHasherInterface;
+use Symfony\Component\Uid\Uuid;
 
 // Processor API Platform qui hash le mot de passe d'un agent lors d'un POST
 class AgentPasswordHashProcessor implements ProcessorInterface
 {
     private EntityManagerInterface $em;
     private UserPasswordHasherInterface $passwordHasher;
+    private EmailVerificationService $emailVerificationService;
 
     // Injection des dépendances Doctrine et du hasher Symfony
-    public function __construct(EntityManagerInterface $em, UserPasswordHasherInterface $passwordHasher)
-    {
+    public function __construct(
+        EntityManagerInterface $em, 
+        UserPasswordHasherInterface $passwordHasher,
+        EmailVerificationService $emailVerificationService
+    ) {
         $this->em = $em;
         $this->passwordHasher = $passwordHasher;
+        $this->emailVerificationService = $emailVerificationService;
     }
 
     // Méthode appelée lors d'un POST sur un agent
@@ -28,9 +35,24 @@ class AgentPasswordHashProcessor implements ProcessorInterface
         if ($data instanceof Agent && !empty($data->getPassword()) && !str_starts_with($data->getPassword(), '$2y$')) {
             $data->setPassword($this->passwordHasher->hashPassword($data, $data->getPassword()));
         }
+        
         // Persistance de l'agent
         $this->em->persist($data);
         $this->em->flush();
+        
+        // Générer et envoyer l'email de vérification
+        if ($data instanceof Agent) {
+            $token = Uuid::v4()->toRfc4122();
+            $data->setEmailVerificationToken($token);
+            $data->setEmailVerificationExpiresAt(new \DateTimeImmutable('+24 hours'));
+            $data->setEmailVerified(false);
+            
+            $this->em->flush();
+            
+            // Envoyer l'email de vérification
+            $this->emailVerificationService->sendVerificationEmail($data, $token);
+        }
+        
         return $data;
     }
 } 

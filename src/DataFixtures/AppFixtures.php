@@ -44,7 +44,7 @@ class AppFixtures extends Fixture
             $countries[] = $country;
         }
 
-        // --- Création des agents ---
+        // --- Création des agents (sans relations pour l'instant) ---
         $agents = [];
         $agentData = [
             [
@@ -100,7 +100,10 @@ class AppFixtures extends Fixture
             $agents[] = $agent;
         }
 
-        // --- Définition des mentors ---
+        // Flush pour s'assurer que les agents sont persistés avant de créer les relations
+        $manager->flush();
+
+        // --- Définition des mentors (après flush) ---
         $agents[0]->setMentor($agents[4]);
         $agents[1]->setMentor($agents[0]);
         $agents[2]->setMentor($agents[0]);
@@ -114,19 +117,19 @@ class AppFixtures extends Fixture
         $countries[3]->setCellLeader($agents[2]);
         $countries[4]->setCellLeader($agents[3]);
 
-        // --- Création des missions ---
+        // --- Création des missions (sans assigner d'agents pour l'instant) ---
         $missions = [];
         $missionData = [
             [
                 'name' => 'Opération GoldenEye',
                 'danger' => DangerLevel::Critical,
                 'status' => MissionStatus::Success,
-                'description' => 'Empêcher l’utilisation de l’arme satellite GoldenEye.',
+                'description' => 'Empêcher l\'utilisation de l\'arme satellite GoldenEye.',
                 'objectives' => 'Infiltrer la base, neutraliser Janus, désactiver GoldenEye.',
                 'startDate' => new \DateTimeImmutable('2024-01-10'),
                 'endDate' => new \DateTimeImmutable('2024-01-20'),
                 'country' => $countries[2],
-                'agents' => [$agents[0], $agents[4]],
+                'agentIndexes' => [0, 4], // James Bond et Alec Trevelyan
             ],
             [
                 'name' => 'Treadstone',
@@ -137,7 +140,7 @@ class AppFixtures extends Fixture
                 'startDate' => new \DateTimeImmutable('2023-05-01'),
                 'endDate' => new \DateTimeImmutable('2023-05-15'),
                 'country' => $countries[1],
-                'agents' => [$agents[1]],
+                'agentIndexes' => [1], // Jason Bourne
             ],
             [
                 'name' => 'Mission Fantôme',
@@ -148,7 +151,7 @@ class AppFixtures extends Fixture
                 'startDate' => new \DateTimeImmutable('2024-03-01'),
                 'endDate' => null,
                 'country' => $countries[3],
-                'agents' => [$agents[2]],
+                'agentIndexes' => [2], // Ethan Hunt
             ],
             [
                 'name' => 'Paix en Égypte',
@@ -159,7 +162,7 @@ class AppFixtures extends Fixture
                 'startDate' => new \DateTimeImmutable('2024-04-01'),
                 'endDate' => null,
                 'country' => $countries[4],
-                'agents' => [$agents[3]],
+                'agentIndexes' => [3], // OSS 117
             ],
         ];
         foreach ($missionData as $data) {
@@ -172,14 +175,23 @@ class AppFixtures extends Fixture
             $mission->setStartDate($data['startDate']);
             $mission->setEndDate($data['endDate']);
             $mission->setCountry($data['country']);
-            foreach ($data['agents'] as $agent) {
-                // Check que l'agent est bien infiltré dans le pays de la mission
-                if ($agent->getInfiltratedCountry() === $data['country']) {
-                    $mission->getAgents()->add($agent);
-                }
-            }
             $manager->persist($mission);
             $missions[] = $mission;
+        }
+
+        // Flush pour s'assurer que les missions sont persistées
+        $manager->flush();
+
+        // --- Assignation des agents aux missions (après flush) ---
+        foreach ($missionData as $index => $data) {
+            $mission = $missions[$index];
+            foreach ($data['agentIndexes'] as $agentIndex) {
+                $agent = $agents[$agentIndex];
+                // Vérifier que l'agent est bien infiltré dans le pays de la mission
+                if ($agent->getInfiltratedCountry() === $data['country']) {
+                    $mission->addAgent($agent);
+                }
+            }
         }
 
         // --- Création des résultats de mission ---

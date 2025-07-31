@@ -13,9 +13,6 @@ use ApiPlatform\Metadata\GetCollection;
 use ApiPlatform\Metadata\Get;
 use ApiPlatform\Metadata\Post;
 use ApiPlatform\Metadata\Patch;
-use App\Application\AgentDataPersister;
-use App\Application\Security\Processor\AgentPasswordHashProcessor;
-use App\Application\Agent\Notifier\AgentKilledInActionNotifier;
 
 #[ApiResource(
     description: "Agent secret de la SSA.",
@@ -29,11 +26,9 @@ use App\Application\Agent\Notifier\AgentKilledInActionNotifier;
             description: "Détail d’un agent (missions, messages, mentor, pays, etc.)."
         ),
         new Post(
-            processor: AgentPasswordHashProcessor::class,
             description: "Créer un nouvel agent."
         ),
         new Patch(
-            processor: AgentKilledInActionNotifier::class,
             description: "Modifier un agent. Lors du passage au statut 'Killed in Action', tous les agents sont notifiés par message."
         ),
     ]
@@ -74,13 +69,7 @@ class Agent extends User
     #[Groups(['agent:read:collection', 'agent:read:item', 'agent:write'])]
     private \DateTimeImmutable $enrolementDate;
 
-    /**
-     * Mission en cours de l'agent
-     */
-    #[ORM\ManyToOne(targetEntity: Mission::class, inversedBy: 'agents')]
-    #[Groups(['agent:read:item', 'agent:write'])]
-    #[MaxDepth(1)]
-    private ?Mission $currentMission = null;
+
 
     /**
      * Messages reçus par l'agent (destinataire)
@@ -91,14 +80,14 @@ class Agent extends User
     /**
      * Missions auxquelles participe l'agent
      */
-    #[ORM\OneToMany(mappedBy: 'currentAgent', targetEntity: Mission::class)]
+    #[ORM\ManyToMany(targetEntity: Mission::class, mappedBy: 'agents')]
     private Collection $missions;
 
     /**
      * Pays infiltré par l'agent
      */
     #[ORM\ManyToOne(targetEntity: Country::class, inversedBy: 'agents')]
-    #[Groups(['agent:read:item', 'agent:write'])]
+    #[Groups(['agent:read:collection', 'agent:read:item', 'agent:write'])]
     #[MaxDepth(1)]
     private ?Country $infiltratedCountry = null;
 
@@ -175,16 +164,7 @@ class Agent extends User
         return $this;
     }
 
-    public function getCurrentMission(): ?Mission
-    {
-        return $this->currentMission;
-    }
 
-    public function setCurrentMission(?Mission $mission): self
-    {
-        $this->currentMission = $mission;
-        return $this;
-    }
 
     public function getMentor(): ?self
     {

@@ -13,8 +13,6 @@ use ApiPlatform\Metadata\GetCollection;
 use ApiPlatform\Metadata\Get;
 use ApiPlatform\Metadata\Post;
 use ApiPlatform\Metadata\Patch;
-use App\Application\Mission\Processor\MissionStartProcessor;
-use App\Application\Mission\Processor\MissionResultProcessor;
 
 #[ApiResource(
     description: "Mission secrète.",
@@ -26,12 +24,10 @@ use App\Application\Mission\Processor\MissionResultProcessor;
             description: "Détail d'une mission (agents, pays, résultat, etc.)."
         ),
         new Post(
-            processor: MissionStartProcessor::class,
             description: "Créer une nouvelle mission. Les agents doivent être infiltrés dans le pays pour pouvoir participer. Un message sera envoyé à tous les agents du pays (sauf ceux qui participent)."
         ),
         new Patch(
-            processor: MissionResultProcessor::class,
-            description: "Modifier une mission. Si le statut passe à 'Success' ou 'Failure', un résultat de mission sera automatiquement créé."
+            description: "Modifier une mission. Le niveau de danger du pays sera automatiquement mis à jour. Si le statut passe à 'Success' ou 'Failure', un résultat de mission sera automatiquement créé."
         ),
     ]
 )]
@@ -128,12 +124,6 @@ class Mission
     #[Groups(['mission:read:item', 'mission:write'])]
     #[MaxDepth(1)]
     private ?Country $country = null;
-
-    /**
-     * Agent actuellement en mission
-     */
-    #[ORM\ManyToOne(targetEntity: Agent::class, inversedBy: 'missions')]
-    private ?Agent $currentAgent = null;
 
     public function __construct()
     {

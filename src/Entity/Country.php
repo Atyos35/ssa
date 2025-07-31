@@ -160,33 +160,4 @@ class Country
     {
         return $this->agents;
     }
-
-    /**
-     * Retourne le plus haut niveau de danger des missions actives dans ce pays
-     */
-    public function getMaxLevelDanger(): ?DangerLevel
-    {
-        $dangerLevels = [];
-        foreach (
-            $this->getMissions() as $mission) {
-            if ($mission->getStatus() === MissionStatus::Success) {
-                continue;
-            }
-            $dangerLevels[] = $mission->getDanger();
-        }
-        if (empty($dangerLevels)) {
-            return null;
-        }
-        
-        $order = [
-            DangerLevel::Low => 1,
-            DangerLevel::Medium => 2,
-            DangerLevel::High => 3,
-            DangerLevel::Critical => 4,
-        ];
-        usort($dangerLevels, function($a, $b) use ($order) {
-            return $order[$b->value] <=> $order[$a->value];
-        });
-        return $dangerLevels[0];
-    }
 } 
