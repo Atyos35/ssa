@@ -8,21 +8,6 @@ namespace App\Entity;
 enum MissionStatus: string
 {
     /**
-     * Mission en cours de planification
-     */
-    case Planning = 'Planning';
-    
-    /**
-     * Mission en cours
-     */
-    case InProgress = 'In Progress';
-    
-    /**
-     * Mission en pause
-     */
-    case Paused = 'Paused';
-    
-    /**
      * Mission terminée avec succès
      */
     case Success = 'Success';
@@ -31,9 +16,4 @@ enum MissionStatus: string
      * Mission échouée
      */
     case Failure = 'Failure';
-    
-    /**
-     * Mission annulée
-     */
-    case Cancelled = 'Cancelled';
 } 

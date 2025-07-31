@@ -13,11 +13,12 @@ security:
             pattern: ^/(_(profiler|wdt)|css|images|js)/
             security: false
         login:
-            pattern: ^/login$
+            pattern: ^/api/login$
             stateless: true
             provider: app_user_provider
+            user_checker: App\Security\UserChecker
             json_login:
-                check_path: /login
+                check_path: /api/login
                 username_path: email
                 password_path: password
                 success_handler: lexik_jwt_authentication.handler.authentication_success
@@ -25,10 +26,15 @@ security:
         token_refresh:
             pattern: ^/token/refresh
             stateless: true
+            user_checker: App\Security\UserChecker
             json_login:
                 check_path: /token/refresh
                 success_handler: lexik_jwt_authentication.handler.authentication_success
                 failure_handler: App\Security\CustomAuthenticationFailureHandler
+        auth_api:
+            pattern: ^/api/(register|verify-email)
+            stateless: true
+            security: false
         api:
             pattern: ^/api
             stateless: true
@@ -36,6 +42,7 @@ security:
         main:
             lazy: true
             provider: app_user_provider
+            user_checker: App\Security\UserChecker
 
             # activate different ways to authenticate
             # https://symfony.com/doc/current/security.html#the-firewall
@@ -47,8 +54,10 @@ security:
     # Note: Only the *first* access control that matches will be used
     access_control:
         # Routes publiques (pas d'authentification requise)
-        - { path: ^/login, roles: PUBLIC_ACCESS }
+        - { path: ^/api/login, roles: PUBLIC_ACCESS }
         - { path: ^/token/refresh, roles: PUBLIC_ACCESS }
+        - { path: ^/api/register, roles: PUBLIC_ACCESS }
+        - { path: ^/api/verify-email, roles: PUBLIC_ACCESS }
         - { path: ^/api/docs, roles: PUBLIC_ACCESS }
         - { path: ^/api/contexts, roles: PUBLIC_ACCESS }
         - { path: ^/api/validation_errors, roles: PUBLIC_ACCESS }

@@ -82,6 +82,10 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface
     #[Assert\NotBlank]
     #[Assert\Length(min: 12, max: 255)]
     #[Assert\Regex(
+        pattern: '/^.{12,}$/',
+        message: 'Le mot de passe doit contenir au minimum 12 caractères.'
+    )]
+    #[Assert\Regex(
         pattern: '/[a-z].*[a-z]/',
         message: 'Le mot de passe doit contenir au moins 2 minuscules.'
     )]
@@ -97,8 +101,27 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface
         pattern: '/[^a-zA-Z0-9].*[^a-zA-Z0-9]/',
         message: 'Le mot de passe doit contenir au moins 2 caractères spéciaux.'
     )]
-    #[Groups(['user:write', 'agent:write'])]
+    #[Groups(['user:write'])]
     private string $password;
+
+    /**
+     * Token de vérification d'email
+     */
+    #[ORM\Column(type: 'string', length: 255, nullable: true)]
+    private ?string $emailVerificationToken = null;
+
+    /**
+     * Date d'expiration du token de vérification
+     */
+    #[ORM\Column(type: 'datetime_immutable', nullable: true)]
+    private ?\DateTimeImmutable $emailVerificationExpiresAt = null;
+
+    /**
+     * Email vérifié ou non
+     */
+    #[ORM\Column(type: 'boolean')]
+    #[Groups(['user:read'])]
+    private bool $emailVerified = false;
 
     public function __construct()
     {
@@ -173,5 +196,38 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface
     {
         // Si vous stockez des données temporaires sensibles sur l'utilisateur, effacez-les ici
         // $this->plainPassword = null;
+    }
+
+    public function getEmailVerificationToken(): ?string
+    {
+        return $this->emailVerificationToken;
+    }
+
+    public function setEmailVerificationToken(?string $token): self
+    {
+        $this->emailVerificationToken = $token;
+        return $this;
+    }
+
+    public function getEmailVerificationExpiresAt(): ?\DateTimeImmutable
+    {
+        return $this->emailVerificationExpiresAt;
+    }
+
+    public function setEmailVerificationExpiresAt(?\DateTimeImmutable $expiresAt): self
+    {
+        $this->emailVerificationExpiresAt = $expiresAt;
+        return $this;
+    }
+
+    public function isEmailVerified(): bool
+    {
+        return $this->emailVerified;
+    }
+
+    public function setEmailVerified(bool $verified): self
+    {
+        $this->emailVerified = $verified;
+        return $this;
     }
 } 
