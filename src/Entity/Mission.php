@@ -23,9 +23,6 @@ use ApiPlatform\Metadata\Patch;
         new Get(
             description: "Détail d'une mission (agents, pays, résultat, etc.)."
         ),
-        new Post(
-            description: "Créer une nouvelle mission. Les agents doivent être infiltrés dans le pays pour pouvoir participer. Un message sera envoyé à tous les agents du pays (sauf ceux qui participent)."
-        ),
         new Patch(
             description: "Modifier une mission. Le niveau de danger du pays sera automatiquement mis à jour. Si le statut passe à 'Success' ou 'Failure', un résultat de mission sera automatiquement créé."
         ),

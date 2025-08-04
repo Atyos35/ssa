@@ -4,6 +4,7 @@ namespace App\Factory;
 
 use App\Entity\Agent;
 use App\Entity\AgentStatus;
+use App\Factory\CountryFactory;
 use Zenstruck\Foundry\Persistence\PersistentProxyObjectFactory;
 
 /**
@@ -40,6 +41,7 @@ final class AgentFactory extends PersistentProxyObjectFactory
             'firstName' => self::faker()->text(50),
             'lastName' => self::faker()->text(50),
             'password' => self::faker()->text(255),
+            'infiltratedCountry' => CountryFactory::new(),
             'roles' => [],
             'status' => self::faker()->randomElement(AgentStatus::cases()),
             'yearsOfExperience' => self::faker()->randomNumber(),
