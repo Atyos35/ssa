@@ -69,7 +69,7 @@ class Message
      * Auteur du message (agent)
      */
     #[ORM\ManyToOne(targetEntity: Agent::class)]
-    #[ORM\JoinColumn(nullable: false)]
+    #[ORM\JoinColumn(nullable: true)]
     #[Groups(['message:read', 'agent:read:item'])]
     #[MaxDepth(1)]
     private ?Agent $by = null;

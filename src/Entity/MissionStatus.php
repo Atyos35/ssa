@@ -8,6 +8,11 @@ namespace App\Entity;
 enum MissionStatus: string
 {
     /**
+     * Mission en cours
+     */
+    case InProgress = 'InProgress';
+
+    /**
      * Mission terminée avec succès
      */
     case Success = 'Success';
