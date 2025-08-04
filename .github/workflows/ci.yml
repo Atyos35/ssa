@@ -36,6 +36,7 @@ jobs:
       JWT_PRIVATE_KEY: ${{ secrets.JWT_PRIVATE_KEY }}
       JWT_PASSPHRASE: ${{ secrets.JWT_PASSPHRASE }}
       MAILER_DSN: ${{ secrets.MAILER_DSN }}
+      MESSENGER_TRANSPORT_DSN: ${{ secrets.MESSENGER_TRANSPORT_DSN }}
 
     steps:
       - name: Checkout code
@@ -62,6 +63,7 @@ jobs:
           JWT_PRIVATE_KEY=${{ secrets.JWT_PRIVATE_KEY }}
           JWT_PASSPHRASE=${{ secrets.JWT_PASSPHRASE }}
           MAILER_DSN=${{ secrets.MAILER_DSN }}
+          MESSENGER_TRANSPORT_DSN=${{ secrets.MESSENGER_TRANSPORT_DSN }}
           DATABASE_URL=postgresql://${POSTGRES_USER}:${POSTGRES_PASSWORD}@127.0.0.1:5432/${POSTGRES_DB}?serverVersion=16&charset=utf8
           EOF
 
@@ -82,6 +84,7 @@ jobs:
           JWT_PRIVATE_KEY=${{ secrets.JWT_PRIVATE_KEY }}
           JWT_PASSPHRASE=${{ secrets.JWT_PASSPHRASE }}
           MAILER_DSN=${{ secrets.MAILER_DSN }}
+          MESSENGER_TRANSPORT_DSN=${{ secrets.MESSENGER_TRANSPORT_DSN }}
           DATABASE_URL=postgresql://${POSTGRES_USER}:${POSTGRES_PASSWORD}@127.0.0.1:5432/${POSTGRES_DB}?serverVersion=16&charset=utf8
           EOF
 

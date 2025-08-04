@@ -12,7 +12,6 @@ use Symfony\Component\Serializer\Annotation\MaxDepth;
 use ApiPlatform\Metadata\GetCollection;
 use ApiPlatform\Metadata\Get;
 use ApiPlatform\Metadata\Post;
-use ApiPlatform\Metadata\Patch;
 
 #[ApiResource(
     description: "Agent secret de la SSA.",
@@ -28,9 +27,7 @@ use ApiPlatform\Metadata\Patch;
         new Post(
             description: "Créer un nouvel agent."
         ),
-        new Patch(
-            description: "Modifier un agent. Lors du passage au statut 'Killed in Action', tous les agents sont notifiés par message."
-        ),
+
     ]
 )]
 #[ORM\Entity]

@@ -7,7 +7,7 @@ use App\Entity\User;
 use Doctrine\ORM\EntityManagerInterface;
 use Zenstruck\Foundry\Test\ResetDatabase;
 
-class RegistrationTest extends ApiTestCase
+class RegistrationFunctionalTest extends ApiTestCase
 {
     // Reset la base de données avant chaque test
     use ResetDatabase;
