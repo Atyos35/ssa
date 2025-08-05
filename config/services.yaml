@@ -29,3 +29,7 @@ services:
             $passwordHasher: '@security.user_password_hasher'
             $emailVerificationService: '@App\Service\EmailVerificationService'
         tags: [ 'api_platform.state_processor' ]
+
+    App\EventListener\MissionEventListener:
+        tags:
+            - { name: 'doctrine.event_listener', event: 'postPersist' }

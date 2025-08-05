@@ -6,6 +6,7 @@ use App\Story\DefaultAgentsStory;
 use App\Story\DefaultCountriesStory;
 use Doctrine\Bundle\FixturesBundle\Fixture;
 use Doctrine\Persistence\ObjectManager;
+use App\Story\DefaultMissionsStory;
 
 class AppFixtures extends Fixture
 {
@@ -13,5 +14,6 @@ class AppFixtures extends Fixture
     {
         DefaultCountriesStory::load();
         DefaultAgentsStory::load();
+        DefaultMissionsStory::load();
     }
 }

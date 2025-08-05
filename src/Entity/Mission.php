@@ -12,7 +12,6 @@ use Symfony\Component\Serializer\Annotation\MaxDepth;
 use ApiPlatform\Metadata\GetCollection;
 use ApiPlatform\Metadata\Get;
 use ApiPlatform\Metadata\Post;
-use ApiPlatform\Metadata\Patch;
 
 #[ApiResource(
     description: "Mission secrète.",
@@ -23,8 +22,8 @@ use ApiPlatform\Metadata\Patch;
         new Get(
             description: "Détail d'une mission (agents, pays, résultat, etc.)."
         ),
-        new Patch(
-            description: "Modifier une mission. Le niveau de danger du pays sera automatiquement mis à jour. Si le statut passe à 'Success' ou 'Failure', un résultat de mission sera automatiquement créé."
+        new Post(
+            description: "Créer une nouvelle mission. Le niveau de danger du pays sera automatiquement mis à jour."
         ),
     ]
 )]

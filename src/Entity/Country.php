@@ -54,10 +54,9 @@ class Country
     /**
      * Niveau de danger du pays
      */
-    #[ORM\Column(enumType: DangerLevel::class)]
-    #[Assert\NotNull]
+    #[ORM\Column(enumType: DangerLevel::class, nullable: true)]
     #[Groups(['country:read', 'agent:read:item', 'mission:read:item', 'country:write'])]
-    private DangerLevel $danger;
+    private ?DangerLevel $danger = null;
 
     /**
      * Nombre d'agents dans le pays
@@ -112,12 +111,12 @@ class Country
         return $this;
     }
 
-    public function getDanger(): DangerLevel
+    public function getDanger(): ?DangerLevel
     {
         return $this->danger;
     }
 
-    public function setDanger(DangerLevel $danger): self
+    public function setDanger(?DangerLevel $danger): self
     {
         $this->danger = $danger;
         return $this;

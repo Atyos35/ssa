@@ -2,14 +2,15 @@
 
 namespace App\Factory;
 
-use App\Entity\Country;
+use App\Entity\Mission;
 use App\Entity\DangerLevel;
+use App\Entity\MissionStatus;
 use Zenstruck\Foundry\Persistence\PersistentProxyObjectFactory;
 
 /**
- * @extends PersistentProxyObjectFactory<Country>
+ * @extends PersistentProxyObjectFactory<Mission>
  */
-final class CountryFactory extends PersistentProxyObjectFactory
+final class MissionFactory extends PersistentProxyObjectFactory
 {
     /**
      * @see https://symfony.com/bundles/ZenstruckFoundryBundle/current/index.html#factories-as-services
@@ -22,7 +23,7 @@ final class CountryFactory extends PersistentProxyObjectFactory
 
     public static function class(): string
     {
-        return Country::class;
+        return Mission::class;
     }
 
     /**
@@ -34,7 +35,12 @@ final class CountryFactory extends PersistentProxyObjectFactory
     {
         return [
             'name' => self::faker()->text(100),
-            'numberOfAgents' => self::faker()->randomNumber(),
+            'danger' => self::faker()->randomElement(DangerLevel::cases()),
+            'status' => MissionStatus::InProgress,
+            'description' => self::faker()->text(500),
+            'objectives' => self::faker()->text(500),
+            'startDate' => \DateTimeImmutable::createFromMutable(self::faker()->dateTime()),
+            'endDate' => null,
         ];
     }
 
@@ -44,7 +50,7 @@ final class CountryFactory extends PersistentProxyObjectFactory
     protected function initialize(): static
     {
         return $this
-            // ->afterInstantiate(function(Country $country): void {})
+            // ->afterInstantiate(function(Mission $mission): void {})
         ;
     }
 }
