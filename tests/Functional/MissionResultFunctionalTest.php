@@ -123,9 +123,9 @@ class MissionResultFunctionalTest extends WebTestCase
 
         $this->entityManager->flush();
 
-        // Modifier autre chose que le statut (par exemple la description)
+        // Modifier autre chose que le statut (par exemple le danger)
         $patchData = [
-            'description' => 'Nouvelle description'
+            'danger' => 'High'
         ];
 
         $this->client->request(
@@ -172,9 +172,9 @@ class MissionResultFunctionalTest extends WebTestCase
 
         $this->assertResponseIsSuccessful();
 
-        // Modifier autre chose (par exemple la description)
+        // Modifier autre chose (par exemple le danger)
         $patchData2 = [
-            'description' => 'Description modifiée'
+            'danger' => 'Critical'
         ];
 
         $this->client->request(

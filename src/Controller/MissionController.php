@@ -2,6 +2,7 @@
 
 namespace App\Controller;
 
+use App\Dto\MissionPatchDto;
 use App\Entity\Mission;
 use App\Service\MissionCreationService;
 use App\Service\MissionValidationService;
@@ -65,14 +66,12 @@ class MissionController extends AbstractController
             return $this->json(['error' => 'Mission not found'], Response::HTTP_NOT_FOUND);
         }
 
-        // Désérialiser les modifications depuis la requête
+        // Désérialiser le DTO depuis la requête
         $content = $request->getContent();
-        $updatedMission = $this->serializer->deserialize($content, Mission::class, 'json', [
-            'object_to_populate' => $mission
-        ]);
+        $patchDto = $this->serializer->deserialize($content, MissionPatchDto::class, 'json');
 
-        // Valider la mission
-        $violations = $this->validator->validate($updatedMission);
+        // Valider le DTO
+        $violations = $this->validator->validate($patchDto);
         if (count($violations) > 0) {
             $errors = [];
             foreach ($violations as $violation) {
@@ -81,18 +80,26 @@ class MissionController extends AbstractController
             return $this->json(['errors' => $errors], Response::HTTP_BAD_REQUEST);
         }
 
+        // Appliquer les modifications depuis le DTO
+        if ($patchDto->status !== null) {
+            $mission->setStatus($patchDto->status);
+        }
+        if ($patchDto->danger !== null) {
+            $mission->setDanger($patchDto->danger);
+        }
+
         // Valider les agents de la mission
         try {
-            $this->missionValidationService->validateMissionAgents($updatedMission);
+            $this->missionValidationService->validateMissionAgents($mission);
         } catch (\DomainException $e) {
             return $this->json(['error' => $e->getMessage()], Response::HTTP_BAD_REQUEST);
         }
 
         // Persister les modifications
-        $this->entityManager->persist($updatedMission);
+        $this->entityManager->persist($mission);
         $this->entityManager->flush();
 
         // Retourner la mission mise à jour
-        return $this->json($updatedMission, Response::HTTP_OK, [], ['groups' => ['mission:read:item']]);
+        return $this->json($mission, Response::HTTP_OK, [], ['groups' => ['mission:read:item']]);
     }
 } 
