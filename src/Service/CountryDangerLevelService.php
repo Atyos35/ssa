@@ -3,19 +3,20 @@
 namespace App\Service;
 
 use App\Entity\Country;
-use App\Entity\DangerLevel;
 use App\Entity\Mission;
 use App\Entity\MissionStatus;
+use App\Entity\DangerLevel;
 use Doctrine\ORM\EntityManagerInterface;
 
-class CountryDangerLevelService
+final class CountryDangerLevelService
 {
     public function __construct(
         private EntityManagerInterface $entityManager
-    ) {}
+    ) {
+    }
 
     /**
-     * Met à jour le niveau de danger d'un pays en fonction de ses missions actives
+     * Met à jour le niveau de danger d'un pays basé sur les missions actives
      */
     public function updateCountryDangerLevel(Country $country): void
     {
@@ -29,7 +30,7 @@ class CountryDangerLevelService
     /**
      * Récupère le niveau de danger le plus élevé parmi les missions actives d'un pays
      */
-    private function getHighestDangerLevelFromActiveMissions(Country $country): ?DangerLevel
+    private function getHighestDangerLevelFromActiveMissions(Country $country): DangerLevel
     {
         $activeMissions = $this->entityManager->getRepository(Mission::class)
             ->createQueryBuilder('m')
@@ -41,47 +42,60 @@ class CountryDangerLevelService
             ->getResult();
 
         if (empty($activeMissions)) {
-            // Si aucune mission active, retourner null (pas de niveau de danger)
-            return null;
+            return DangerLevel::Low; // Niveau par défaut si aucune mission active
         }
 
-        $highestDangerLevel = DangerLevel::Low;
+        $highestLevel = DangerLevel::Low;
         
         foreach ($activeMissions as $mission) {
-            $missionDangerLevel = $mission->getDanger();
-            
-            if ($this->isDangerLevelHigher($missionDangerLevel, $highestDangerLevel)) {
-                $highestDangerLevel = $missionDangerLevel;
+            $missionDanger = $mission->getDanger();
+            if ($this->isDangerLevelHigher($missionDanger, $highestLevel)) {
+                $highestLevel = $missionDanger;
             }
         }
 
-        return $highestDangerLevel;
+        return $highestLevel;
     }
 
     /**
-     * Compare deux niveaux de danger et retourne true si le premier est plus élevé que le second
+     * Compare deux niveaux de danger et retourne true si le premier est plus élevé
      */
     private function isDangerLevelHigher(DangerLevel $level1, DangerLevel $level2): bool
     {
-        $dangerLevels = [
-            'Low' => 1,
-            'Medium' => 2,
-            'High' => 3,
-            'Critical' => 4
+        $dangerHierarchy = [
+            DangerLevel::Low->value => 1,
+            DangerLevel::Medium->value => 2,
+            DangerLevel::High->value => 3,
+            DangerLevel::Critical->value => 4
         ];
 
-        return $dangerLevels[$level1->value] > $dangerLevels[$level2->value];
+        return $dangerHierarchy[$level1->value] > $dangerHierarchy[$level2->value];
     }
 
     /**
-     * Met à jour le niveau de danger du pays lorsqu'une mission est créée
+     * Met à jour le niveau de danger d'un pays après la création d'une mission
      */
-    public function updateCountryDangerLevelFromMission(Mission $mission): void
+    public function updateCountryDangerLevelAfterMissionCreation(Mission $mission): void
     {
         $country = $mission->getCountry();
-        
-        if ($country) {
-            $this->updateCountryDangerLevel($country);
+        if (!$country) {
+            return;
         }
+
+        // Recalcule le niveau de danger basé sur toutes les missions actives
+        $this->updateCountryDangerLevel($country);
+    }
+
+    /**
+     * Met à jour le niveau de danger d'un pays après le changement de statut d'une mission
+     */
+    public function updateCountryDangerLevelAfterMissionStatusChange(Mission $mission): void
+    {
+        $country = $mission->getCountry();
+        if (!$country) {
+            return;
+        }
+
+        $this->updateCountryDangerLevel($country);
     }
 } 

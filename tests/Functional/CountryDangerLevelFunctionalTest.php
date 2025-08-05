@@ -3,8 +3,12 @@
 namespace App\Tests\Functional;
 
 use App\Entity\Country;
+use App\Entity\Mission;
+use App\Entity\MissionStatus;
 use App\Entity\DangerLevel;
 use App\Factory\CountryFactory;
+use App\Factory\MissionFactory;
+
 use Doctrine\ORM\EntityManagerInterface;
 use Symfony\Bundle\FrameworkBundle\Test\WebTestCase;
 use Zenstruck\Foundry\Test\Factories;
@@ -14,183 +18,174 @@ class CountryDangerLevelFunctionalTest extends WebTestCase
 {
     use ResetDatabase, Factories;
 
-    private EntityManagerInterface $entityManager;
-
     protected function setUp(): void
     {
         parent::setUp();
-        $this->client = static::createClient();
-        $this->entityManager = static::getContainer()->get(EntityManagerInterface::class);
     }
 
-    public function testCountryDangerLevelUpdatesViaApi(): void
+    public function testCountryDangerLevelUpdatedAfterMissionCreation(): void
     {
-        // Créer un pays sans niveau de danger
+        $client = static::createClient();
+        
+        // Crée un pays avec un niveau de danger initial
         $country = CountryFactory::createOne([
             'name' => 'France',
-            'danger' => null,
+            'danger' => DangerLevel::Low,
+            'numberOfAgents' => 5
         ]);
-
-        // Vérifier que le pays n'a pas de niveau de danger initialement
-        $this->assertNull($country->getDanger());
-
-        // Créer une mission via l'API
+        $initialDangerLevel = $country->getDanger();
+        
+        // Crée une mission avec un niveau de danger plus élevé
         $missionData = [
-            'name' => 'Mission Infiltration',
-            'danger' => 'High',
-            'status' => 'InProgress',
-            'country' => '/api/countries/' . $country->getId(),
-            'description' => 'Mission d\'infiltration dans un réseau terroriste',
-            'objectives' => 'Infiltration et collecte d\'informations sensibles',
-            'startDate' => '2024-01-15',
+            'name' => 'Mission Test Danger',
+            'description' => 'Description de la mission test',
+            'objectives' => 'Objectifs de la mission test',
+            'danger' => DangerLevel::High->value,
+            'status' => MissionStatus::InProgress->value,
+            'startDate' => (new \DateTimeImmutable())->format('Y-m-d'),
+            'country' => '/api/countries/' . $country->getId()
         ];
 
-        $this->client->request(
-            'POST',
-            '/api/missions',
-            [],
-            [],
-            ['CONTENT_TYPE' => 'application/ld+json'],
-            json_encode($missionData)
-        );
+        $client->request('POST', '/api/missions', [], [], [
+            'CONTENT_TYPE' => 'application/ld+json',
+        ], json_encode($missionData));
 
-        // Vérifier que la requête a réussi
         $this->assertResponseIsSuccessful();
-
-        // Récupérer le pays depuis la base de données pour vérifier la mise à jour
-        $updatedCountry = $this->entityManager->getRepository(Country::class)->find($country->getId());
-
-        // Le niveau de danger du pays devrait maintenant être High
+        
+        // Vérifie que le niveau de danger du pays a été mis à jour
+        $entityManager = static::getContainer()->get(EntityManagerInterface::class);
+        $entityManager->clear();
+        $updatedCountry = CountryFactory::repository()->find($country->getId());
         $this->assertEquals(DangerLevel::High, $updatedCountry->getDanger());
     }
 
-    public function testCountryDangerLevelUpdatesWithMultipleMissionsViaApi(): void
+    public function testCountryDangerLevelUpdatedToMissionLevelWhenOnlyOneMission(): void
     {
-        // Créer un pays sans niveau de danger
+        $client = static::createClient();
+        
+        // Crée un pays avec un niveau de danger élevé
         $country = CountryFactory::createOne([
             'name' => 'France',
-            'danger' => null,
+            'danger' => DangerLevel::High,
+            'numberOfAgents' => 5
         ]);
-
-        // Créer une première mission via l'API
-        $missionData1 = [
-            'name' => 'Mission Surveillance',
-            'danger' => 'Medium',
-            'status' => 'InProgress',
-            'country' => '/api/countries/' . $country->getId(),
-            'description' => 'Mission de surveillance',
-            'objectives' => 'Surveiller les activités suspectes',
-            'startDate' => '2024-01-15',
+        
+        // Crée une mission avec un niveau de danger plus faible
+        $missionData = [
+            'name' => 'Mission Test Danger Faible',
+            'description' => 'Description de la mission test',
+            'objectives' => 'Objectifs de la mission test',
+            'danger' => DangerLevel::Low->value,
+            'status' => MissionStatus::InProgress->value,
+            'startDate' => (new \DateTimeImmutable())->format('Y-m-d'),
+            'country' => '/api/countries/' . $country->getId()
         ];
 
-        $this->client->request(
-            'POST',
-            '/api/missions',
-            [],
-            [],
-            ['CONTENT_TYPE' => 'application/ld+json'],
-            json_encode($missionData1)
-        );
+        $client->request('POST', '/api/missions', [], [], [
+            'CONTENT_TYPE' => 'application/ld+json',
+        ], json_encode($missionData));
 
         $this->assertResponseIsSuccessful();
+        
+        // Vérifie que le niveau de danger du pays a été mis à jour au niveau de la mission
+        $entityManager = static::getContainer()->get(EntityManagerInterface::class);
+        $entityManager->clear();
+        $updatedCountry = CountryFactory::repository()->find($country->getId());
+        $this->assertEquals(DangerLevel::Low, $updatedCountry->getDanger());
+    }
 
-        // Récupérer le pays depuis la base de données
-        $updatedCountry = $this->entityManager->getRepository(Country::class)->find($country->getId());
-
-        // Le niveau de danger du pays devrait être Medium
-        $this->assertEquals(DangerLevel::Medium, $updatedCountry->getDanger());
-
-        // Créer une deuxième mission avec niveau de danger Critical
-        $missionData2 = [
-            'name' => 'Mission Extraction',
-            'danger' => 'Critical',
-            'status' => 'InProgress',
-            'country' => '/api/countries/' . $country->getId(),
-            'description' => 'Mission d\'extraction d\'urgence',
-            'objectives' => 'Extraire des agents en danger',
-            'startDate' => '2024-01-15',
-        ];
-
-        $this->client->request(
-            'POST',
-            '/api/missions',
-            [],
-            [],
-            ['CONTENT_TYPE' => 'application/ld+json'],
-            json_encode($missionData2)
-        );
-
-        $this->assertResponseIsSuccessful();
-
-        // Récupérer le pays depuis la base de données
-        $updatedCountry = $this->entityManager->getRepository(Country::class)->find($country->getId());
-
-        // Le niveau de danger du pays devrait maintenant être Critical (le plus élevé)
+    public function testCountryDangerLevelUpdatedAfterMissionStatusChange(): void
+    {
+        $client = static::createClient();
+        
+        // Crée un pays
+        $country = CountryFactory::createOne([
+            'name' => 'France',
+            'danger' => DangerLevel::Low,
+            'numberOfAgents' => 5
+        ]);
+        
+        // Crée une mission avec un niveau de danger élevé
+        $mission = MissionFactory::createOne([
+            'name' => 'Mission Test Status Change',
+            'description' => 'Description de la mission test',
+            'objectives' => 'Objectifs de la mission test',
+            'danger' => DangerLevel::Critical,
+            'status' => MissionStatus::InProgress,
+            'startDate' => new \DateTimeImmutable(),
+            'country' => $country
+        ]);
+        
+        // Vérifie que le niveau de danger du pays a été mis à jour
+        $entityManager = static::getContainer()->get(EntityManagerInterface::class);
+        $entityManager->clear();
+        $updatedCountry = CountryFactory::repository()->find($country->getId());
         $this->assertEquals(DangerLevel::Critical, $updatedCountry->getDanger());
+        
+        // Change le statut de la mission à Success
+        $missionData = [
+            'status' => MissionStatus::Success->value
+        ];
+
+        $client->request('PATCH', '/api/missions/' . $mission->getId(), [], [], [
+            'CONTENT_TYPE' => 'application/merge-patch+json',
+        ], json_encode($missionData));
+
+        $this->assertResponseIsSuccessful();
+        
+        // Vérifie que le niveau de danger du pays est revenu au niveau par défaut
+        $entityManager = static::getContainer()->get(EntityManagerInterface::class);
+        $entityManager->clear();
+        $finalCountry = CountryFactory::repository()->find($country->getId());
+        $this->assertEquals(DangerLevel::Low, $finalCountry->getDanger());
     }
 
-    public function testCountryDangerLevelStaysHighestWhenLowerMissionIsCreatedViaApi(): void
+    public function testCountryDangerLevelUpdatedWithHighestActiveMission(): void
     {
-        // Créer un pays sans niveau de danger
+        $client = static::createClient();
+        
+        // Crée un pays
         $country = CountryFactory::createOne([
             'name' => 'France',
-            'danger' => null,
+            'danger' => DangerLevel::Low,
+            'numberOfAgents' => 5
         ]);
-
-        // Créer une mission avec niveau de danger High
-        $missionData1 = [
-            'name' => 'Mission Infiltration',
-            'danger' => 'High',
-            'status' => 'InProgress',
-            'country' => '/api/countries/' . $country->getId(),
-            'description' => 'Mission d\'infiltration',
-            'objectives' => 'Infiltration et collecte d\'informations',
-            'startDate' => '2024-01-15',
-        ];
-
-        $this->client->request(
-            'POST',
-            '/api/missions',
-            [],
-            [],
-            ['CONTENT_TYPE' => 'application/ld+json'],
-            json_encode($missionData1)
-        );
-
-        $this->assertResponseIsSuccessful();
-
-        // Récupérer le pays depuis la base de données
-        $updatedCountry = $this->entityManager->getRepository(Country::class)->find($country->getId());
-
-        // Le niveau de danger du pays devrait être High
-        $this->assertEquals(DangerLevel::High, $updatedCountry->getDanger());
-
-        // Créer une deuxième mission avec niveau de danger Medium (plus faible)
-        $missionData2 = [
-            'name' => 'Mission Surveillance',
-            'danger' => 'Medium',
-            'status' => 'InProgress',
-            'country' => '/api/countries/' . $country->getId(),
-            'description' => 'Mission de surveillance',
-            'objectives' => 'Surveiller les activités',
-            'startDate' => '2024-01-15',
-        ];
-
-        $this->client->request(
-            'POST',
-            '/api/missions',
-            [],
-            [],
-            ['CONTENT_TYPE' => 'application/ld+json'],
-            json_encode($missionData2)
-        );
-
-        $this->assertResponseIsSuccessful();
-
-        // Récupérer le pays depuis la base de données
-        $updatedCountry = $this->entityManager->getRepository(Country::class)->find($country->getId());
-
-        // Le niveau de danger du pays devrait rester High (le plus élevé)
+        
+        // Crée plusieurs missions avec différents niveaux de danger
+        MissionFactory::createOne([
+            'name' => 'Mission Low',
+            'description' => 'Mission de faible danger',
+            'objectives' => 'Objectifs',
+            'danger' => DangerLevel::Low,
+            'status' => MissionStatus::InProgress,
+            'startDate' => new \DateTimeImmutable(),
+            'country' => $country
+        ]);
+        
+        MissionFactory::createOne([
+            'name' => 'Mission Medium',
+            'description' => 'Mission de danger moyen',
+            'objectives' => 'Objectifs',
+            'danger' => DangerLevel::Medium,
+            'status' => MissionStatus::InProgress,
+            'startDate' => new \DateTimeImmutable(),
+            'country' => $country
+        ]);
+        
+        MissionFactory::createOne([
+            'name' => 'Mission High',
+            'description' => 'Mission de danger élevé',
+            'objectives' => 'Objectifs',
+            'danger' => DangerLevel::High,
+            'status' => MissionStatus::InProgress,
+            'startDate' => new \DateTimeImmutable(),
+            'country' => $country
+        ]);
+        
+        // Vérifie que le niveau de danger du pays correspond au plus élevé
+        $entityManager = static::getContainer()->get(EntityManagerInterface::class);
+        $entityManager->clear();
+        $updatedCountry = CountryFactory::repository()->find($country->getId());
         $this->assertEquals(DangerLevel::High, $updatedCountry->getDanger());
     }
 } 
