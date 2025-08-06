@@ -8,9 +8,7 @@
     "generate": "nuxt generate",
     "preview": "nuxt preview",
     "postinstall": "nuxt prepare",
-    "typecheck": "vue-tsc --noEmit",
-    "lint": "eslint .",
-    "lint:fix": "eslint . --fix"
+    "typecheck": "vue-tsc --noEmit"
   },
   "dependencies": {
     "@quasar/extras": "^1.17.0",
