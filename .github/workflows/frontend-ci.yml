@@ -32,11 +32,6 @@ jobs:
           cd Frontend
           npm run typecheck
 
-      # - name: Lint
-      #   run: |
-      #     cd Frontend
-      #     npm run lint
-
       - name: Build
         run: |
           cd Frontend
