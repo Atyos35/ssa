@@ -4,7 +4,7 @@ namespace App\Application\Security\Processor;
 
 use ApiPlatform\State\ProcessorInterface;
 use ApiPlatform\Metadata\Operation;
-use App\Entity\Agent;
+use App\Domain\Entity\Agent;
 use App\Service\EmailVerificationService;
 use Doctrine\ORM\EntityManagerInterface;
 use Symfony\Component\PasswordHasher\Hasher\UserPasswordHasherInterface;

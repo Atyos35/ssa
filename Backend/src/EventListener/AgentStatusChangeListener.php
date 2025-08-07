@@ -2,9 +2,9 @@
 
 namespace App\EventListener;
 
-use App\Entity\Agent;
-use App\Entity\AgentStatus;
-use App\Service\AgentStatusChangeService;
+use App\Domain\Entity\Agent;
+use App\Domain\Entity\AgentStatus;
+use App\Domain\Service\AgentStatusChangeService;
 use Doctrine\ORM\Event\PreUpdateEventArgs;
 use Doctrine\ORM\Event\PostUpdateEventArgs;
 use Doctrine\Bundle\DoctrineBundle\Attribute\AsDoctrineListener;

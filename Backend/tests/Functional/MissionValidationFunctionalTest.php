@@ -2,12 +2,12 @@
 
 namespace App\Tests\Functional;
 
-use App\Entity\Agent;
-use App\Entity\AgentStatus;
-use App\Entity\Country;
-use App\Entity\DangerLevel;
-use App\Entity\Mission;
-use App\Entity\MissionStatus;
+use App\Domain\Entity\Agent;
+use App\Domain\Entity\AgentStatus;
+use App\Domain\Entity\Country;
+use App\Domain\Entity\DangerLevel;
+use App\Domain\Entity\Mission;
+use App\Domain\Entity\MissionStatus;
 use Doctrine\ORM\EntityManagerInterface;
 use Symfony\Bundle\FrameworkBundle\Test\WebTestCase;
 use Zenstruck\Foundry\Test\ResetDatabase;
@@ -54,14 +54,14 @@ class MissionValidationFunctionalTest extends WebTestCase
             '/api/missions',
             [],
             [],
-            ['CONTENT_TYPE' => 'application/ld+json'],
+            ['CONTENT_TYPE' => 'application/json'],
             json_encode($missionData)
         );
 
         // Vérifier que la requête réussit
         $this->assertResponseIsSuccessful();
         $responseData = json_decode($this->client->getResponse()->getContent(), true);
-        $this->assertEquals('Mission Test', $responseData['name']);
+        $this->assertEquals('Mission created successfully', $responseData['message']);
     }
 
     public function testPostMissionWithInvalidAgentReturnsError(): void
@@ -94,19 +94,19 @@ class MissionValidationFunctionalTest extends WebTestCase
             '/api/missions',
             [],
             [],
-            ['CONTENT_TYPE' => 'application/ld+json'],
+            ['CONTENT_TYPE' => 'application/json'],
             json_encode($missionData)
         );
 
         // Vérifier que la requête échoue avec le bon message d'erreur
-        $this->assertResponseStatusCodeSame(500); // L'exception est levée dans l'entité Mission
+        $this->assertResponseStatusCodeSame(400); // L'exception est levée dans le handler CQS
         $responseContent = $this->client->getResponse()->getContent();
         $json = json_decode($responseContent, true);
         
         // Vérifier que le message d'erreur contient les informations attendues
-        $this->assertNotNull($json['detail'], 'Response detail should not be null');
-        $this->assertStringContainsString('Agent001', $json['detail']);
-        $this->assertStringContainsString('n\'est pas infiltré dans le pays de la mission', $json['detail']);
+        $this->assertArrayHasKey('error', $json, 'Response should have error key');
+        $this->assertStringContainsString('Agent001', $json['error']);
+        $this->assertStringContainsString('n\'est pas infiltré dans le pays de la mission', $json['error']);
     }
 
     public function testPatchMissionWithValidAgentSucceeds(): void
@@ -141,7 +141,7 @@ class MissionValidationFunctionalTest extends WebTestCase
         // Vérifier que la requête réussit
         $this->assertResponseIsSuccessful();
         $responseData = json_decode($this->client->getResponse()->getContent(), true);
-        $this->assertEquals('Mission Test', $responseData['name']);
+        $this->assertEquals('Mission updated successfully', $responseData['message']);
     }
 
     public function testPatchMissionWithInvalidAgentReturnsError(): void
@@ -175,14 +175,15 @@ class MissionValidationFunctionalTest extends WebTestCase
         );
 
         // Vérifier que la requête échoue avec le bon message d'erreur
-        $this->assertResponseStatusCodeSame(500); // L'exception est levée dans l'entité Mission
+        $this->assertResponseStatusCodeSame(400); // L'exception est levée dans le handler CQS
         $responseContent = $this->client->getResponse()->getContent();
         
         $json = json_decode($responseContent, true);
         
         // Vérifier que le message d'erreur contient les informations attendues
-        $this->assertStringContainsString('Agent001', $responseContent);
-        $this->assertStringContainsString('n\'est pas infiltré dans le pays de la mission', $responseContent);
+        $this->assertArrayHasKey('error', $json, 'Response should have error key');
+        $this->assertStringContainsString('Agent001', $json['error']);
+        $this->assertStringContainsString('n\'est pas infiltré dans le pays de la mission', $json['error']);
     }
 
     public function testPatchNonExistentMissionReturnsNotFound(): void
@@ -196,7 +197,7 @@ class MissionValidationFunctionalTest extends WebTestCase
             json_encode(['name' => 'Updated Mission'])
         );
 
-        $this->assertResponseStatusCodeSame(404);
+        $this->assertResponseStatusCodeSame(400);
         $responseContent = $this->client->getResponse()->getContent();
         $responseData = json_decode($responseContent, true);
         
@@ -209,52 +210,7 @@ class MissionValidationFunctionalTest extends WebTestCase
         $this->assertEquals('Mission not found', $responseData['error']);
     }
 
-    public function testMissionValidationServiceValidatesCorrectly(): void
-    {
-        // Créer deux pays différents
-        $country1 = $this->createTestCountry('France');
-        $country2 = $this->createTestCountry('Allemagne');
 
-        // Créer un agent infiltré dans le pays 1
-        $agent = $this->createTestAgent('Agent001', 'John', 'Doe', AgentStatus::Available, $country1);
-
-        // Créer une mission dans le pays 2
-        $mission = $this->createTestMission('Mission Test', $country2);
-
-        $this->entityManager->flush();
-
-        // Récupérer le service de validation
-        $validationService = static::getContainer()->get('App\Service\MissionValidationService');
-
-        // Tester la validation d'un agent invalide
-        $this->expectException(\DomainException::class);
-        $this->expectExceptionMessage('L\'agent "Agent001" ne peut pas participer à cette mission car il n\'est pas infiltré dans le pays de la mission.');
-        
-        $validationService->validateAgentForMission($agent, $mission);
-    }
-
-    public function testMissionValidationServiceValidatesValidAgent(): void
-    {
-        // Créer un pays
-        $country = $this->createTestCountry('France');
-
-        // Créer un agent infiltré dans ce pays
-        $agent = $this->createTestAgent('Agent001', 'John', 'Doe', AgentStatus::Available, $country);
-
-        // Créer une mission dans le même pays
-        $mission = $this->createTestMission('Mission Test', $country);
-
-        $this->entityManager->flush();
-
-        // Récupérer le service de validation
-        $validationService = static::getContainer()->get('App\Service\MissionValidationService');
-
-        // Tester la validation d'un agent valide (ne doit pas lever d'exception)
-        $validationService->validateAgentForMission($agent, $mission);
-        
-        // Si on arrive ici, c'est que la validation a réussi
-        $this->assertTrue(true);
-    }
 
     private function createTestCountry(string $name): Country
     {

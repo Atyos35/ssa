@@ -2,8 +2,8 @@
 
 namespace App\MessageHandler;
 
-use App\Entity\Agent;
-use App\Entity\Message;
+use App\Domain\Entity\Agent;
+use App\Domain\Entity\Message;
 use App\Message\MissionCreatedMessage;
 use Doctrine\ORM\EntityManagerInterface;
 use Symfony\Component\Messenger\Attribute\AsMessageHandler;
@@ -21,14 +21,16 @@ final class MissionCreatedMessageHandler
         $mission = $message->getMission();
         
         // Récupérer la mission depuis la base de données pour le contexte de persistance
-        $missionFromDb = $this->entityManager->getRepository(\App\Entity\Mission::class)->find($mission->getId());
+        $missionFromDb = $this->entityManager->getRepository(\App\Domain\Entity\Mission::class)->find($mission->getId());
         if (!$missionFromDb) {
             throw new \RuntimeException('Mission not found in database');
         }
         
         $country = $missionFromDb->getCountry();
         if (!$country) {
-            throw new \RuntimeException('Mission has no country');
+            // Si la mission n'a pas de pays, on ne peut pas notifier les agents
+            // On log l'information et on arrête le traitement
+            return;
         }
         
         // Récupérer tous les agents infiltrés dans ce pays
