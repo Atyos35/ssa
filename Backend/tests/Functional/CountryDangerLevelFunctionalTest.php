@@ -6,8 +6,8 @@ use App\Domain\Entity\Country;
 use App\Domain\Entity\Mission;
 use App\Domain\Entity\MissionStatus;
 use App\Domain\Entity\DangerLevel;
-use App\Factory\CountryFactory;
-use App\Factory\MissionFactory;
+use App\Shared\Factory\CountryFactory;
+use App\Shared\Factory\MissionFactory;
 
 use Doctrine\ORM\EntityManagerInterface;
 use Symfony\Bundle\FrameworkBundle\Test\WebTestCase;
