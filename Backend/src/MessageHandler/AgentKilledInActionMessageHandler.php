@@ -2,8 +2,8 @@
 
 namespace App\MessageHandler;
 
-use App\Entity\Agent;
-use App\Entity\Message;
+use App\Domain\Entity\Agent;
+use App\Domain\Entity\Message;
 use App\Message\AgentKilledInActionMessage;
 use Doctrine\ORM\EntityManagerInterface;
 use Symfony\Component\Messenger\Attribute\AsMessageHandler;

@@ -2,7 +2,7 @@
 
 namespace App\Message;
 
-use App\Entity\Mission;
+use App\Domain\Entity\Mission;
 
 /**
  * Message envoyé quand une nouvelle mission est créée

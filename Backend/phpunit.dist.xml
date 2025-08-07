@@ -14,15 +14,15 @@
             <directory suffix=".php">src</directory>
         </include>
         <exclude>
-            <directory>src/Repository</directory>
-            <directory>src/DataFixtures</directory>
-            <directory>src/Entity</directory>
-            <file>src/Kernel.php</file>
+            <directory>src/Infrastructure/Persistence/Repository</directory>
+            <directory>src/Shared/DataFixtures</directory>
+            <directory>src/Domain/Entity</directory>
+            <file>src/Shared/Kernel.php</file>
         </exclude>
     </source>
 
     <php>
-        <env name="KERNEL_CLASS" value="App\Kernel"/>
+        <env name="KERNEL_CLASS" value="App\Shared\Kernel"/>
         <env name="APP_ENV" value="test"/>
     </php>
 

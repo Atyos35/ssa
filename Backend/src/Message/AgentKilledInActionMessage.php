@@ -2,7 +2,7 @@
 
 namespace App\Message;
 
-use App\Entity\Agent;
+use App\Domain\Entity\Agent;
 
 /**
  * Message envoyé quand un agent passe au statut "Killed in Action"

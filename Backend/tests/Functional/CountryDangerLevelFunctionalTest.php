@@ -2,10 +2,10 @@
 
 namespace App\Tests\Functional;
 
-use App\Entity\Country;
-use App\Entity\Mission;
-use App\Entity\MissionStatus;
-use App\Entity\DangerLevel;
+use App\Domain\Entity\Country;
+use App\Domain\Entity\Mission;
+use App\Domain\Entity\MissionStatus;
+use App\Domain\Entity\DangerLevel;
 use App\Factory\CountryFactory;
 use App\Factory\MissionFactory;
 

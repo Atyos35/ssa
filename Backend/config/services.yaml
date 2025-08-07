@@ -17,8 +17,8 @@ services:
         resource: '../src/'
         exclude:
             - '../src/DependencyInjection/'
-            - '../src/Entity/'
-            - '../src/Kernel.php'
+            - '../src/Domain/Entity/'
+            - '../src/Shared/Kernel.php'
 
     # add more service definitions when explicit configuration is needed
     # please note that last definitions always *replace* previous ones
@@ -27,7 +27,7 @@ services:
         arguments:
             $em: '@doctrine.orm.entity_manager'
             $passwordHasher: '@security.user_password_hasher'
-            $emailVerificationService: '@App\Service\EmailVerificationService'
+            $emailVerificationService: '@App\Domain\Service\EmailVerificationService'
         tags: [ 'api_platform.state_processor' ]
 
     App\EventListener\MissionEventListener:
@@ -35,3 +35,10 @@ services:
             - { name: 'doctrine.event_listener', event: 'postPersist' }
             - { name: 'doctrine.event_listener', event: 'preUpdate' }
             - { name: 'doctrine.event_listener', event: 'postUpdate' }
+
+    # CQS Bus Configuration
+    App\Application\Bus\CommandBusInterface:
+        alias: App\Application\Bus\SimpleCommandBus
+
+    App\Application\Bus\QueryBusInterface:
+        alias: App\Application\Bus\SimpleQueryBus

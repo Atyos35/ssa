@@ -2,11 +2,11 @@
 
 namespace App\EventListener;
 
-use App\Entity\Mission;
-use App\Entity\MissionStatus;
+use App\Domain\Entity\Mission;
+use App\Domain\Entity\MissionStatus;
 use App\Message\MissionCreatedMessage;
-use App\Service\CountryDangerLevelService;
-use App\Service\MissionResultService;
+use App\Domain\Service\CountryDangerLevelService;
+use App\Domain\Service\MissionResultService;
 use Doctrine\ORM\Event\PostPersistEventArgs;
 use Doctrine\ORM\Event\PreUpdateEventArgs;
 use Doctrine\ORM\Event\PostUpdateEventArgs;
