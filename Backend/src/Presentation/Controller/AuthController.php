@@ -70,7 +70,7 @@ class AuthController extends AbstractController
             $userDto = UserDto::fromEntity($user);
 
             return $this->json([
-                'message' => 'Utilisateur créé avec succès. Un email de vérification a été envoyé à votre adresse email.',
+                'message' => 'Utilisateur créé avec succès. Un email de vérification a été envoyé à votre adresse email. Rendez vous sur http://localhost:8025',
                 'user' => $userDto
             ], Response::HTTP_CREATED);
         } catch (\DomainException $e) {

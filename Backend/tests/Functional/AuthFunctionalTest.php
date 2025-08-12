@@ -41,7 +41,7 @@ class AuthFunctionalTest extends WebTestCase
 
         $this->assertResponseIsSuccessful();
         $responseData = json_decode($this->client->getResponse()->getContent(), true);
-        $this->assertEquals('Utilisateur créé avec succès. Un email de vérification a été envoyé à votre adresse email.', $responseData['message']);
+        $this->assertEquals('Utilisateur créé avec succès. Un email de vérification a été envoyé à votre adresse email. Rendez vous sur http://localhost:8025', $responseData['message']);
 
         // Vérifier que l'utilisateur a été créé en base
         $this->entityManager->clear();
