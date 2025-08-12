@@ -1,8 +1,24 @@
 import { Quasar, Notify, Dialog, Loading } from 'quasar'
-import * as components from 'quasar'
+import {
+  QLayout,
+  QHeader,
+  QFooter,
+  QPageContainer,
+  QToolbar,
+  QToolbarTitle,
+  QAvatar,
+  QBtn,
+  QIcon,
+  QCard,
+  QCardSection,
+  QForm,
+  QInput,
+  QSelect,
+  QToggle
+} from 'quasar'
 
 export default defineNuxtPlugin((nuxtApp) => {
-  // Vérifier si on est côté client
+  // S'assurer que Quasar ne se charge que côté client
   if (typeof window !== 'undefined') {
     nuxtApp.vueApp.use(Quasar, {
       plugins: {
@@ -11,14 +27,21 @@ export default defineNuxtPlugin((nuxtApp) => {
         Loading
       },
       components: {
-        QBtn: components.QBtn,
-        QIcon: components.QIcon,
-        QCard: components.QCard,
-        QCardSection: components.QCardSection,
-        QForm: components.QForm,
-        QInput: components.QInput,
-        QSelect: components.QSelect,
-        QToggle: components.QToggle
+        QLayout,
+        QHeader,
+        QFooter,
+        QPageContainer,
+        QToolbar,
+        QToolbarTitle,
+        QAvatar,
+        QBtn,
+        QIcon,
+        QCard,
+        QCardSection,
+        QForm,
+        QInput,
+        QSelect,
+        QToggle
       },
       config: {
         brand: {
