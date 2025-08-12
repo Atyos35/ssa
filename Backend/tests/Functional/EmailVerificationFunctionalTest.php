@@ -29,8 +29,15 @@ class EmailVerificationFunctionalTest extends WebTestCase
         $this->client->request('GET', '/api/verify-email/' . $user->getEmailVerificationToken());
 
         $this->assertResponseIsSuccessful();
-        $responseData = json_decode($this->client->getResponse()->getContent(), true);
-        $this->assertEquals('Email vérifié avec succès', $responseData['message']);
+        
+        // Vérifier que la réponse est du HTML
+        $this->assertResponseHeaderSame('Content-Type', 'text/html; charset=UTF-8');
+        
+        // Vérifier le contenu HTML
+        $responseContent = $this->client->getResponse()->getContent();
+        $this->assertStringContainsString('Email vérifié avec succès !', $responseContent);
+        $this->assertStringContainsString('http://localhost:3001/login', $responseContent);
+        $this->assertStringContainsString('Aller à la page de connexion', $responseContent);
 
         // Vérifier que l'utilisateur a été marqué comme vérifié
         $this->entityManager->clear();
@@ -46,8 +53,15 @@ class EmailVerificationFunctionalTest extends WebTestCase
         $this->client->request('GET', '/api/verify-email/invalid-token');
 
         $this->assertResponseStatusCodeSame(400);
-        $responseData = json_decode($this->client->getResponse()->getContent(), true);
-        $this->assertEquals('Token invalide', $responseData['error']);
+        
+        // Vérifier que la réponse est du HTML
+        $this->assertResponseHeaderSame('Content-Type', 'text/html; charset=UTF-8');
+        
+        // Vérifier le contenu HTML
+        $responseContent = $this->client->getResponse()->getContent();
+        $this->assertStringContainsString('Erreur de validation', $responseContent);
+        $this->assertStringContainsString('http://localhost:3001/registration', $responseContent);
+        $this->assertStringContainsString('Retourner à l\'inscription', $responseContent);
     }
 
     public function testVerifyEmailWithExpiredToken(): void
@@ -59,8 +73,15 @@ class EmailVerificationFunctionalTest extends WebTestCase
         $this->client->request('GET', '/api/verify-email/' . $user->getEmailVerificationToken());
 
         $this->assertResponseStatusCodeSame(400);
-        $responseData = json_decode($this->client->getResponse()->getContent(), true);
-        $this->assertEquals('Token expiré', $responseData['error']);
+        
+        // Vérifier que la réponse est du HTML
+        $this->assertResponseHeaderSame('Content-Type', 'text/html; charset=UTF-8');
+        
+        // Vérifier le contenu HTML
+        $responseContent = $this->client->getResponse()->getContent();
+        $this->assertStringContainsString('Erreur de validation', $responseContent);
+        $this->assertStringContainsString('http://localhost:3001/registration', $responseContent);
+        $this->assertStringContainsString('Retourner à l\'inscription', $responseContent);
     }
 
     public function testVerifyEmailAlreadyVerified(): void
@@ -72,8 +93,15 @@ class EmailVerificationFunctionalTest extends WebTestCase
         $this->client->request('GET', '/api/verify-email/' . $user->getEmailVerificationToken());
 
         $this->assertResponseStatusCodeSame(400);
-        $responseData = json_decode($this->client->getResponse()->getContent(), true);
-        $this->assertEquals('Email déjà vérifié', $responseData['error']);
+        
+        // Vérifier que la réponse est du HTML
+        $this->assertResponseHeaderSame('Content-Type', 'text/html; charset=UTF-8');
+        
+        // Vérifier le contenu HTML
+        $responseContent = $this->client->getResponse()->getContent();
+        $this->assertStringContainsString('Erreur de validation', $responseContent);
+        $this->assertStringContainsString('http://localhost:3001/registration', $responseContent);
+        $this->assertStringContainsString('Retourner à l\'inscription', $responseContent);
     }
 
     public function testResendVerificationWithValidEmail(): void
