@@ -19,17 +19,70 @@ class EmailVerificationController extends AbstractController
     }
 
     #[Route('/api/verify-email/{token}', name: 'app_verify_email', methods: ['GET'])]
-    public function verifyEmail(string $token): JsonResponse
+    public function verifyEmail(string $token): Response
     {
         try {
             $command = new VerifyEmailCommand($token);
             $this->commandBus->dispatch($command);
 
-            return $this->json(['message' => 'Email vérifié avec succès'], Response::HTTP_OK);
+            $html = '
+            <!DOCTYPE html>
+            <html>
+            <head>
+                <meta charset="UTF-8">
+                <meta name="viewport" content="width=device-width, initial-scale=1.0">
+                <title>Email vérifié</title>
+            </head>
+            <body>
+                <div class="container">
+                    <div class="success">Email vérifié avec succès !</div>
+                    <p>Votre adresse email a été validée. Vous pouvez maintenant vous connecter à votre compte.</p>
+                    <a href="http://localhost:3001/login" class="btn">Aller à la page de connexion</a>
+                </div>
+            </body>
+            </html>';
+
+            return new Response($html, Response::HTTP_OK, ['Content-Type' => 'text/html']);
+
         } catch (\DomainException $e) {
-            return $this->json(['error' => $e->getMessage()], Response::HTTP_BAD_REQUEST);
+            $html = '
+            <!DOCTYPE html>
+            <html>
+            <head>
+                <meta charset="UTF-8">
+                <meta name="viewport" content="width=device-width, initial-scale=1.0">
+                <title>Erreur de validation</title>
+            </head>
+            <body>
+                <div class="container">
+                    <div class="error">Erreur de validation</div>
+                    <p>' . htmlspecialchars($e->getMessage()) . '</p>
+                    <a href="http://localhost:3001/registration" class="btn">Retourner à l\'inscription</a>
+                </div>
+            </body>
+            </html>';
+
+            return new Response($html, Response::HTTP_BAD_REQUEST, ['Content-Type' => 'text/html']);
+
         } catch (\Exception $e) {
-            return $this->json(['error' => 'Internal server error'], Response::HTTP_INTERNAL_SERVER_ERROR);
+            $html = '
+            <!DOCTYPE html>
+            <html>
+            <head>
+                <meta charset="UTF-8">
+                <meta name="viewport" content="width=device-width, initial-scale=1.0">
+                <title>Erreur serveur</title>
+            </head>
+            <body>
+                <div class="container">
+                    <div class="error">Erreur serveur</div>
+                    <p>Une erreur interne est survenue. Veuillez réessayer plus tard.</p>
+                    <a href="http://localhost:3001/registration" class="btn">Retourner à l\'inscription</a>
+                </div>
+            </body>
+            </html>';
+
+            return new Response($html, Response::HTTP_INTERNAL_SERVER_ERROR, ['Content-Type' => 'text/html']);
         }
     }
 

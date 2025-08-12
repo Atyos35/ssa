@@ -12,7 +12,16 @@
             <template v-slot:avatar>
               <q-icon name="check_circle" color="positive" />
             </template>
-            {{ successMessage }}
+            Inscription réussie ! Rendez vous sur 
+            <a 
+              href="http://localhost:8025" 
+              target="_blank" 
+              class="text-primary q-ml-xs"
+              style="text-decoration: underline;"
+            >
+              http://localhost:8025
+            </a>
+            Pour valider votre email
           </q-banner>
           
           <div class="q-mt-md">
@@ -138,7 +147,6 @@ const form = reactive<RegistrationForm>({
 // État de l'interface
 const loading = ref(false)
 const success = ref(false)
-const successMessage = ref('')
 const errors = reactive({
   firstName: '',
   lastName: '',
@@ -212,7 +220,6 @@ const onSubmit = async () => {
     if (apiResult.success && apiResult.data) {
       // Succès
       success.value = true
-      successMessage.value = `Inscription réussie ! Bienvenue ${apiResult.data.message}.`
 
       // Rediriger vers la page de connexion
       //navigateTo('/login')
