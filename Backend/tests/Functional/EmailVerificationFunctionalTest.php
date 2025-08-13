@@ -36,7 +36,7 @@ class EmailVerificationFunctionalTest extends WebTestCase
         // Vérifier le contenu HTML
         $responseContent = $this->client->getResponse()->getContent();
         $this->assertStringContainsString('Email vérifié avec succès !', $responseContent);
-        $this->assertStringContainsString('http://localhost:3001/login', $responseContent);
+        $this->assertStringContainsString('http://localhost:3000/login', $responseContent);
         $this->assertStringContainsString('Aller à la page de connexion', $responseContent);
 
         // Vérifier que l'utilisateur a été marqué comme vérifié
@@ -60,7 +60,7 @@ class EmailVerificationFunctionalTest extends WebTestCase
         // Vérifier le contenu HTML
         $responseContent = $this->client->getResponse()->getContent();
         $this->assertStringContainsString('Erreur de validation', $responseContent);
-        $this->assertStringContainsString('http://localhost:3001/registration', $responseContent);
+        $this->assertStringContainsString('http://localhost:3000/registration', $responseContent);
         $this->assertStringContainsString('Retourner à l\'inscription', $responseContent);
     }
 
@@ -80,7 +80,7 @@ class EmailVerificationFunctionalTest extends WebTestCase
         // Vérifier le contenu HTML
         $responseContent = $this->client->getResponse()->getContent();
         $this->assertStringContainsString('Erreur de validation', $responseContent);
-        $this->assertStringContainsString('http://localhost:3001/registration', $responseContent);
+        $this->assertStringContainsString('http://localhost:3000/registration', $responseContent);
         $this->assertStringContainsString('Retourner à l\'inscription', $responseContent);
     }
 
@@ -100,7 +100,7 @@ class EmailVerificationFunctionalTest extends WebTestCase
         // Vérifier le contenu HTML
         $responseContent = $this->client->getResponse()->getContent();
         $this->assertStringContainsString('Erreur de validation', $responseContent);
-        $this->assertStringContainsString('http://localhost:3001/registration', $responseContent);
+        $this->assertStringContainsString('http://localhost:3000/registration', $responseContent);
         $this->assertStringContainsString('Retourner à l\'inscription', $responseContent);
     }
 
