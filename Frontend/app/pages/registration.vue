@@ -1,133 +1,152 @@
 <template>
-  <div class="q-pa-md">
-    <q-card class="registration-card">
-      <q-card-section class="text-center">
-        <h2 class="text-h4 q-mb-md">Inscription</h2>
-      </q-card-section>
+  <div class="auth-container">
+    <div class="auth-card">
+      <h1 class="auth-title">Inscription</h1>
+      
+      <!-- Message de succès -->
+      <div v-if="success" class="success-alert">
+        <div class="success-content">
+          <h3>Inscription réussie !</h3>
+          <p>Rendez-vous sur <a href="http://localhost:8025" target="_blank" class="auth-link">http://localhost:8025</a> pour valider votre email.</p>
+          <button 
+            @click="navigateTo('/login')" 
+            class="auth-button"
+          >
+            Aller à la page de connexion
+          </button>
+        </div>
+      </div>
 
-      <q-card-section>
-        <!-- Message de succès -->
-        <div v-if="success" class="text-center q-mb-md">
-          <q-banner class="text-positive">
-            <template v-slot:avatar>
-              <q-icon name="check_circle" color="positive" />
-            </template>
-            Inscription réussie ! Rendez vous sur 
-            <a 
-              href="http://localhost:8025" 
-              target="_blank" 
-              class="text-primary q-ml-xs"
-              style="text-decoration: underline;"
+      <!-- Formulaire d'inscription -->
+      <form v-else @submit.prevent="onSubmit" class="auth-form">
+        <div class="form-group">
+          <label for="firstName" class="form-label">Prénom</label>
+          <input
+            id="firstName"
+            v-model="form.firstName"
+            type="text"
+            class="form-input"
+            :class="{ 'error': errors.firstName }"
+            placeholder="Votre prénom"
+            required
+            @blur="validateField('firstName')"
+          />
+          <span v-if="errors.firstName" class="error-message">
+            {{ errors.firstName }}
+          </span>
+        </div>
+
+        <div class="form-group">
+          <label for="lastName" class="form-label">Nom</label>
+          <input
+            id="lastName"
+            v-model="form.lastName"
+            type="text"
+            class="form-input"
+            :class="{ 'error': errors.lastName }"
+            placeholder="Votre nom"
+            required
+            @blur="validateField('lastName')"
+          />
+          <span v-if="errors.lastName" class="error-message">
+            {{ errors.lastName }}
+          </span>
+        </div>
+
+        <div class="form-group">
+          <label for="email" class="form-label">Email</label>
+          <input
+            id="email"
+            v-model="form.email"
+            type="email"
+            class="form-input"
+            :class="{ 'error': errors.email }"
+            placeholder="votre@email.com"
+            required
+            @blur="validateField('email')"
+          />
+          <span v-if="errors.email" class="error-message">
+            {{ errors.email }}
+          </span>
+        </div>
+
+        <div class="form-group">
+          <label for="password" class="form-label">Mot de passe</label>
+          <input
+            id="password"
+            v-model="form.password"
+            type="password"
+            class="form-input"
+            :class="{ 'error': errors.password }"
+            placeholder="Votre mot de passe"
+            required
+            @blur="validateField('password')"
+          />
+          <span v-if="errors.password" class="error-message">
+            {{ errors.password }}
+          </span>
+        </div>
+
+        <!-- Indicateurs de force du mot de passe -->
+        <div class="password-strength">
+          <div class="strength-label">Force du mot de passe :</div>
+          <div class="strength-chips">
+            <span 
+              :class="[
+                'strength-chip',
+                form.password.length >= 12 ? 'positive' : 'neutral'
+              ]"
             >
-              http://localhost:8025
-            </a>
-            Pour valider votre email
-          </q-banner>
-          
-          <div class="q-mt-md">
-            <q-btn
-              color="primary"
-              label="Aller à la page de connexion"
-              @click="navigateTo('/login')"
-            />
+              12+ caractères
+            </span>
+            <span 
+              :class="[
+                'strength-chip',
+                countUppercase(form.password) >= 2 ? 'positive' : 'neutral'
+              ]"
+            >
+              2+ majuscules
+            </span>
+            <span 
+              :class="[
+                'strength-chip',
+                countDigits(form.password) >= 2 ? 'positive' : 'neutral'
+              ]"
+            >
+              2+ chiffres
+            </span>
+            <span 
+              :class="[
+                'strength-chip',
+                countSpecialChars(form.password) >= 2 ? 'positive' : 'neutral'
+              ]"
+            >
+              2+ caractères spéciaux
+            </span>
           </div>
         </div>
 
-        <!-- Formulaire d'inscription -->
-        <q-form v-else-if="!success" @submit="onSubmit" class="q-gutter-md">
-          <!-- Prénom -->
-          <q-input
-            v-model="form.firstName"
-            label="Prénom *"
-            outlined
-            :error="!!errors.firstName"
-            :error-message="errors.firstName"
-            @blur="validateField('firstName')"
-          />
+        <!-- Erreur générale -->
+        <div v-if="errors.general" class="error-alert">
+          {{ errors.general }}
+        </div>
 
-          <!-- Nom -->
-          <q-input
-            v-model="form.lastName"
-            label="Nom *"
-            outlined
-            :error="!!errors.lastName"
-            :error-message="errors.lastName"
-            @blur="validateField('lastName')"
-          />
+        <button 
+          type="submit" 
+          class="auth-button"
+          :disabled="loading"
+        >
+          <span v-if="loading">Inscription en cours...</span>
+          <span v-else>S'inscrire</span>
+        </button>
+      </form>
 
-          <!-- Email -->
-          <q-input
-            v-model="form.email"
-            label="Email *"
-            type="email"
-            outlined
-            :error="!!errors.email"
-            :error-message="errors.email"
-            @blur="validateField('email')"
-          />
-
-          <!-- Mot de passe -->
-          <q-input
-            v-model="form.password"
-            label="Mot de passe *"
-            type="password"
-            outlined
-            :error="!!errors.password"
-            :error-message="errors.password"
-            @blur="validateField('password')"
-          />
-
-          <!-- Indicateurs de force du mot de passe -->
-          <div class="password-strength q-mt-sm">
-            <div class="text-caption q-mb-xs">Force du mot de passe :</div>
-            <div class="row q-gutter-xs">
-              <q-chip 
-                :color="form.password.length >= 12 ? 'positive' : 'grey'" 
-                size="sm"
-                :label="`12+ caractères`"
-              />
-              <q-chip 
-                :color="countUppercase(form.password) >= 2 ? 'positive' : 'grey'" 
-                size="sm"
-                :label="`2+ majuscules`"
-              />
-              <q-chip 
-                :color="countDigits(form.password) >= 2 ? 'positive' : 'grey'" 
-                size="sm"
-                :label="`2+ chiffres`"
-              />
-              <q-chip 
-                :color="countSpecialChars(form.password) >= 2 ? 'positive' : 'grey'" 
-                size="sm"
-                :label="`2+ caractères spéciaux`"
-              />
-            </div>
-          </div>
-
-          <!-- Bouton de soumission -->
-          <div class="q-mt-lg">
-            <!-- Erreur générale -->
-            <div v-if="errors.general" class="q-mb-md">
-              <q-banner class="text-negative">
-                <template v-slot:avatar>
-                  <q-icon name="error" color="negative" />
-                </template>
-                {{ errors.general }}
-              </q-banner>
-            </div>
-            
-            <q-btn
-              type="submit"
-              color="primary"
-              size="lg"
-              class="full-width"
-              :loading="loading"
-              label="S'inscrire"
-            />
-          </div>
-        </q-form>
-      </q-card-section>
-    </q-card>
+      <div class="auth-footer">
+        <p>Déjà un compte ? 
+          <NuxtLink to="/login" class="auth-link">Se connecter</NuxtLink>
+        </p>
+      </div>
+    </div>
   </div>
 </template>
 
@@ -168,7 +187,7 @@ const countSpecialChars = (str: string): number => {
   return (str.match(/[!@#$%^&*()_+\-=\[\]{};':"\\|,.<>\/?]/g) || []).length
 }
 
-// Validation d'un champ spécifique
+// Validation d'un champ spécifique (utilisée pour la validation en temps réel)
 const validateField = (fieldName: keyof RegistrationForm) => {
   const fieldValue = form[fieldName]
   const partialData = { [fieldName]: fieldValue }
@@ -220,10 +239,6 @@ const onSubmit = async () => {
     if (apiResult.success && apiResult.data) {
       // Succès
       success.value = true
-
-      // Rediriger vers la page de connexion
-      //navigateTo('/login')
-      
     } else if (apiResult.validationErrors) {
       // Erreurs de validation côté serveur
       Object.entries(apiResult.validationErrors).forEach(([field, message]) => {
@@ -250,15 +265,37 @@ const navigateTo = (path: string) => {
 </script>
 
 <style scoped>
-.registration-card {
-  max-width: 500px;
-  margin: 0 auto;
+/* Styles spécifiques à la page de registration */
+.success-content {
+  text-align: center;
 }
 
-.password-strength {
-  border: 1px solid #e0e0e0;
-  border-radius: 8px;
-  padding: 12px;
-  background-color: #fafafa;
+.success-content h3 {
+  color: #0369a1;
+  margin-bottom: 10px;
+}
+
+.success-content p {
+  color: #0369a1;
+  margin-bottom: 20px;
+}
+
+.strength-chip {
+  display: inline-block;
+  padding: 4px 8px;
+  border-radius: 12px;
+  font-size: 11px;
+  font-weight: 500;
+  margin: 2px;
+}
+
+.strength-chip.positive {
+  background-color: #10b981;
+  color: white;
+}
+
+.strength-chip.neutral {
+  background-color: #9ca3af;
+  color: white;
 }
 </style>

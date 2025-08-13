@@ -37,7 +37,7 @@ class EmailVerificationController extends AbstractController
                 <div class="container">
                     <div class="success">Email vérifié avec succès !</div>
                     <p>Votre adresse email a été validée. Vous pouvez maintenant vous connecter à votre compte.</p>
-                    <a href="http://localhost:3001/login" class="btn">Aller à la page de connexion</a>
+                    <a href="http://localhost:3000/login" class="btn">Aller à la page de connexion</a>
                 </div>
             </body>
             </html>';
@@ -57,7 +57,7 @@ class EmailVerificationController extends AbstractController
                 <div class="container">
                     <div class="error">Erreur de validation</div>
                     <p>' . htmlspecialchars($e->getMessage()) . '</p>
-                    <a href="http://localhost:3001/registration" class="btn">Retourner à l\'inscription</a>
+                    <a href="http://localhost:3000/registration" class="btn">Retourner à l\'inscription</a>
                 </div>
             </body>
             </html>';
@@ -77,7 +77,7 @@ class EmailVerificationController extends AbstractController
                 <div class="container">
                     <div class="error">Erreur serveur</div>
                     <p>Une erreur interne est survenue. Veuillez réessayer plus tard.</p>
-                    <a href="http://localhost:3001/registration" class="btn">Retourner à l\'inscription</a>
+                    <a href="http://localhost:3000/registration" class="btn">Retourner à l\'inscription</a>
                 </div>
             </body>
             </html>';
