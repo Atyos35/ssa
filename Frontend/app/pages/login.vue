@@ -121,6 +121,7 @@ const handleLogin = async () => {
   } else {
     // L'erreur est déjà gérée par le composable useAuth
     // et sera affichée via authError
+    console.error('Erreur de connexion:', result.error?.message)
   }
 }
 </script>

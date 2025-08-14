@@ -1,8 +1,7 @@
 // Composable d'authentification
 import { ref, computed } from 'vue'
 import { authService } from '~/services/auth.service'
-import type { LoginRequest } from '~/services/auth.service'
-import type { RegisterRequest } from '~/types/api'
+import type { LoginRequest, RegisterRequest } from '~/services/auth.service'
 
 export const useAuth = () => {
   // État réactif
@@ -28,6 +27,8 @@ export const useAuth = () => {
           email: data.email,
           password: data.password
         })
+      } else {
+        error.value = result.error?.message || 'Erreur lors de l\'inscription'
       }
       
       return result
@@ -35,7 +36,10 @@ export const useAuth = () => {
       error.value = 'Erreur lors de l\'inscription'
       return {
         success: false,
-        error: error.value
+        error: {
+          message: error.value,
+          status: 500
+        }
       }
     } finally {
       loading.value = false
@@ -69,7 +73,10 @@ export const useAuth = () => {
       error.value = 'Erreur réseau lors de la connexion'
       return {
         success: false,
-        error: error.value
+        error: {
+          message: error.value,
+          status: 500
+        }
       }
     } finally {
       loading.value = false
@@ -94,26 +101,23 @@ export const useAuth = () => {
         lastName: 'Connecté',
         roles: ['ROLE_USER']
       }
-      
-      // Ne pas faire d'appel API automatique ici
-      // Le refresh se fera automatiquement lors du premier appel API réel
     }
   }
 
   // Récupérer le token d'authentification
-  const getAuthToken = (): string | null => {
+  const getAuthToken = () => {
     return authService.getToken()
   }
 
-  // Vérifier l'authentification au chargement
-  checkAuth()
-
   return {
+    // État
     user,
     loading,
     error,
     isAuthenticated,
     isAdmin,
+    
+    // Méthodes
     register,
     login,
     logout,

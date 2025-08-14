@@ -1,186 +1,197 @@
 <template>
-  <form @submit.prevent="handleSubmit" class="country-form">
-    <!-- Nom du pays -->
-    <div class="form-group">
-      <label for="countryName" class="form-label">Nom du pays *</label>
-      <q-input
-        id="countryName"
-        v-model="formData.name"
-        type="text"
-        outlined
-        dense
-        :error="!!errors.name"
-        :error-message="errors.name"
-        placeholder="Entrez le nom du pays"
-        @blur="validateField('name')"
-      />
-    </div>
+  <div class="country-form">
+    <form @submit.prevent="handleSubmit">
+      <div class="form-group">
+        <label for="name" class="form-label">Nom du pays *</label>
+        <q-input
+          id="name"
+          v-model="formData.name"
+          :error="!!errors.name"
+          :error-message="errors.name"
+          placeholder="Ex: France"
+          outlined
+          dense
+          @blur="validateField('name')"
+        />
+      </div>
 
-    <!-- Responsable (CellLeader) -->
-    <div class="form-group">
-      <label for="countryCellLeader" class="form-label">Responsable</label>
-      <q-select
-        id="countryCellLeader"
-        v-model="formData.cellLeader"
-        :options="agents"
-        option-label="name"
-        option-value="id"
-        outlined
-        dense
-        clearable
-        :error="!!errors.cellLeader"
-        :error-message="errors.cellLeader"
-        placeholder="Sélectionnez un responsable (optionnel)"
-        @blur="validateField('cellLeader')"
-      />
-    </div>
-  </form>
+      <div class="form-actions">
+        <q-btn
+          type="submit"
+          color="primary"
+          :loading="isSubmitting"
+          :disabled="isSubmitting"
+          label="Créer le pays"
+          class="submit-btn"
+        />
+        <q-btn
+          type="button"
+          color="secondary"
+          outline
+          label="Annuler"
+          @click="$emit('cancel')"
+          class="cancel-btn"
+        />
+      </div>
+    </form>
+  </div>
 </template>
 
 <script setup lang="ts">
-import { ref, reactive, onMounted } from 'vue'
+import { ref, reactive } from 'vue'
 import { z } from 'zod'
+import apiService from '~/services/api.service'
+import { useNotification } from '~/composables/useNotification'
 
-// Props
-interface Props {
-  onSubmit?: (data: any) => void
-  onValidationError?: (errors: any) => void
-}
+// Émettre des événements
+const emit = defineEmits<{
+  cancel: []
+  success: [data: any]
+  error: [message: string]
+}>()
 
-// Emits
-interface Emits {
-  (e: 'form-data-change', data: CountryFormData): void
-}
+// Utiliser le composable de notification
+const { showSuccess, showError } = useNotification()
 
-const props = defineProps<Props>()
-const emit = defineEmits<Emits>()
-
-// Schéma de validation Zod
+// Schéma de validation
 const countrySchema = z.object({
   name: z.string()
     .min(2, 'Le nom doit contenir au moins 2 caractères')
-    .max(100, 'Le nom ne peut pas dépasser 100 caractères'),
-  cellLeader: z.any().optional()
+    .max(100, 'Le nom ne peut pas dépasser 100 caractères')
+    .trim()
 })
 
-type CountryFormData = z.infer<typeof countrySchema>
-
-// État local
-const formData = reactive<CountryFormData>({
-  name: '',
-  cellLeader: null
+// État du formulaire
+const formData = reactive({
+  name: ''
 })
-const errors = reactive<Partial<CountryFormData>>({})
-const agents = ref<Array<{ id: string, name: string }>>([])
+
+const errors = reactive({
+  name: ''
+})
+
+const isSubmitting = ref(false)
 
 // Validation d'un champ
-const validateField = (field: keyof CountryFormData) => {
+const validateField = (field: keyof typeof formData) => {
   try {
-    const fieldSchema = countrySchema.pick({ [field]: true })
-    fieldSchema.parse({ [field]: formData[field] })
-    delete errors[field]
+    countrySchema.parse(formData)
+    errors[field] = ''
   } catch (error) {
-    if (error instanceof z.ZodError && error.issues.length > 0 && error.issues[0]) {
-      errors[field] = error.issues[0].message
+    if (error instanceof z.ZodError) {
+      const fieldError = error.issues.find(issue => issue.path.includes(field))
+      if (fieldError) {
+        errors[field] = fieldError.message
+      }
     }
   }
-  
-  // Émettre les changements de données
-  emit('form-data-change', formData)
 }
 
-// Charger la liste des agents
-const loadAgents = async () => {
+// Validation complète du formulaire
+const validateForm = (): boolean => {
   try {
-    const token = localStorage.getItem('auth_token')
-    if (!token) {
-      throw new Error('Token d\'authentification manquant')
-    }
-
-    const response = await fetch('http://127.0.0.1:8000/api/agents', {
-      headers: {
-        'Authorization': `Bearer ${token}`,
-        'Content-Type': 'application/json'
-      }
-    })
-
-    if (!response.ok) {
-      throw new Error('Erreur lors du chargement des agents')
-    }
-
-    const data = await response.json()
-    if (data['hydra:member'] && Array.isArray(data['hydra:member'])) {
-      agents.value = data['hydra:member'].map((agent: any) => ({
-        id: agent.id,
-        name: agent.name
-      }))
-    } else {
-      agents.value = []
-    }
+    countrySchema.parse(formData)
+    return true
   } catch (error) {
-    console.error('Erreur lors du chargement des agents:', error)
+    if (error instanceof z.ZodError) {
+      error.issues.forEach(issue => {
+        const field = issue.path[0] as keyof typeof formData
+        if (field) {
+          errors[field] = issue.message
+        }
+      })
+    }
+    return false
   }
 }
 
 // Soumission du formulaire
 const handleSubmit = async () => {
-  // Valider le formulaire
-  try {
-    countrySchema.parse(formData)
-  } catch (error) {
-    if (error instanceof z.ZodError) {
-      error.issues.forEach((err: any) => {
-        const field = err.path[0] as keyof CountryFormData
-        errors[field] = err.message
-      })
-    }
-    
-    if (props.onValidationError) {
-      props.onValidationError(errors)
-    }
+  if (!validateForm()) {
     return
   }
 
-  if (props.onSubmit) {
-    props.onSubmit(formData)
+  isSubmitting.value = true
+
+  try {
+    const response = await apiService.post('/api/countries', {
+      name: formData.name.trim()
+    })
+
+    // Afficher la notification de succès
+    showSuccess(`Le pays "${formData.name.trim()}" a été créé avec succès !`)
+    
+    emit('success', response.data)
+    
+    // Réinitialiser le formulaire
+    formData.name = ''
+    errors.name = ''
+    
+  } catch (error) {
+    console.error('Erreur lors de la création du pays:', error)
+    const errorMessage = error instanceof Error ? error.message : 'Erreur lors de la création du pays'
+    
+    // Afficher la notification d'erreur
+    showError(errorMessage)
+    
+    emit('error', errorMessage)
+  } finally {
+    isSubmitting.value = false
   }
 }
 
 // Réinitialiser le formulaire
 const resetForm = () => {
   formData.name = ''
-  formData.cellLeader = null
-  Object.keys(errors).forEach(key => delete errors[key as keyof CountryFormData])
+  errors.name = ''
 }
 
-// Exposer les méthodes publiques
+// Exposer des méthodes pour le composant parent
 defineExpose({
-  resetForm,
-  validateField,
-  formData,
-  errors
-})
-
-// Initialisation
-onMounted(() => {
-  loadAgents()
+  resetForm
 })
 </script>
 
 <style scoped>
 .country-form {
-  padding: 20px 0;
+  padding: 1rem 0;
 }
 
 .form-group {
-  margin-bottom: 20px;
+  margin-bottom: 1.5rem;
 }
 
 .form-label {
   display: block;
-  font-weight: 600;
-  color: #2c3e50;
-  font-size: 0.9rem;
-  margin-bottom: 8px;
+  margin-bottom: 0.5rem;
+  font-weight: 500;
+  color: #333;
+}
+
+.form-actions {
+  display: flex;
+  gap: 1rem;
+  justify-content: flex-end;
+  margin-top: 2rem;
+}
+
+.submit-btn {
+  min-width: 120px;
+}
+
+.cancel-btn {
+  min-width: 100px;
+}
+
+/* Responsive */
+@media (max-width: 768px) {
+  .form-actions {
+    flex-direction: column;
+  }
+  
+  .submit-btn,
+  .cancel-btn {
+    width: 100%;
+  }
 }
 </style>

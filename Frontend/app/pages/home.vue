@@ -83,13 +83,11 @@
 
     <!-- Modal de création de pays -->
     <Modal v-model="showCreateCountryModal" title="Créer un nouveau pays">
-      <div class="modal-content">
-        <p>Cette modal utilise un backdrop filter de {{ backdropFilter }}.</p>
-      </div>
-      
-      <template #actions>
-        <q-btn flat label="Fermer" color="primary" v-close-popup />
-      </template>
+      <CountryForm
+        @success="handleCountryCreated"
+        @error="handleCountryError"
+        @cancel="handleCountryModalCancel"
+      />
     </Modal>
   </q-page>
 </template>
@@ -98,17 +96,21 @@
 import { ref, onMounted } from 'vue'
 import { useAuth } from '~/composables/useAuth'
 import Modal from '~/components/Modal.vue'
+import CountryForm from '~/components/CountryForm.vue'
+import { authService } from '~/services/auth.service'
+import { useNotification } from '~/composables/useNotification'
 
 // Composables
-const { isAuthenticated, logout } = useAuth()
+const { logout } = useAuth()
+
+// Utiliser le composable de notification
+const { showSuccess, showError } = useNotification()
 
 // État de la modal
 const showCreateCountryModal = ref(false)
-const backdropFilter = ref('blur(4px)')
 
 // Ouvrir la modal de création de pays
 const openCreateCountryModal = () => {
-  backdropFilter.value = 'blur(4px)'
   showCreateCountryModal.value = true
 }
 
@@ -120,9 +122,25 @@ const handleLogout = () => {
   }
 }
 
+// Gestion des événements du CountryForm
+const handleCountryCreated = () => {
+  showCreateCountryModal.value = false
+}
+
+// Afficher un message d'erreur à l'utilisateur
+const handleCountryError = (error: string) => {
+  console.error('Erreur lors de la création du pays:', error)
+  showError('Erreur lors de la création du pays.')
+}
+
+const handleCountryModalCancel = () => {
+  showCreateCountryModal.value = false
+}
+
 // Vérifier l'authentification au chargement
 onMounted(() => {
-  if (!isAuthenticated.value) {
+  // Vérifier directement si l'utilisateur est authentifié
+  if (!authService.isAuthenticated()) {
     if (typeof window !== 'undefined') {
       window.location.href = '/login'
     }
@@ -139,7 +157,6 @@ onMounted(() => {
 .home-header {
   background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
   padding: 60px 20px;
-  margin-bottom: 0;
 }
 
 .header-content {
@@ -155,11 +172,6 @@ onMounted(() => {
   right: 0;
 }
 
-.logout-btn {
-  border-radius: 8px;
-  font-weight: 500;
-}
-
 .home-content {
   max-width: 1200px;
   margin: 0 auto;
@@ -173,18 +185,15 @@ onMounted(() => {
 }
 
 .action-card {
-  background: rgba(255, 255, 255, 0.95);
-  backdrop-filter: blur(10px);
+  background: white;
   border-radius: 15px;
   cursor: pointer;
-  transition: all 0.3s ease;
-  border: 1px solid rgba(255, 255, 255, 0.2);
+  transition: transform 0.3s ease;
 }
 
 .action-card:hover {
   transform: translateY(-5px);
   box-shadow: 0 10px 25px rgba(0, 0, 0, 0.2);
-  background: rgba(255, 255, 255, 1);
 }
 
 .action-card h3 {
@@ -194,18 +203,9 @@ onMounted(() => {
   text-align: center;
 }
 
-.modal-content {
-  padding: 1rem 0;
-}
-
-/* Responsive */
 @media (max-width: 768px) {
   .home-header {
     padding: 40px 20px;
-  }
-  
-  .header-content h1 {
-    font-size: 2rem !important;
   }
   
   .home-content {
