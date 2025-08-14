@@ -100,6 +100,11 @@ export const useAuth = () => {
     }
   }
 
+  // Récupérer le token d'authentification
+  const getAuthToken = (): string | null => {
+    return authService.getToken()
+  }
+
   // Vérifier l'authentification au chargement
   checkAuth()
 
@@ -112,6 +117,7 @@ export const useAuth = () => {
     register,
     login,
     logout,
-    checkAuth
+    checkAuth,
+    getAuthToken
   }
 }

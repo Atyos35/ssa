@@ -7,8 +7,6 @@
         </q-avatar>
         SSA - Secret Service Agency
       </q-toolbar-title>
-      
-      <q-btn flat round dense icon="menu" aria-label="Menu" />
     </q-toolbar>
   </q-header>
 </template>

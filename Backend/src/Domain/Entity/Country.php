@@ -61,16 +61,15 @@ class Country
     /**
      * Nombre d'agents dans le pays
      */
-    #[ORM\Column(type: 'integer')]
+    #[ORM\Column(type: 'integer', nullable: true)]
     #[Assert\PositiveOrZero]
     #[Groups(['country:read', 'country:write'])]
-    private int $numberOfAgents;
+    private ?int $numberOfAgents = null;
 
     /**
      * Chef de cellule du pays (agent)
      */
     #[ORM\OneToOne(targetEntity: User::class)]
-    #[Assert\NotNull]
     #[Groups(['country:read', 'country:write'])]
     #[MaxDepth(1)]
     private ?Agent $cellLeader = null;
@@ -122,12 +121,12 @@ class Country
         return $this;
     }
 
-    public function getNumberOfAgents(): int
+    public function getNumberOfAgents(): ?int
     {
         return $this->numberOfAgents;
     }
 
-    public function setNumberOfAgents(int $number): self
+    public function setNumberOfAgents(?int $number): self
     {
         $this->numberOfAgents = $number;
         return $this;
