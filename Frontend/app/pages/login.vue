@@ -116,11 +116,12 @@ const handleLogin = async () => {
   })
 
   if (result.success) {
-    // Redirection vers la page d'accueil ou dashboard
-    await navigateTo('/')
+    // Redirection vers la page d'accueil
+    await navigateTo('/home')
   } else {
     // L'erreur est déjà gérée par le composable useAuth
     // et sera affichée via authError
+    console.error('Erreur de connexion:', result.error?.message)
   }
 }
 </script>

@@ -1,6 +1,5 @@
 // Service d'authentification
-import { apiService } from './api.service'
-import type { RegisterRequest, RegisterResponse, ApiResponse } from '../types/api'
+import apiService from './api.service'
 
 export interface LoginRequest {
   email: string
@@ -12,54 +11,99 @@ export interface LoginResponse {
   refresh_token: string
 }
 
+export interface RegisterRequest {
+  email: string
+  password: string
+  firstName: string
+  lastName: string
+}
+
+export interface RegisterResponse {
+  message: string
+}
+
+interface ApiResult<T> {
+  success: boolean
+  data?: T
+  error?: {
+    message: string
+    status?: number
+  }
+}
+
 class AuthService {
   // Inscription d'un nouvel utilisateur
-  async register(data: RegisterRequest): Promise<ApiResponse<RegisterResponse>> {
-    const requestData = {
-      ...data,
-      roles: ['ROLE_USER'] // Rôle par défaut
+  async register(data: RegisterRequest): Promise<ApiResult<RegisterResponse>> {
+    try {
+      const requestData = {
+        ...data,
+        roles: ['ROLE_USER'] // Rôle par défaut
+      }
+      
+      const response = await apiService.post<RegisterResponse>('/api/register', requestData)
+      return {
+        success: true,
+        data: response.data
+      }
+    } catch (error) {
+      return {
+        success: false,
+        error: {
+          message: error instanceof Error ? error.message : 'Erreur lors de l\'inscription',
+          status: 500
+        }
+      }
     }
-    
-    return apiService.post<RegisterResponse>('/register', requestData)
   }
 
   // Connexion d'un utilisateur
-  async login(data: LoginRequest): Promise<ApiResponse<LoginResponse>> {
-    const response = await apiService.post<LoginResponse>('/login', data)
-    
-    // Si la connexion réussit, stocker le token
-    if (response.success && response.data) {
-      // Stocker le token ET le refresh_token
-      localStorage.setItem('auth_token', response.data.token)
-      localStorage.setItem('refresh_token', response.data.refresh_token)
+  async login(data: LoginRequest): Promise<ApiResult<LoginResponse>> {
+    try {
+      const response = await apiService.post<LoginResponse>('/api/login', data)
+      
+      // Si la connexion réussit, stocker le token
+      if (response.data) {
+        // Stocker le token ET le refresh_token
+        localStorage.setItem('auth_token', response.data.token)
+        localStorage.setItem('refresh_token', response.data.refresh_token)
+      }
+      
+      return {
+        success: true,
+        data: response.data
+      }
+    } catch (error) {
+      return {
+        success: false,
+        error: {
+          message: error instanceof Error ? error.message : 'Identifiants incorrects',
+          status: 401
+        }
+      }
     }
-    
-    return response
   }
 
   // Déconnexion
   logout(): void {
     localStorage.removeItem('auth_token')
     localStorage.removeItem('refresh_token')
-    // Rediriger vers la page de connexion ou d'accueil
   }
 
   // Vérifier si l'utilisateur est connecté
   isAuthenticated(): boolean {
-    return !!this.getToken()
+    const token = this.getToken()
+    return !!token
   }
 
   // Récupérer le token actuel
   getToken(): string | null {
-    // Récupérer directement depuis localStorage pour éviter les incohérences
     const token = localStorage.getItem('auth_token')
     return token
   }
 
   // Rafraîchir le token
-  async refreshToken(): Promise<ApiResponse<{ token: string }>> {
+  async refreshToken(): Promise<ApiResult<{ token: string }>> {
     try {
-      // Récupérer le refresh_token stocké
       const refreshToken = localStorage.getItem('refresh_token')
       
       if (!refreshToken) {
@@ -67,44 +111,25 @@ class AuthService {
           success: false,
           error: {
             message: 'Refresh token non disponible',
-            status: 400,
+            status: 400
           }
         }
       }
       
-      // Utiliser fetch directement pour éviter le problème d'URL avec apiService
-      const response = await fetch('http://localhost:8000/api/token/refresh', {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-        },
-        body: JSON.stringify({ 
-          refresh_token: refreshToken
-        }),
+      const response = await apiService.post<{ token: string }>('/api/token/refresh', {
+        refresh_token: refreshToken
       })
-      
-      const data = await response.json()
-      
-      if (!response.ok) {
-        return {
-          success: false,
-          error: {
-            message: data.message || data.error || 'Échec du rafraîchissement du token',
-            status: response.status,
-          }
-        }
-      }
       
       return {
         success: true,
-        data: { token: data.token }
+        data: response.data
       }
     } catch (error) {
       return {
         success: false,
         error: {
-          message: error instanceof Error ? error.message : 'Erreur réseau',
-          status: 0,
+          message: 'Échec du rafraîchissement du token',
+          status: 500
         }
       }
     }
@@ -113,3 +138,4 @@ class AuthService {
 
 // Instance singleton
 export const authService = new AuthService()
+export default authService

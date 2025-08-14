@@ -23,6 +23,19 @@ export default defineNuxtConfig({
     }
   },
 
+  // Configuration Quasar avec nuxt-quasar-ui
+  modules: [
+    'nuxt-quasar-ui'
+  ],
+
+  // Configuration Quasar
+  quasar: {
+    extras: {
+      fontIcons: ['material-icons']
+    },
+    plugins: ['Notify']
+  },
+
   // Configuration CSS pour Quasar
   css: [
     '@quasar/extras/material-icons/material-icons.css',
