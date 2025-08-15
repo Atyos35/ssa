@@ -41,6 +41,8 @@ export default defineNuxtConfig({
     '@quasar/extras/material-icons/material-icons.css',
     '@quasar/extras/roboto-font/roboto-font.css',
     'quasar/dist/quasar.css',
-    '~/assets/css/index.css'
+    '~/assets/css/index.css',
+    '~/assets/css/form.css',
+    '~/assets/css/auth.css'
   ]
 })

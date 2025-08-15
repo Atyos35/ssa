@@ -1,5 +1,5 @@
 <template>
-  <div class="country-form">
+  <div class="form-container">
     <form @submit.prevent="handleSubmit">
       <div class="form-group">
         <label for="name" class="form-label">Nom du pays *</label>
@@ -39,8 +39,9 @@
 
 <script setup lang="ts">
 import { ref, reactive } from 'vue'
-import { z } from 'zod'
-import apiService from '~/services/api.service'
+import { validateCountry, type CountryForm } from '~/schemas/country.schema'
+import type { CreateCountryDto } from '~/types'
+import { CountryService } from '~/services/country.service'
 import { useNotification } from '~/composables/useNotification'
 
 // Émettre des événements
@@ -53,16 +54,8 @@ const emit = defineEmits<{
 // Utiliser le composable de notification
 const { showSuccess, showError } = useNotification()
 
-// Schéma de validation
-const countrySchema = z.object({
-  name: z.string()
-    .min(2, 'Le nom doit contenir au moins 2 caractères')
-    .max(100, 'Le nom ne peut pas dépasser 100 caractères')
-    .trim()
-})
-
 // État du formulaire
-const formData = reactive({
+const formData = reactive<CountryForm>({
   name: ''
 })
 
@@ -73,36 +66,41 @@ const errors = reactive({
 const isSubmitting = ref(false)
 
 // Validation d'un champ
-const validateField = (field: keyof typeof formData) => {
-  try {
-    countrySchema.parse(formData)
+const validateField = (field: keyof CountryForm) => {
+  const fieldValue = formData[field]
+  const partialData = { [field]: fieldValue }
+  
+  // Validation partielle avec Zod
+  const result = validateCountry(partialData)
+  
+  if (!result.success && result.errors[field]) {
+    errors[field] = result.errors[field]
+  } else {
     errors[field] = ''
-  } catch (error) {
-    if (error instanceof z.ZodError) {
-      const fieldError = error.issues.find(issue => issue.path.includes(field))
-      if (fieldError) {
-        errors[field] = fieldError.message
-      }
-    }
   }
 }
 
 // Validation complète du formulaire
 const validateForm = (): boolean => {
-  try {
-    countrySchema.parse(formData)
-    return true
-  } catch (error) {
-    if (error instanceof z.ZodError) {
-      error.issues.forEach(issue => {
-        const field = issue.path[0] as keyof typeof formData
-        if (field) {
-          errors[field] = issue.message
-        }
-      })
-    }
+  const result = validateCountry(formData)
+  
+  if (!result.success) {
+    // Afficher les erreurs
+    Object.keys(result.errors).forEach(key => {
+      const errorMessage = result.errors[key]
+      if (errorMessage) {
+        errors[key as keyof typeof errors] = errorMessage
+      }
+    })
     return false
   }
+  
+  // Réinitialiser les erreurs si validation réussie
+  Object.keys(errors).forEach(key => {
+    errors[key as keyof typeof errors] = ''
+  })
+  
+  return true
 }
 
 // Soumission du formulaire
@@ -114,9 +112,18 @@ const handleSubmit = async () => {
   isSubmitting.value = true
 
   try {
-    const response = await apiService.post('/api/countries', {
+    // Créer le DTO pour l'API
+    const createCountryDto: CreateCountryDto = {
       name: formData.name.trim()
-    })
+    }
+
+    const result = await CountryService.createCountry(createCountryDto)
+    
+    if (!result.success) {
+      throw new Error(result.error?.message || 'Erreur lors de la création du pays')
+    }
+    
+    const response = { data: result.data }
 
     // Afficher la notification de succès
     showSuccess(`Le pays "${formData.name.trim()}" a été créé avec succès !`)
@@ -124,8 +131,7 @@ const handleSubmit = async () => {
     emit('success', response.data)
     
     // Réinitialiser le formulaire
-    formData.name = ''
-    errors.name = ''
+    resetForm()
     
   } catch (error) {
     console.error('Erreur lors de la création du pays:', error)
@@ -152,46 +158,4 @@ defineExpose({
 })
 </script>
 
-<style scoped>
-.country-form {
-  padding: 1rem 0;
-}
 
-.form-group {
-  margin-bottom: 1.5rem;
-}
-
-.form-label {
-  display: block;
-  margin-bottom: 0.5rem;
-  font-weight: 500;
-  color: #333;
-}
-
-.form-actions {
-  display: flex;
-  gap: 1rem;
-  justify-content: flex-end;
-  margin-top: 2rem;
-}
-
-.submit-btn {
-  min-width: 120px;
-}
-
-.cancel-btn {
-  min-width: 100px;
-}
-
-/* Responsive */
-@media (max-width: 768px) {
-  .form-actions {
-    flex-direction: column;
-  }
-  
-  .submit-btn,
-  .cancel-btn {
-    width: 100%;
-  }
-}
-</style>

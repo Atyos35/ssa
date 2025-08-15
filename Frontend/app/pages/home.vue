@@ -39,7 +39,7 @@
           </q-card-section>
         </q-card>
         
-        <q-card class="action-card" @click="openCreateCountryModal">
+        <q-card class="action-card" @click="openCreateAgentModal">
           <q-card-section class="text-center">
             <q-icon name="person_add" size="48px" color="accent" class="q-mb-md" />
             <h3>Créer de nouveaux agents</h3>
@@ -89,6 +89,15 @@
         @cancel="handleCountryModalCancel"
       />
     </Modal>
+
+    <!-- Modal de création d'agent -->
+    <Modal v-model="showCreateAgentModal" title="Créer un nouvel agent">
+      <AgentForm
+        @success="handleAgentCreated"
+        @error="handleAgentError"
+        @cancel="handleAgentModalCancel"
+      />
+    </Modal>
   </q-page>
 </template>
 
@@ -97,6 +106,7 @@ import { ref, onMounted } from 'vue'
 import { useAuth } from '~/composables/useAuth'
 import Modal from '~/components/Modal.vue'
 import CountryForm from '~/components/CountryForm.vue'
+import AgentForm from '~/components/AgentForm.vue'
 import { authService } from '~/services/auth.service'
 import { useNotification } from '~/composables/useNotification'
 
@@ -108,10 +118,16 @@ const { showSuccess, showError } = useNotification()
 
 // État de la modal
 const showCreateCountryModal = ref(false)
+const showCreateAgentModal = ref(false)
 
 // Ouvrir la modal de création de pays
 const openCreateCountryModal = () => {
   showCreateCountryModal.value = true
+}
+
+// Ouvrir la modal de création d'agent
+const openCreateAgentModal = () => {
+  showCreateAgentModal.value = true
 }
 
 // Gestion de la déconnexion
@@ -135,6 +151,21 @@ const handleCountryError = (error: string) => {
 
 const handleCountryModalCancel = () => {
   showCreateCountryModal.value = false
+}
+
+// Gestion des événements du AgentForm
+const handleAgentCreated = () => {
+  showCreateAgentModal.value = false
+}
+
+// Afficher un message d'erreur à l'utilisateur
+const handleAgentError = (error: string) => {
+  console.error('Erreur lors de la création de l\'agent:', error)
+  showError('Erreur lors de la création de l\'agent.')
+}
+
+const handleAgentModalCancel = () => {
+  showCreateAgentModal.value = false
 }
 
 // Vérifier l'authentification au chargement
