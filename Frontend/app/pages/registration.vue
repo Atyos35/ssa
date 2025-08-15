@@ -154,6 +154,7 @@
 import { ref, reactive } from 'vue'
 import { validateRegistration, type RegistrationForm } from '../schemas/registration.schema'
 import { useAuth } from '../composables/useAuth'
+import type { CreateUserDto } from '~/types'
 
 // État du formulaire
 const form = reactive<RegistrationForm>({
@@ -226,15 +227,18 @@ const onSubmit = async () => {
       errors[key as keyof typeof errors] = ''
     })
     
-    // Appel API via le composable
-    const { register } = useAuth()
-    const apiResult = await register({
+    // Créer le DTO pour l'API
+    const createUserDto: CreateUserDto = {
       firstName: result.data.firstName,
       lastName: result.data.lastName,
       email: result.data.email,
       password: result.data.password,
       roles: ['ROLE_USER']
-    })
+    }
+
+    // Appel API via le composable
+    const { register } = useAuth()
+    const apiResult = await register(createUserDto)
     
     if (apiResult.success && apiResult.data) {
       // Succès
@@ -264,38 +268,3 @@ const navigateTo = (path: string) => {
 }
 </script>
 
-<style scoped>
-/* Styles spécifiques à la page de registration */
-.success-content {
-  text-align: center;
-}
-
-.success-content h3 {
-  color: #0369a1;
-  margin-bottom: 10px;
-}
-
-.success-content p {
-  color: #0369a1;
-  margin-bottom: 20px;
-}
-
-.strength-chip {
-  display: inline-block;
-  padding: 4px 8px;
-  border-radius: 12px;
-  font-size: 11px;
-  font-weight: 500;
-  margin: 2px;
-}
-
-.strength-chip.positive {
-  background-color: #10b981;
-  color: white;
-}
-
-.strength-chip.neutral {
-  background-color: #9ca3af;
-  color: white;
-}
-</style>

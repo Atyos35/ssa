@@ -125,7 +125,3 @@ const handleLogin = async () => {
   }
 }
 </script>
-
-<style scoped>
-/* Les styles sont maintenant globaux dans assets/css/global.css */
-</style>
