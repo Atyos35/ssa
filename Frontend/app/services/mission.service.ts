@@ -35,6 +35,28 @@ export class MissionService {
   }
 
   /**
+   * Récupérer toutes les missions avec leurs résultats
+   */
+  async getMissionsWithResults(): Promise<ApiResponseDto<any[]>> {
+    try {
+      const response = await apiService.get('/api/missions')
+      return {
+        success: true,
+        data: response.data,
+        message: 'Missions et résultats récupérés avec succès'
+      }
+    } catch (error: any) {
+      return {
+        success: false,
+        error: {
+          message: error.response?.data?.message || 'Erreur lors de la récupération des missions',
+          status: error.response?.status || 500
+        }
+      }
+    }
+  }
+
+  /**
    * Récupérer toutes les missions
    */
   async getMissions(): Promise<ApiResponseDto<any[]>> {

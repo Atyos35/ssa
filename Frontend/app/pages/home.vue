@@ -23,7 +23,7 @@
     <!-- Contenu principal -->
     <div class="home-content">
       <div class="actions-grid">
-        <q-card class="action-card" @click="openCreateCountryModal">
+        <q-card class="action-card" @click="openMissionListModal">
           <q-card-section class="text-center">
             <q-icon name="list_alt" size="48px" color="primary" class="q-mb-md" />
             <h3>Voir la liste des missions et leurs résultats</h3>
@@ -116,6 +116,11 @@
         @cancel="handleMissionClosureModalCancel"
       />
     </Modal>
+
+    <!-- Modal de liste des missions -->
+    <Modal v-model="showMissionListModal" title="Liste des missions et leurs résultats" size="lg">
+      <MissionList @viewMission="handleViewMission" />
+    </Modal>
   </q-page>
 </template>
 
@@ -127,6 +132,7 @@ import CountryForm from '~/components/CountryForm.vue'
 import AgentForm from '~/components/AgentForm.vue'
 import MissionForm from '~/components/MissionForm.vue'
 import MissionClosureForm from '~/components/MissionClosureForm.vue'
+import MissionList from '~/components/MissionList.vue'
 import { authService } from '~/services/auth.service'
 import { useNotification } from '~/composables/useNotification'
 
@@ -141,6 +147,7 @@ const showCreateCountryModal = ref(false)
 const showCreateAgentModal = ref(false)
 const showCreateMissionModal = ref(false)
 const showMissionClosureModal = ref(false)
+const showMissionListModal = ref(false)
 
 // Ouvrir la modal de création de pays
 const openCreateCountryModal = () => {
@@ -160,6 +167,11 @@ const openCreateMissionModal = () => {
 // Ouvrir la modal de clôture de mission
 const openMissionClosureModal = () => {
   showMissionClosureModal.value = true
+}
+
+// Ouvrir la modal de liste des missions
+const openMissionListModal = () => {
+  showMissionListModal.value = true
 }
 
 // Gestion de la déconnexion
@@ -228,6 +240,13 @@ const handleMissionClosureError = (error: string) => {
 
 const handleMissionClosureModalCancel = () => {
   showMissionClosureModal.value = false
+}
+
+// Gestion de la vue d'une mission
+const handleViewMission = (mission: any) => {
+  console.log('Voir les détails de la mission:', mission)
+  // Ici vous pouvez ajouter la logique pour afficher plus de détails
+  // Par exemple, ouvrir une autre modal avec les détails complets
 }
 
 // Vérifier l'authentification au chargement
