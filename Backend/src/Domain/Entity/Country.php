@@ -18,16 +18,20 @@ use ApiPlatform\Metadata\GetCollection;
     description: "Pays infiltré.",
     operations: [
         new GetCollection(
-            description: "Liste des pays."
+            description: "Liste des pays.",
+            normalizationContext: ['groups' => ['country:list']]
         ),
         new Get(
-            description: "Détail d’un pays (niveau de danger, agents, missions, chef de cellule, etc.)."
+            description: "Détail d'un pays (niveau de danger, agents, missions, chef de cellule, etc.).",
+            normalizationContext: ['groups' => ['country:detail']]
         ),
         new Post(
-            description: "Créer un nouveau pays."
+            description: "Créer un nouveau pays.",
+            denormalizationContext: ['groups' => ['country:write']]
         ),
         new Patch(
-            description: "Modifier un pays."
+            description: "Modifier un pays.",
+            denormalizationContext: ['groups' => ['country:write']]
         ),
     ]
 )]
@@ -40,6 +44,7 @@ class Country
     #[ORM\Id]
     #[ORM\GeneratedValue]
     #[ORM\Column(type: 'integer')]
+    #[Groups(['country:list', 'country:detail'])]
     private ?int $id = null;
 
     /**
@@ -48,14 +53,14 @@ class Country
     #[ORM\Column(type: 'string', length: 100)]
     #[Assert\NotBlank]
     #[Assert\Length(min: 2, max: 100)]
-    #[Groups(['country:read', 'agent:read:item', 'mission:read:item', 'country:write'])]
+    #[Groups(['country:list', 'country:detail', 'agent:read:item', 'mission:read:item', 'country:write'])]
     private string $name;
 
     /**
      * Niveau de danger du pays
      */
     #[ORM\Column(enumType: DangerLevel::class, nullable: true)]
-    #[Groups(['country:read', 'agent:read:item', 'mission:read:item', 'country:write'])]
+    #[Groups(['country:list', 'country:detail', 'agent:read:item', 'mission:read:item', 'country:write'])]
     private ?DangerLevel $danger = null;
 
     /**
@@ -63,14 +68,14 @@ class Country
      */
     #[ORM\Column(type: 'integer', nullable: true)]
     #[Assert\PositiveOrZero]
-    #[Groups(['country:read', 'country:write'])]
+    #[Groups(['country:list', 'country:detail', 'country:write'])]
     private ?int $numberOfAgents = null;
 
     /**
      * Chef de cellule du pays (agent)
      */
     #[ORM\OneToOne(targetEntity: User::class)]
-    #[Groups(['country:read', 'country:write'])]
+    #[Groups(['country:list', 'country:detail', 'country:write'])]
     #[MaxDepth(1)]
     private ?Agent $cellLeader = null;
 
@@ -78,7 +83,7 @@ class Country
      * Missions se déroulant dans ce pays
      */
     #[ORM\OneToMany(mappedBy: 'country', targetEntity: Mission::class)]
-    #[Groups(['country:read'])]
+    #[Groups(['country:detail'])]
     #[MaxDepth(1)]
     private Collection $missions;
 
@@ -86,6 +91,8 @@ class Country
      * Agents infiltrés dans ce pays
      */
     #[ORM\OneToMany(mappedBy: 'infiltratedCountry', targetEntity: Agent::class)]
+    #[Groups(['country:detail'])]
+    #[MaxDepth(1)]
     private Collection $agents;
 
     public function __construct()

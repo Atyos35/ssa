@@ -31,7 +31,7 @@
           </q-card-section>
         </q-card>
         
-        <q-card class="action-card" @click="openCreateCountryModal">
+        <q-card class="action-card" @click="openAgentInfoModal">
           <q-card-section class="text-center">
             <q-icon name="person" size="48px" color="secondary" class="q-mb-md" />
             <h3>Voir les informations d'un agent, ses missions et ses messages</h3>
@@ -121,6 +121,11 @@
     <Modal v-model="showMissionListModal" title="Liste des missions et leurs résultats" size="lg">
       <MissionList @viewMission="handleViewMission" />
     </Modal>
+
+    <!-- Modal d'informations d'agent -->
+    <Modal v-model="showAgentInfoModal" title="Informations de l'agent" size="lg">
+      <AgentInfoForm />
+    </Modal>
   </q-page>
 </template>
 
@@ -133,6 +138,7 @@ import AgentForm from '~/components/AgentForm.vue'
 import MissionForm from '~/components/MissionForm.vue'
 import MissionClosureForm from '~/components/MissionClosureForm.vue'
 import MissionList from '~/components/MissionList.vue'
+import AgentInfoForm from '~/components/AgentInfoForm.vue'
 import { authService } from '~/services/auth.service'
 import { useNotification } from '~/composables/useNotification'
 
@@ -148,6 +154,7 @@ const showCreateAgentModal = ref(false)
 const showCreateMissionModal = ref(false)
 const showMissionClosureModal = ref(false)
 const showMissionListModal = ref(false)
+const showAgentInfoModal = ref(false)
 
 // Ouvrir la modal de création de pays
 const openCreateCountryModal = () => {
@@ -172,6 +179,11 @@ const openMissionClosureModal = () => {
 // Ouvrir la modal de liste des missions
 const openMissionListModal = () => {
   showMissionListModal.value = true
+}
+
+// Ouvrir la modal d'informations d'agent
+const openAgentInfoModal = () => {
+  showAgentInfoModal.value = true
 }
 
 // Gestion de la déconnexion
