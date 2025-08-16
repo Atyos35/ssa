@@ -176,12 +176,9 @@ const isFormValid = computed(() => {
 // Charger les pays
 const loadCountries = async () => {
   try {
-    const response = await CountryService.getCountries()
+    const response = await CountryService.getCountriesForSelect()
     if (response.success && response.data) {
-      countries.value = response.data.map((country: any) => ({
-        label: country.name,
-        value: country.id
-      }))
+      countries.value = response.data
     }
   } catch (error) {
     console.error('Erreur lors du chargement des pays:', error)
