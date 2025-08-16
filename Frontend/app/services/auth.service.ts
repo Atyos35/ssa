@@ -32,6 +32,8 @@ interface ApiResult<T> {
 }
 
 class AuthService {
+  private refreshInterval: NodeJS.Timeout | null = null
+  private readonly REFRESH_INTERVAL_MS = 25 * 60 * 1000 // 25 minutes
   // Inscription d'un nouvel utilisateur
   async register(data: RegisterRequest): Promise<ApiResult<RegisterResponse>> {
     try {
@@ -66,6 +68,9 @@ class AuthService {
         // Stocker le token ET le refresh_token
         localStorage.setItem('auth_token', response.data.token)
         localStorage.setItem('refresh_token', response.data.refresh_token)
+        
+        // Démarrer le refresh automatique
+        this.startAutoRefresh()
       }
       
       return {
@@ -85,6 +90,10 @@ class AuthService {
 
   // Déconnexion
   logout(): void {
+    // Arrêter le refresh automatique
+    this.stopAutoRefresh()
+    
+    // Nettoyer le localStorage
     localStorage.removeItem('auth_token')
     localStorage.removeItem('refresh_token')
   }
@@ -92,7 +101,14 @@ class AuthService {
   // Vérifier si l'utilisateur est connecté
   isAuthenticated(): boolean {
     const token = this.getToken()
-    return !!token
+    const isAuth = !!token
+    
+    // Si l'utilisateur est authentifié et qu'il n'y a pas d'intervalle de refresh, le redémarrer
+    if (isAuth && !this.refreshInterval) {
+      this.startAutoRefresh()
+    }
+    
+    return isAuth
   }
 
   // Récupérer le token actuel
@@ -120,11 +136,28 @@ class AuthService {
         refresh_token: refreshToken
       })
       
+      // Si le refresh réussit, stocker le nouveau token
+      if (response.data) {
+        localStorage.setItem('auth_token', response.data.token)
+        console.log('Token rafraîchi automatiquement')
+      }
+      
       return {
         success: true,
         data: response.data
       }
     } catch (error) {
+      console.error('Échec du refresh automatique:', error)
+      
+      // Si le refresh échoue, arrêter l'intervalle et rediriger vers login
+      this.stopAutoRefresh()
+      this.logout()
+      
+      // Rediriger vers la page de connexion
+      if (typeof window !== 'undefined') {
+        window.location.href = '/login'
+      }
+      
       return {
         success: false,
         error: {
@@ -133,6 +166,40 @@ class AuthService {
         }
       }
     }
+  }
+
+  // Démarrer le refresh automatique
+  private startAutoRefresh(): void {
+    // Arrêter l'intervalle existant s'il y en a un
+    this.stopAutoRefresh()
+    
+    // Démarrer un nouvel intervalle
+    this.refreshInterval = setInterval(async () => {
+      console.log('Refresh automatique du token...')
+      await this.refreshToken()
+    }, this.REFRESH_INTERVAL_MS)
+    
+    console.log(`Refresh automatique démarré - intervalle: ${this.REFRESH_INTERVAL_MS / 1000 / 60} minutes`)
+  }
+
+  // Arrêter le refresh automatique
+  private stopAutoRefresh(): void {
+    if (this.refreshInterval) {
+      clearInterval(this.refreshInterval)
+      this.refreshInterval = null
+      console.log('Refresh automatique arrêté')
+    }
+  }
+
+  // Forcer un refresh manuel (utile pour les tests)
+  async forceRefresh(): Promise<ApiResult<{ token: string }>> {
+    console.log('Refresh manuel du token...')
+    return await this.refreshToken()
+  }
+
+  // Vérifier l'état du refresh automatique
+  isAutoRefreshActive(): boolean {
+    return this.refreshInterval !== null
   }
 }
 

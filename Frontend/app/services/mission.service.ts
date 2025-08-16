@@ -79,7 +79,7 @@ export class MissionService {
   }
 
   /**
-   * Mettre à jour une mission
+   * Mettre à jour une mission (mise à jour partielle avec PATCH)
    */
   async updateMission(id: number, missionData: Partial<{
     name: string
@@ -91,9 +91,10 @@ export class MissionService {
     endDate: string | null
     countryId: number
     agentIds: number[]
+    missionResultSummary: string
   }>): Promise<ApiResponseDto<any>> {
     try {
-      const response = await apiService.put(`/api/missions/${id}`, missionData)
+      const response = await apiService.patch(`/api/missions/${id}`, missionData)
       return {
         success: true,
         data: response.data,
