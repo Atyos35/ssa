@@ -1,6 +1,6 @@
 <template>
   <q-dialog v-model="isVisible" :backdrop-filter="backdropFilter">
-    <q-card class="modal-card">
+    <q-card class="modal-card" :style="{ width: modalWidth }">
       <q-card-section class="row items-center q-pb-none text-h6">
         {{ title }}
         <q-space />
@@ -23,6 +23,7 @@ interface Props {
   modelValue: boolean
   title: string
   backdropFilter?: string
+  size?: 'sm' | 'md' | 'lg' | 'xl' | 'full'
 }
 
 interface Emits {
@@ -30,7 +31,8 @@ interface Emits {
 }
 
 const props = withDefaults(defineProps<Props>(), {
-  backdropFilter: 'blur(4px)'
+  backdropFilter: 'blur(4px)',
+  size: 'md'
 })
 
 const emit = defineEmits<Emits>()
@@ -43,12 +45,26 @@ const isVisible = computed({
 const closeModal = () => {
   emit('update:modelValue', false)
 }
+
+// Calculer la largeur en fonction de la taille
+const modalWidth = computed(() => {
+  switch (props.size) {
+    case 'sm': return '400px'
+    case 'md': return '600px'
+    case 'lg': return '900px'
+    case 'xl': return '1200px'
+    case 'full': return '95vw'
+    default: return '600px'
+  }
+})
 </script>
 
 <style scoped>
 .modal-card {
   min-width: 400px;
-  max-width: 90vw;
+  max-width: 95vw;
+  max-height: 90vh;
+  overflow-y: auto;
 }
 </style>
 
