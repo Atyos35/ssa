@@ -47,7 +47,7 @@
           </q-card-section>
         </q-card>
         
-        <q-card class="action-card" @click="openCreateCountryModal">
+        <q-card class="action-card" @click="openCreateMissionModal">
           <q-card-section class="text-center">
             <q-icon name="add_task" size="48px" color="positive" class="q-mb-md" />
             <h3>Créer de nouvelles missions</h3>
@@ -98,6 +98,15 @@
         @cancel="handleAgentModalCancel"
       />
     </Modal>
+
+    <!-- Modal de création de mission -->
+    <Modal v-model="showCreateMissionModal" title="Créer une nouvelle mission">
+      <MissionForm
+        @success="handleMissionCreated"
+        @error="handleMissionError"
+        @cancel="handleMissionModalCancel"
+      />
+    </Modal>
   </q-page>
 </template>
 
@@ -107,6 +116,7 @@ import { useAuth } from '~/composables/useAuth'
 import Modal from '~/components/Modal.vue'
 import CountryForm from '~/components/CountryForm.vue'
 import AgentForm from '~/components/AgentForm.vue'
+import MissionForm from '~/components/MissionForm.vue'
 import { authService } from '~/services/auth.service'
 import { useNotification } from '~/composables/useNotification'
 
@@ -119,6 +129,7 @@ const { showSuccess, showError } = useNotification()
 // État de la modal
 const showCreateCountryModal = ref(false)
 const showCreateAgentModal = ref(false)
+const showCreateMissionModal = ref(false)
 
 // Ouvrir la modal de création de pays
 const openCreateCountryModal = () => {
@@ -128,6 +139,11 @@ const openCreateCountryModal = () => {
 // Ouvrir la modal de création d'agent
 const openCreateAgentModal = () => {
   showCreateAgentModal.value = true
+}
+
+// Ouvrir la modal de création de mission
+const openCreateMissionModal = () => {
+  showCreateMissionModal.value = true
 }
 
 // Gestion de la déconnexion
@@ -166,6 +182,21 @@ const handleAgentError = (error: string) => {
 
 const handleAgentModalCancel = () => {
   showCreateAgentModal.value = false
+}
+
+// Gestion des événements du MissionForm
+const handleMissionCreated = () => {
+  showCreateMissionModal.value = false
+}
+
+// Afficher un message d'erreur à l'utilisateur
+const handleMissionError = (error: string) => {
+  console.error('Erreur lors de la création de la mission:', error)
+  showError('Erreur lors de la création de la mission.')
+}
+
+const handleMissionModalCancel = () => {
+  showCreateMissionModal.value = false
 }
 
 // Vérifier l'authentification au chargement

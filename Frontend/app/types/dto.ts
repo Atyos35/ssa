@@ -37,6 +37,35 @@ export interface CreateCountryResponseDto {
 }
 
 // ========================================
+// MISSION DTOs
+// ========================================
+
+export interface CreateMissionDto {
+  name: string
+  description: string
+  objectives: string
+  danger: string
+  status: string
+  startDate: string
+  endDate?: string | null
+  countryId: number
+  agentIds: number[]
+}
+
+export interface CreateMissionResponseDto {
+  id: number
+  name: string
+  description: string
+  objectives: string
+  danger: string
+  status: string
+  startDate: string
+  endDate?: string | null
+  countryId: number
+  agentIds: number[]
+}
+
+// ========================================
 // AGENT DTOs
 // ========================================
 

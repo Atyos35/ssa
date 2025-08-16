@@ -49,7 +49,8 @@ export const agentSchema = z.object({
       z.number().int('Le pays est obligatoire').positive('Le pays est obligatoire'),
       z.object({ label: z.string(), value: z.number() }).transform(obj => obj.value)
     ])
-    .refine((val) => val !== undefined && val !== null, {
+    .optional()
+    .refine((val) => val !== undefined && val !== null && val > 0, {
       message: 'Le pays infiltré est obligatoire'
     })
 })
