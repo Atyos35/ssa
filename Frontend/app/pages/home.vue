@@ -71,7 +71,7 @@
           </q-card-section>
         </q-card>
         
-        <q-card class="action-card" @click="openCreateCountryModal">
+        <q-card class="action-card" @click="openMissionClosureModal">
           <q-card-section class="text-center">
             <q-icon name="task_alt" size="48px" color="deep-orange" class="q-mb-md" />
             <h3>Clôturer une mission et remplir les informations Résultat de mission</h3>
@@ -107,6 +107,15 @@
         @cancel="handleMissionModalCancel"
       />
     </Modal>
+
+    <!-- Modal de clôture de mission -->
+    <Modal v-model="showMissionClosureModal" title="Clôturer une mission">
+      <MissionClosureForm
+        @success="handleMissionClosureSuccess"
+        @error="handleMissionClosureError"
+        @cancel="handleMissionClosureModalCancel"
+      />
+    </Modal>
   </q-page>
 </template>
 
@@ -117,6 +126,7 @@ import Modal from '~/components/Modal.vue'
 import CountryForm from '~/components/CountryForm.vue'
 import AgentForm from '~/components/AgentForm.vue'
 import MissionForm from '~/components/MissionForm.vue'
+import MissionClosureForm from '~/components/MissionClosureForm.vue'
 import { authService } from '~/services/auth.service'
 import { useNotification } from '~/composables/useNotification'
 
@@ -130,6 +140,7 @@ const { showSuccess, showError } = useNotification()
 const showCreateCountryModal = ref(false)
 const showCreateAgentModal = ref(false)
 const showCreateMissionModal = ref(false)
+const showMissionClosureModal = ref(false)
 
 // Ouvrir la modal de création de pays
 const openCreateCountryModal = () => {
@@ -144,6 +155,11 @@ const openCreateAgentModal = () => {
 // Ouvrir la modal de création de mission
 const openCreateMissionModal = () => {
   showCreateMissionModal.value = true
+}
+
+// Ouvrir la modal de clôture de mission
+const openMissionClosureModal = () => {
+  showMissionClosureModal.value = true
 }
 
 // Gestion de la déconnexion
@@ -197,6 +213,21 @@ const handleMissionError = (error: string) => {
 
 const handleMissionModalCancel = () => {
   showCreateMissionModal.value = false
+}
+
+// Gestion des événements du MissionClosureForm
+const handleMissionClosureSuccess = () => {
+  showMissionClosureModal.value = false
+}
+
+// Afficher un message d'erreur à l'utilisateur
+const handleMissionClosureError = (error: string) => {
+  console.error('Erreur lors de la clôture de la mission:', error)
+  showError('Erreur lors de la clôture de la mission.')
+}
+
+const handleMissionClosureModalCancel = () => {
+  showMissionClosureModal.value = false
 }
 
 // Vérifier l'authentification au chargement
