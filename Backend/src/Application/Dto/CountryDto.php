@@ -10,7 +10,7 @@ class CountryDto
         public readonly int $id,
         public readonly string $name,
         public readonly string $dangerLevel,
-        public readonly int $numberOfAgents
+        public readonly ?int $numberOfAgents
     ) {}
 
     public static function fromEntity(Country $country): self
@@ -19,7 +19,7 @@ class CountryDto
             id: $country->getId(),
             name: $country->getName(),
             dangerLevel: $country->getDanger()?->value ?? 'Unknown',
-            numberOfAgents: $country->getNumberOfAgents()
+            numberOfAgents: $country->getAgents()->count()
         );
     }
 } 

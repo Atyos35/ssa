@@ -4,5 +4,6 @@
 export { default as apiService } from './api.service'
 
 // Services métier
-export { AgentService } from './agent.service'
+export { AgentService, agentService } from './agent.service'
 export { CountryService } from './country.service'
+export { MissionService, missionService } from './mission.service'

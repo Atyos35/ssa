@@ -1,107 +1,97 @@
 <template>
-  <div class="form-container">
+  <div class="agent-form">
     <form @submit.prevent="handleSubmit">
-      <div class="form-group">
-        <label for="codeName" class="form-label">Nom de code *</label>
-        <q-input
-          id="codeName"
-          v-model="formData.codeName"
-          :error="!!errors.codeName"
-          :error-message="errors.codeName"
-          placeholder="Ex: 007"
-          outlined
-          dense
-          @blur="validateField('codeName')"
-        />
-      </div>
+             <div class="form-group">
+         <q-input
+           v-model="formData.codeName"
+           :error="!!errors.codeName"
+           :error-message="errors.codeName"
+           placeholder="Nom de code *"
+           outlined
+           dense
+           @blur="validateField('codeName')"
+         />
+       </div>
 
-      <div class="form-group">
-        <label for="firstName" class="form-label">Prénom *</label>
-        <q-input
-          id="firstName"
-          v-model="formData.firstName"
-          :error="!!errors.firstName"
-          :error-message="errors.firstName"
-          placeholder="Ex: James"
-          outlined
-          dense
-          @blur="validateField('firstName')"
-        />
-      </div>
+       <div class="form-group">
+         <q-input
+           v-model="formData.firstName"
+           :error="!!errors.firstName"
+           :error-message="errors.firstName"
+           placeholder="Prénom *"
+           outlined
+           dense
+           @blur="validateField('firstName')"
+         />
+       </div>
 
-      <div class="form-group">
-        <label for="lastName" class="form-label">Nom *</label>
-        <q-input
-          id="lastName"
-          v-model="formData.lastName"
-          :error="!!errors.lastName"
-          :error-message="errors.lastName"
-          placeholder="Ex: Bond"
-          outlined
-          dense
-          @blur="validateField('lastName')"
-        />
-      </div>
+       <div class="form-group">
+         <q-input
+           v-model="formData.lastName"
+           :error="!!errors.lastName"
+           :error-message="errors.lastName"
+           placeholder="Nom *"
+           outlined
+           dense
+           @blur="validateField('lastName')"
+         />
+       </div>
 
-      <div class="form-group">
-        <label for="email" class="form-label">Email *</label>
-        <q-input
-          id="email"
-          v-model="formData.email"
-          type="email"
-          :error="!!errors.email"
-          :error-message="errors.email"
-          placeholder="Ex: james.bond@mi6.gov.uk"
-          outlined
-          dense
-          @blur="validateField('email')"
-        />
-      </div>
+       <div class="form-group">
+         <q-input
+           v-model="formData.email"
+           type="email"
+           :error="!!errors.email"
+           :error-message="errors.email"
+           placeholder="Email *"
+           outlined
+           dense
+           @blur="validateField('email')"
+         />
+       </div>
 
-      <div class="form-group">
-        <label for="password" class="form-label">Mot de passe *</label>
-        <q-input
-          id="password"
-          v-model="formData.password"
-          type="password"
-          :error="!!errors.password"
-          :error-message="errors.password"
-          placeholder="Mot de passe sécurisé"
-          outlined
-          dense
-          @blur="validateField('password')"
-        />
-      </div>
+       <div class="form-group">
+         <q-input
+           v-model="formData.password"
+           type="password"
+           :error="!!errors.password"
+           :error-message="errors.password"
+           placeholder="Mot de passe *"
+           outlined
+           dense
+           @blur="validateField('password')"
+         />
+       </div>
 
-      <div class="form-group">
-        <label for="yearsOfExperience" class="form-label">Années d'expérience *</label>
-        <q-input
-          id="yearsOfExperience"
-          v-model.number="formData.yearsOfExperience"
-          type="number"
-          :error="!!errors.yearsOfExperience"
-          :error-message="errors.yearsOfExperience"
-          placeholder="Ex: 15"
-          outlined
-          dense
-          @blur="validateField('yearsOfExperience')"
-        />
-      </div>
+       <div class="form-group">
+         <q-input
+           v-model.number="formData.yearsOfExperience"
+           type="number"
+           :error="!!errors.yearsOfExperience"
+           :error-message="errors.yearsOfExperience"
+           label="Années d'expérience *"
+           placeholder="Ex: 15"
+           outlined
+           dense
+           clearable
+           @blur="validateField('yearsOfExperience')"
+         />
+       </div>
 
-      <div class="form-group">
-        <label for="infiltratedCountryId" class="form-label">Pays infiltré *</label>
-        <q-select
-          id="infiltratedCountryId"
-          v-model="formData.infiltratedCountryId"
-          :options="countries"
-          :error="!!errors.infiltratedCountryId"
-          :error-message="errors.infiltratedCountryId"
-          placeholder="Sélectionner un pays"
-          outlined
-          dense
-          @blur="validateField('infiltratedCountryId')"
-        />
-      </div>
+       <div class="form-group">
+         <q-select
+           v-model="formData.infiltratedCountryId"
+           :options="countries"
+           :error="!!errors.infiltratedCountryId"
+           :error-message="errors.infiltratedCountryId"
+           label="Pays infiltré *"
+           placeholder="Sélectionner un pays"
+           outlined
+           dense
+           clearable
+           @blur="validateField('infiltratedCountryId')"
+         />
+       </div>
 
       <div class="form-actions">
         <q-btn
@@ -150,7 +140,7 @@ const formData = reactive<AgentForm>({
   email: '',
   password: '',
   yearsOfExperience: 0,
-  infiltratedCountryId: 0
+  infiltratedCountryId: undefined
 })
 
 // Liste des pays pour la sélection
@@ -303,5 +293,38 @@ defineExpose({
   resetForm
 })
 </script>
+
+<style scoped>
+.agent-form {
+  max-width: 600px;
+  margin: 0 auto;
+}
+
+.form-group {
+  margin-bottom: 1rem;
+}
+
+.form-label {
+  display: block;
+  margin-bottom: 0.5rem;
+  font-weight: 500;
+  color: #333;
+}
+
+.form-actions {
+  display: flex;
+  gap: 0.5rem;
+  justify-content: flex-end;
+  margin-top: 1.5rem;
+}
+
+.submit-btn {
+  min-width: 120px;
+}
+
+.cancel-btn {
+  min-width: 100px;
+}
+</style>
 
 

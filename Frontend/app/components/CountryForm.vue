@@ -1,14 +1,12 @@
 <template>
-  <div class="form-container">
+  <div class="country-form">
     <form @submit.prevent="handleSubmit">
       <div class="form-group">
-        <label for="name" class="form-label">Nom du pays *</label>
         <q-input
-          id="name"
           v-model="formData.name"
           :error="!!errors.name"
           :error-message="errors.name"
-          placeholder="Ex: France"
+          placeholder="Nom du pays *"
           outlined
           dense
           @blur="validateField('name')"
@@ -157,5 +155,31 @@ defineExpose({
   resetForm
 })
 </script>
+
+<style scoped>
+.country-form {
+  max-width: 600px;
+  margin: 0 auto;
+}
+
+.form-group {
+  margin-bottom: 1rem;
+}
+
+.form-actions {
+  display: flex;
+  gap: 0.5rem;
+  justify-content: flex-end;
+  margin-top: 1.5rem;
+}
+
+.submit-btn {
+  min-width: 120px;
+}
+
+.cancel-btn {
+  min-width: 100px;
+}
+</style>
 
 
