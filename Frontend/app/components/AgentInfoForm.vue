@@ -163,18 +163,10 @@
                 >
                   <q-item-section>
                     <q-item-label class="text-weight-medium">
-                      {{ message.type }}
-                      <q-chip 
-                        icon="schedule" 
-                        size="sm" 
-                        color="grey-3" 
-                        text-color="grey-8"
-                      >
-                        {{ formatDateTime(message.timestamp) }}
-                      </q-chip>
+                      {{ message.title }}
                     </q-item-label>
                     <q-item-label caption class="q-mt-xs">
-                      {{ message.content }}
+                      {{ message.body }}
                     </q-item-label>
                   </q-item-section>
                 </q-item>
