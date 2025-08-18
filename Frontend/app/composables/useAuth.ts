@@ -109,6 +109,13 @@ export const useAuth = () => {
     return authService.getToken()
   }
 
+  // Initialiser l'utilisateur au montage si un token existe
+  const initUser = async () => {
+    if (authService.isAuthenticated()) {
+      await checkAuth()
+    }
+  }
+
   return {
     // État
     user,
@@ -122,6 +129,7 @@ export const useAuth = () => {
     login,
     logout,
     checkAuth,
-    getAuthToken
+    getAuthToken,
+    initUser
   }
 }

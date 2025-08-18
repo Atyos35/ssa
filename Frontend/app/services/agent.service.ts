@@ -90,9 +90,10 @@ export class AgentService {
     yearsOfExperience: number
     infiltratedCountryId: number
     mentorId: number
+    status?: string
   }>): Promise<ApiResponseDto<any>> {
     try {
-      const response = await apiService.put(`/api/agents/${id}`, agentData)
+      const response = await apiService.patch(`/api/agents/${id}`, agentData)
       return {
         success: true,
         data: response.data,
@@ -103,6 +104,28 @@ export class AgentService {
         success: false,
         error: {
           message: error.response?.data?.message || 'Erreur lors de la mise à jour de l\'agent',
+          status: error.response?.status || 500
+        }
+      }
+    }
+  }
+
+  /**
+   * Mettre à jour le statut d'un agent
+   */
+  async updateAgentStatus(id: number, status: string): Promise<ApiResponseDto<any>> {
+    try {
+      const response = await apiService.patch(`/api/agents/${id}/status`, { status })
+      return {
+        success: true,
+        data: response.data,
+        message: 'Statut de l\'agent mis à jour avec succès'
+      }
+    } catch (error: any) {
+      return {
+        success: false,
+        error: {
+          message: error.response?.data?.message || 'Erreur lors de la mise à jour du statut de l\'agent',
           status: error.response?.status || 500
         }
       }
