@@ -17,7 +17,7 @@ class AgentDto
     public static function fromEntity(Agent $agent): self
     {
         return new self(
-            id: $agent->getId()?->toRfc4122() ?? '',
+            id: $agent->getId() ?? 0,
             codeName: $agent->getCodeName(),
             status: $agent->getStatus()->value,
             yearsOfExperience: $agent->getYearsOfExperience(),

@@ -2,10 +2,11 @@
 import { ref, computed } from 'vue'
 import { authService } from '~/services/auth.service'
 import type { LoginRequest, RegisterRequest } from '~/services/auth.service'
+import type { UserDto } from '~/types/dto'
 
 export const useAuth = () => {
   // État réactif
-  const user = ref<any>(null)
+  const user = ref<UserDto | null>(null)
   const loading = ref(false)
   const error = ref<string | null>(null)
 
@@ -111,8 +112,14 @@ export const useAuth = () => {
 
   // Initialiser l'utilisateur au montage si un token existe
   const initUser = async () => {
-    if (authService.isAuthenticated()) {
-      await checkAuth()
+    try {
+      const response = await authService.getCurrentUser()
+      if (response.success && response.data) {
+        user.value = response.data
+        // isAuthenticated.value = true // This line was removed from the new_code, so it's removed here.
+      }
+    } catch (error) {
+      console.error('Erreur lors de l\'initialisation de l\'utilisateur:', error)
     }
   }
 

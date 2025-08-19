@@ -32,6 +32,8 @@ class CreateAgentHandler implements CommandHandlerInterface
         $agent->setYearsOfExperience($command->yearsOfExperience);
         $agent->setStatus($command->status);
         $agent->setEnrolementDate($command->enrolementDate);
+        $agent->setEmailVerified(true);
+        $agent->setRoles(['ROLE_USER']);
 
         // Hasher le mot de passe
         $hashedPassword = $this->passwordHasher->hashPassword($agent, $command->password);

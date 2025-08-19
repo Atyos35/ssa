@@ -45,13 +45,14 @@ class AgentKilledInActionFunctionalTest extends WebTestCase
         $this->assertCount(0, $this->messengerTransport->get());
 
         // 4. Effectuer la requête PATCH pour tuer l'agent1
+        $patchData = ['status' => 'Killed in Action'];
         $this->client->request(
             'PATCH',
             '/api/agents/' . $agent1->getId() . '/status',
             [],
             [],
             ['CONTENT_TYPE' => 'application/json'],
-            json_encode(['status' => 'Killed in Action'])
+            json_encode($patchData)
         );
 
         // 5. Vérifier la réponse HTTP
@@ -129,7 +130,7 @@ class AgentKilledInActionFunctionalTest extends WebTestCase
     {
         $this->client->request(
             'PATCH',
-            '/api/agents/00000000-0000-0000-0000-000000000000/status',
+            '/api/agents/999999/status', // ID entier inexistant au lieu d'UUID
             [],
             [],
             ['CONTENT_TYPE' => 'application/json'],

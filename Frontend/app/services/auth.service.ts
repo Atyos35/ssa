@@ -201,6 +201,37 @@ class AuthService {
   isAutoRefreshActive(): boolean {
     return this.refreshInterval !== null
   }
+
+  // Récupérer les informations de l'utilisateur connecté
+  async getCurrentUser(): Promise<ApiResult<any>> {
+    try {
+      const token = this.getToken()
+      
+      if (!token) {
+        return {
+          success: false,
+          error: {
+            message: 'Aucun token d\'authentification',
+            status: 401
+          }
+        }
+      }
+
+      const response = await apiService.get('/api/me')
+      return {
+        success: true,
+        data: response.data
+      }
+    } catch (error: any) {
+      return {
+        success: false,
+        error: {
+          message: error.response?.data?.message || 'Erreur lors de la récupération des informations utilisateur',
+          status: error.response?.status || 500
+        }
+      }
+    }
+  }
 }
 
 // Instance singleton

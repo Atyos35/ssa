@@ -233,9 +233,9 @@ class AgentFunctionalTest extends WebTestCase
 
     public function testGetAgentNotFound(): void
     {
-        $this->client->request('GET', '/api/agents/00000000-0000-0000-0000-000000000000');
+        $this->client->request('GET', '/api/agents/999999'); // ID entier inexistant
 
-        $this->assertResponseStatusCodeSame(400); // Le handler lève une exception
+        $this->assertResponseStatusCodeSame(400);
     }
 
     public function testPatchAgentStatusNotFound(): void
@@ -246,14 +246,14 @@ class AgentFunctionalTest extends WebTestCase
 
         $this->client->request(
             'PATCH',
-            '/api/agents/00000000-0000-0000-0000-000000000000/status',
+            '/api/agents/999999/status', // ID entier inexistant
             [],
             [],
             ['CONTENT_TYPE' => 'application/json'],
             json_encode($patchData)
         );
 
-        $this->assertResponseStatusCodeSame(400); // Le handler lève une exception DomainException
+        $this->assertResponseStatusCodeSame(400);
     }
 
     public function testCreateAgentWithInvalidCountry(): void

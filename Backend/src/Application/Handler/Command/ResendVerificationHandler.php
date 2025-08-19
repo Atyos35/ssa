@@ -6,13 +6,15 @@ use App\Application\Command\CommandInterface;
 use App\Application\Command\ResendVerificationCommand;
 use App\Application\Handler\CommandHandlerInterface;
 use App\Domain\Entity\User;
+use App\Domain\Service\EmailVerificationService;
 use Doctrine\ORM\EntityManagerInterface;
 use Symfony\Component\Uid\Uuid;
 
 class ResendVerificationHandler implements CommandHandlerInterface
 {
     public function __construct(
-        private readonly EntityManagerInterface $entityManager
+        private readonly EntityManagerInterface $entityManager,
+        private readonly EmailVerificationService $emailVerificationService
     ) {}
 
     public function handle(CommandInterface $command): void
@@ -33,7 +35,7 @@ class ResendVerificationHandler implements CommandHandlerInterface
             throw new \DomainException('Email déjà vérifié');
         }
 
-        // Générer un nouveau token
+        // Générer un nouveau token de vérification
         $token = Uuid::v4()->toRfc4122();
         $user->setEmailVerificationToken($token);
         $user->setEmailVerificationExpiresAt(new \DateTimeImmutable('+24 hours'));
@@ -41,7 +43,7 @@ class ResendVerificationHandler implements CommandHandlerInterface
         $this->entityManager->persist($user);
         $this->entityManager->flush();
 
-        // TODO: Envoyer l'email (injecter le service EmailVerificationService)
-        // $this->emailVerificationService->sendVerificationEmail($user, $token);
+        // Envoyer l'email de vérification
+        $this->emailVerificationService->sendVerificationEmail($user, $token);
     }
 } 

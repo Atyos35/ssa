@@ -133,6 +133,19 @@
             <div class="text-caption text-grey-6">Finaliser une opération</div>
           </q-card-section>
         </q-card>
+
+        <!-- 8. Créer un nouveau message - Disponible seulement s'il y a des agents -->
+        <q-card 
+          v-if="availableFeatures.canCreateAgent"
+          class="action-card" 
+          @click="openCreateMessageModal"
+        >
+          <q-card-section class="text-center">
+            <q-icon name="mail" size="48px" color="indigo" class="q-mb-md" />
+            <h3>Créer un nouveau message</h3>
+            <div class="text-caption text-grey-6">Envoyer un message interne à un agent</div>
+          </q-card-section>
+        </q-card>
       </div>
     </div>
 
@@ -160,6 +173,15 @@
         @success="handleMissionCreated"
         @error="handleMissionError"
         @cancel="handleMissionModalCancel"
+      />
+    </Modal>
+
+    <!-- Modal de création de message -->
+    <Modal v-model="showCreateMessageModal" title="Créer un nouveau message">
+      <MessageForm
+        @success="handleMessageCreated"
+        @error="handleMessageError"
+        @cancel="handleMessageModalCancel"
       />
     </Modal>
 
@@ -207,6 +229,7 @@ import MissionClosureForm from '~/components/MissionClosureForm.vue'
 import MissionList from '~/components/MissionList.vue'
 import AgentInfoForm from '~/components/AgentInfoForm.vue'
 import KillAgentForm from '~/components/KillAgentForm.vue'
+import MessageForm from '~/components/MessageForm.vue'
 import { authService } from '~/services/auth.service'
 import { useNotification } from '~/composables/useNotification'
 
@@ -215,12 +238,13 @@ const { logout, user, checkAuth, initUser } = useAuth()
 const { isLoading, availableFeatures, isComplete, refreshDatabaseState } = useDatabaseState()
 
 // Utiliser le composable de notification
-const { showError } = useNotification()
+const { showError, showSuccess } = useNotification()
 
 // État de la modal
 const showCreateCountryModal = ref(false)
 const showCreateAgentModal = ref(false)
 const showCreateMissionModal = ref(false)
+const showCreateMessageModal = ref(false)
 const showMissionClosureModal = ref(false)
 const showMissionListModal = ref(false)
 const showAgentInfoModal = ref(false)
@@ -239,6 +263,11 @@ const openCreateAgentModal = () => {
 // Ouvrir la modal de création de mission
 const openCreateMissionModal = () => {
   showCreateMissionModal.value = true
+}
+
+// Ouvrir la modal de création de message
+const openCreateMessageModal = () => {
+  showCreateMessageModal.value = true
 }
 
 // Ouvrir la modal de clôture de mission
@@ -359,6 +388,20 @@ const handleAgentKillError = (error: string) => {
 
 const handleAgentKillModalCancel = () => {
   showKillAgentModal.value = false
+}
+
+// Gestion des événements du MessageForm
+const handleMessageCreated = async () => {
+  showCreateMessageModal.value = false
+  showSuccess('Message envoyé avec succès')
+}
+
+const handleMessageError = (error: string) => {
+  showError('Erreur lors de l\'envoi du message.')
+}
+
+const handleMessageModalCancel = () => {
+  showCreateMessageModal.value = false
 }
 
 // Vérifier l'authentification au chargement

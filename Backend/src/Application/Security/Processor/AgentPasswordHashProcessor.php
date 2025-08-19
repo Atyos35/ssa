@@ -8,7 +8,6 @@ use App\Domain\Entity\Agent;
 use App\Service\EmailVerificationService;
 use Doctrine\ORM\EntityManagerInterface;
 use Symfony\Component\PasswordHasher\Hasher\UserPasswordHasherInterface;
-use Symfony\Component\Uid\Uuid;
 
 // Processor API Platform qui hash le mot de passe d'un agent lors d'un POST
 class AgentPasswordHashProcessor implements ProcessorInterface
@@ -42,7 +41,7 @@ class AgentPasswordHashProcessor implements ProcessorInterface
         
         // Générer et envoyer l'email de vérification
         if ($data instanceof Agent) {
-            $token = Uuid::v4()->toRfc4122();
+            $token = bin2hex(random_bytes(32)); // Alternative plus simple
             $data->setEmailVerificationToken($token);
             $data->setEmailVerificationExpiresAt(new \DateTimeImmutable('+24 hours'));
             $data->setEmailVerified(false);
