@@ -23,10 +23,3 @@ export interface MissionClosureFormRawData {
   status: 'Success' | 'Failure' | ''
   summary: string
 }
-
-// Exemples de validation du schéma :
-// ✅ missionId: "123" (string) -> valide
-// ✅ missionId: 123 (number) -> valide et transformé en "123"
-// ❌ missionId: null -> invalide
-// ❌ missionId: 0 -> invalide (pas positif)
-// ❌ missionId: "" -> invalide (string vide)

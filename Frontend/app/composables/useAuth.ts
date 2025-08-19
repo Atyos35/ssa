@@ -91,20 +91,6 @@ export const useAuth = () => {
     error.value = null
   }
 
-  // Vérifier l'état d'authentification au chargement
-  const checkAuth = async () => {
-    if (authService.isAuthenticated()) {
-      // Créer un utilisateur temporaire basé sur la présence du token
-      user.value = {
-        id: 'user_from_token',
-        email: 'utilisateur@connecte.com',
-        firstName: 'Utilisateur',
-        lastName: 'Connecté',
-        roles: ['ROLE_USER']
-      }
-    }
-  }
-
   // Récupérer le token d'authentification
   const getAuthToken = () => {
     return authService.getToken()
@@ -130,12 +116,10 @@ export const useAuth = () => {
     error,
     isAuthenticated,
     isAdmin,
-    
     // Méthodes
     register,
     login,
     logout,
-    checkAuth,
     getAuthToken,
     initUser
   }

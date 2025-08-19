@@ -116,10 +116,10 @@
 </template>
 
 <script setup lang="ts">
-import { ref, reactive, onMounted, nextTick } from 'vue'
+import { ref, reactive, onMounted } from 'vue'
 import { validateAgent, type AgentForm } from '~/schemas/agent.schema'
-import type { CreateAgentDto, CountrySelectOptionDto } from '~/types'
-import { AgentService } from '~/services/agent.service'
+import type { CreateAgentDto, CountrySelectOptionDto } from '~/types/dto'
+import { agentService } from '~/services/agent.service'
 import { useNotification } from '~/composables/useNotification'
 
 // Émettre des événements
@@ -163,7 +163,7 @@ const isSubmitting = ref(false)
 // Récupérer la liste des pays
 const fetchCountries = async () => {
   try {
-    const result = await AgentService.getCountriesForSelect()
+    const result = await agentService.getCountriesForSelect()
     
     if (result.success && result.data) {
       countries.value = result.data
@@ -243,7 +243,7 @@ const handleSubmit = async () => {
           infiltratedCountryId: countryId || 0
         }
 
-        const result = await AgentService.createAgent(createAgentDto)
+        const result = await agentService.createAgent(createAgentDto)
         
         if (!result.success) {
           throw new Error(result.error?.message || 'Erreur lors de la création de l\'agent')
@@ -293,38 +293,3 @@ defineExpose({
   resetForm
 })
 </script>
-
-<style scoped>
-.agent-form {
-  max-width: 600px;
-  margin: 0 auto;
-}
-
-.form-group {
-  margin-bottom: 1rem;
-}
-
-.form-label {
-  display: block;
-  margin-bottom: 0.5rem;
-  font-weight: 500;
-  color: #333;
-}
-
-.form-actions {
-  display: flex;
-  gap: 0.5rem;
-  justify-content: flex-end;
-  margin-top: 1.5rem;
-}
-
-.submit-btn {
-  min-width: 120px;
-}
-
-.cancel-btn {
-  min-width: 100px;
-}
-</style>
-
-

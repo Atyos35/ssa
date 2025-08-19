@@ -20,7 +20,7 @@ final class AgentKilledInActionMessageHandler
     {
         $killedAgent = $message->getKilledAgent();
         
-        // Récupérer l'agent tué depuis la base de données pour le contexte de persistance
+        // Récupérer l'agent tué depuis la bdd
         $killedAgentFromDb = $this->entityManager->getRepository(Agent::class)->find($killedAgent->getId());
         if (!$killedAgentFromDb) {
             throw new \RuntimeException('Agent not found in database');
@@ -59,7 +59,7 @@ final class AgentKilledInActionMessageHandler
     }
 
     /**
-     * Supprime tous les messages liés à un agent
+     * Supprime tous les messages liés à l'agent tué
      */
     private function deleteAgentMessages(Agent $agent): void
     {

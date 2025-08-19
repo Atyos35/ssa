@@ -33,7 +33,7 @@ class MissionDto
             startDate: $mission->getStartDate()->format('Y-m-d'),
             endDate: $mission->getEndDate()?->format('Y-m-d'),
             country: $mission->getCountry() ? CountryDto::fromEntity($mission->getCountry()) : null,
-            agents: [], // On ne retourne pas les agents pour des raisons de sécurité
+            agents: [],
             missionResult: $mission->getMissionResult() ? MissionResultDto::fromEntity($mission->getMissionResult()) : null
         );
     }

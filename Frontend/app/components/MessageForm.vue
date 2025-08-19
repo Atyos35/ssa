@@ -208,20 +208,3 @@ onMounted(() => {
   loadAgents()
 })
 </script>
-
-<style scoped>
-.message-form {
-  padding: 1rem;
-}
-
-.form-group {
-  margin-bottom: 1rem;
-}
-
-.form-actions {
-  display: flex;
-  justify-content: flex-end;
-  gap: 0.5rem;
-  margin-top: 1.5rem;
-}
-</style>

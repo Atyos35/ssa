@@ -16,7 +16,7 @@ class CustomAuthenticationFailureHandler extends AuthenticationFailureHandler
         if ($exception instanceof CustomUserMessageAuthenticationException) {
             $message = $exception->getMessage();
             
-            // Si le message contient "activé" ou "vérifié", c'est une erreur d'email non vérifié
+            // Si le message contient "activé" ou "vérifié"
             if (str_contains($message, 'activé') || str_contains($message, 'vérifié')) {
                 return new JsonResponse([
                     'code' => 401,
@@ -25,7 +25,7 @@ class CustomAuthenticationFailureHandler extends AuthenticationFailureHandler
             }
         }
 
-        // Pour toutes les autres erreurs d'authentification
+        // Sinon
         return new JsonResponse([
             'code' => 401,
             'message' => 'Identifiants invalides.'

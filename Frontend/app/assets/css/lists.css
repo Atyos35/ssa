@@ -1,0 +1,120 @@
+/* Styles communs pour tous les composants de liste */
+
+/* Liste des missions */
+.mission-list {
+  width: 100%;
+  max-width: 100%;
+}
+
+.missions-list {
+  max-height: 70vh;
+  overflow-y: auto;
+}
+
+.mission-item {
+  transition: all 0.2s ease;
+  padding: 16px;
+}
+
+.mission-item:hover {
+  background-color: rgba(0, 0, 0, 0.02);
+}
+
+.mission-item .q-item__section {
+  min-width: 0;
+}
+
+/* Optimisation pour les écrans larges */
+@media (min-width: 900px) {
+  .mission-item {
+    padding: 20px;
+  }
+  
+  .mission-item .q-item__section {
+    padding-right: 20px;
+  }
+}
+
+/* Responsive design pour les listes */
+@media (max-width: 768px) {
+  .mission-list {
+    padding: 0 10px;
+  }
+  
+  .mission-item {
+    padding: 12px;
+  }
+}
+
+/* Styles génériques pour les listes */
+.list-container {
+  width: 100%;
+  max-width: 100%;
+}
+
+.list-item {
+  transition: all 0.2s ease;
+  padding: 16px;
+}
+
+.list-item:hover {
+  background-color: rgba(0, 0, 0, 0.02);
+}
+
+.list-item .q-item__section {
+  min-width: 0;
+}
+
+/* États de chargement et d'erreur */
+.loading-state,
+.error-state,
+.empty-state {
+  text-align: center;
+  padding: 2rem;
+}
+
+.loading-state .q-spinner-dots {
+  margin-bottom: 1rem;
+}
+
+.error-state .q-icon {
+  margin-bottom: 1rem;
+}
+
+.empty-state .q-icon {
+  margin-bottom: 1rem;
+}
+
+/* Styles spécifiques pour AgentInfoForm */
+.agent-info-form {
+  width: 100%;
+  max-width: 100%;
+}
+
+.agent-details {
+  max-height: 70vh;
+  overflow-y: auto;
+}
+
+.mission-item,
+.message-item {
+  transition: all 0.2s ease;
+  padding: 12px;
+}
+
+.mission-item:hover,
+.message-item:hover {
+  background-color: rgba(0, 0, 0, 0.02);
+}
+
+/* Responsive design pour AgentInfoForm */
+@media (max-width: 768px) {
+  .agent-info-form {
+    padding: 0 10px;
+  }
+  
+  .mission-item,
+  .message-item {
+    padding: 8px;
+  }
+}

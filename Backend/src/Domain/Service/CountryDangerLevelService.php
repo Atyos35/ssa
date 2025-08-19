@@ -41,8 +41,9 @@ final class CountryDangerLevelService
             ->getQuery()
             ->getResult();
 
+        //si pas de mission, danger à Low
         if (empty($activeMissions)) {
-            return DangerLevel::Low; // Niveau par défaut si aucune mission active
+            return DangerLevel::Low;
         }
 
         $highestLevel = DangerLevel::Low;

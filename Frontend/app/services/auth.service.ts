@@ -39,7 +39,7 @@ class AuthService {
     try {
       const requestData = {
         ...data,
-        roles: ['ROLE_USER'] // Rôle par défaut
+        roles: ['ROLE_USER']
       }
       
       const response = await apiService.post<RegisterResponse>('/api/register', requestData)
@@ -189,17 +189,6 @@ class AuthService {
       this.refreshInterval = null
       console.log('Refresh automatique arrêté')
     }
-  }
-
-  // Forcer un refresh manuel (utile pour les tests)
-  async forceRefresh(): Promise<ApiResult<{ token: string }>> {
-    console.log('Refresh manuel du token...')
-    return await this.refreshToken()
-  }
-
-  // Vérifier l'état du refresh automatique
-  isAutoRefreshActive(): boolean {
-    return this.refreshInterval !== null
   }
 
   // Récupérer les informations de l'utilisateur connecté

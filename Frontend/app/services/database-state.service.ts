@@ -1,5 +1,5 @@
 import { apiService } from './index'
-import type { ApiResponseDto } from '~/types/api'
+import type { ApiResponseDto } from '~/types/dto'
 
 export class DatabaseStateService {
   private static instance: DatabaseStateService

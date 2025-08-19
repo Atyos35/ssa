@@ -1,0 +1,67 @@
+/* Styles pour les pages */
+
+/* Page d'accueil */
+.home-page {
+  background: #f5f5f5;
+  min-height: 100vh;
+}
+
+.home-header {
+  background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+  padding: 60px 20px;
+}
+
+.header-content {
+  max-width: 1200px;
+  margin: 0 auto;
+  text-align: center;
+  position: relative;
+}
+
+.header-top {
+  position: absolute;
+  top: 0;
+  right: 0;
+}
+
+.home-content {
+  max-width: 1200px;
+  margin: 0 auto;
+  padding: 40px 20px;
+}
+
+.actions-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+  gap: 1.5rem;
+}
+
+.action-card {
+  background: white;
+  border-radius: 15px;
+  cursor: pointer;
+  transition: transform 0.3s ease;
+}
+
+.action-card:hover {
+  transform: translateY(-5px);
+  box-shadow: 0 10px 25px rgba(0, 0, 0, 0.2);
+}
+
+.action-card h3 {
+  margin: 0;
+  color: #333;
+  font-size: 1.1rem;
+  text-align: center;
+}
+
+/* Responsive design pour les pages */
+@media (max-width: 768px) {
+  .home-header {
+    padding: 40px 20px;
+  }
+  
+  .home-content {
+    padding: 20px 20px;
+  }
+}

@@ -1,2 +1,8 @@
 /* Import des styles globaux */
 @import './global.css';
+@import './auth.css';
+@import './form.css';
+@import './forms.css';
+@import './lists.css';
+@import './components.css';
+@import './pages.css';

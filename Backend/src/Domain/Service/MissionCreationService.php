@@ -17,11 +17,9 @@ final class MissionCreationService
 
     /**
      * Gère la création d'une mission
-     * Note: L'envoi du message est maintenant géré par l'événement postPersist
      */
     public function handleMissionCreation(Mission $mission): void
     {
-        // Persister la mission
         $this->entityManager->persist($mission);
         $this->entityManager->flush();
     }

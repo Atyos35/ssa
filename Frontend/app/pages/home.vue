@@ -196,7 +196,7 @@
 
     <!-- Modal de liste des missions -->
     <Modal v-model="showMissionListModal" title="Liste des missions et leurs résultats" size="lg">
-      <MissionList @viewMission="handleViewMission" />
+      <MissionList />
     </Modal>
 
     <!-- Modal d'informations d'agent -->
@@ -218,7 +218,7 @@
 </template>
 
 <script setup lang="ts">
-import { ref, onMounted, watch } from 'vue'
+import { ref, onMounted } from 'vue'
 import { useAuth } from '~/composables/useAuth'
 import { useDatabaseState } from '~/composables/useDatabaseState'
 import Modal from '~/components/Modal.vue'
@@ -234,7 +234,7 @@ import { authService } from '~/services/auth.service'
 import { useNotification } from '~/composables/useNotification'
 
 // Composables
-const { logout, user, checkAuth, initUser } = useAuth()
+const { logout, initUser } = useAuth()
 const { isLoading, availableFeatures, isComplete, refreshDatabaseState } = useDatabaseState()
 
 // Utiliser le composable de notification
@@ -290,8 +290,6 @@ const openKillAgentModal = () => {
   showKillAgentModal.value = true
 }
 
-
-
 // Gestion de la déconnexion
 const handleLogout = () => {
   logout()
@@ -309,7 +307,7 @@ const handleCountryCreated = async () => {
 }
 
 // Afficher un message d'erreur à l'utilisateur
-const handleCountryError = (error: string) => {
+const handleCountryError = () => {
   showError('Erreur lors de la création du pays.')
 }
 
@@ -326,7 +324,7 @@ const handleAgentCreated = async () => {
 }
 
 // Afficher un message d'erreur à l'utilisateur
-const handleAgentError = (error: string) => {
+const handleAgentError = () => {
   showError('Erreur lors de la création de l\'agent.')
 }
 
@@ -343,7 +341,7 @@ const handleMissionCreated = async () => {
 }
 
 // Afficher un message d'erreur à l'utilisateur
-const handleMissionError = (error: string) => {
+const handleMissionError = () => {
   showError('Erreur lors de la création de la mission.')
 }
 
@@ -360,18 +358,12 @@ const handleMissionClosureSuccess = async () => {
 }
 
 // Afficher un message d'erreur à l'utilisateur
-const handleMissionClosureError = (error: string) => {
+const handleMissionClosureError = () => {
   showError('Erreur lors de la clôture de la mission.')
 }
 
 const handleMissionClosureModalCancel = () => {
   showMissionClosureModal.value = false
-}
-
-// Gestion de la vue d'une mission
-const handleViewMission = (mission: any) => {
-  // Ici vous pouvez ajouter la logique pour afficher plus de détails
-  // Par exemple, ouvrir une autre modal avec les détails complets
 }
 
 // Gestion des événements du KillAgentModal
@@ -382,7 +374,7 @@ const handleAgentKilled = async () => {
   await refreshDatabaseState()
 }
 
-const handleAgentKillError = (error: string) => {
+const handleAgentKillError = () => {
   showError('Erreur lors de la mise à mort de l\'agent.')
 }
 
@@ -396,7 +388,8 @@ const handleMessageCreated = async () => {
   showSuccess('Message envoyé avec succès')
 }
 
-const handleMessageError = (error: string) => {
+
+const handleMessageError = () => {
   showError('Erreur lors de l\'envoi du message.')
 }
 
@@ -419,69 +412,3 @@ onMounted(async () => {
 
 
 </script>
-
-<style scoped>
-.home-page {
-  background: #f5f5f5;
-  min-height: 100vh;
-}
-
-.home-header {
-  background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
-  padding: 60px 20px;
-}
-
-.header-content {
-  max-width: 1200px;
-  margin: 0 auto;
-  text-align: center;
-  position: relative;
-}
-
-.header-top {
-  position: absolute;
-  top: 0;
-  right: 0;
-}
-
-.home-content {
-  max-width: 1200px;
-  margin: 0 auto;
-  padding: 40px 20px;
-}
-
-.actions-grid {
-  display: grid;
-  grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
-  gap: 1.5rem;
-}
-
-.action-card {
-  background: white;
-  border-radius: 15px;
-  cursor: pointer;
-  transition: transform 0.3s ease;
-}
-
-.action-card:hover {
-  transform: translateY(-5px);
-  box-shadow: 0 10px 25px rgba(0, 0, 0, 0.2);
-}
-
-.action-card h3 {
-  margin: 0;
-  color: #333;
-  font-size: 1.1rem;
-  text-align: center;
-}
-
-@media (max-width: 768px) {
-  .home-header {
-    padding: 40px 20px;
-  }
-  
-  .home-content {
-    padding: 20px 20px;
-  }
-}
-</style>

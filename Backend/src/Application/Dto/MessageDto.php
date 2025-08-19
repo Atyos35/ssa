@@ -20,8 +20,8 @@ class MessageDto
             id: $message->getId(),
             title: $message->getTitle(),
             body: $message->getBody(),
-            by: null, // On ne retourne pas l'expéditeur pour des raisons de sécurité
-            recipient: null // On ne retourne pas le destinataire pour des raisons de sécurité
+            by: null,
+            recipient: null
         );
     }
 } 

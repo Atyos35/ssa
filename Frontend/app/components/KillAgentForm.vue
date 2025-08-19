@@ -152,37 +152,3 @@ onMounted(() => {
   loadAgents()
 })
 </script>
-
-<style scoped>
-.kill-agent-form {
-  max-width: 600px;
-  margin: 0 auto;
-}
-
-.warning-message {
-  display: flex;
-  align-items: center;
-  gap: 0.5rem;
-  padding: 1rem;
-  background-color: #fff3cd;
-  border: 1px solid #ffeaa7;
-  border-radius: 8px;
-  color: #856404;
-  font-size: 0.9rem;
-}
-
-.form-actions {
-  display: flex;
-  gap: 0.5rem;
-  justify-content: flex-end;
-  margin-top: 1.5rem;
-}
-
-.submit-btn {
-  min-width: 140px;
-}
-
-.cancel-btn {
-  min-width: 100px;
-}
-</style>

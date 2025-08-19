@@ -38,8 +38,8 @@
 <script setup lang="ts">
 import { ref, reactive } from 'vue'
 import { validateCountry, type CountryForm } from '~/schemas/country.schema'
-import type { CreateCountryDto } from '~/types'
-import { CountryService } from '~/services/country.service'
+import type { CreateCountryDto } from '~/types/dto'
+import { countryService } from '~/services/country.service'
 import { useNotification } from '~/composables/useNotification'
 
 // Émettre des événements
@@ -115,7 +115,7 @@ const handleSubmit = async () => {
       name: formData.name.trim()
     }
 
-    const result = await CountryService.createCountry(createCountryDto)
+    const result = await countryService.createCountry(createCountryDto)
     
     if (!result.success) {
       throw new Error(result.error?.message || 'Erreur lors de la création du pays')
@@ -155,31 +155,3 @@ defineExpose({
   resetForm
 })
 </script>
-
-<style scoped>
-.country-form {
-  max-width: 600px;
-  margin: 0 auto;
-}
-
-.form-group {
-  margin-bottom: 1rem;
-}
-
-.form-actions {
-  display: flex;
-  gap: 0.5rem;
-  justify-content: flex-end;
-  margin-top: 1.5rem;
-}
-
-.submit-btn {
-  min-width: 120px;
-}
-
-.cancel-btn {
-  min-width: 100px;
-}
-</style>
-
-

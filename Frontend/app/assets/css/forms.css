@@ -1,0 +1,91 @@
+/* Styles communs pour tous les formulaires */
+
+/* Formulaires génériques */
+.agent-form,
+.country-form,
+.mission-form,
+.mission-closure-form,
+.kill-agent-form,
+.message-form,
+.agent-info-form {
+  max-width: 600px;
+  margin: 0 auto;
+}
+
+/* Groupes de champs */
+.form-group {
+  margin-bottom: 1rem;
+}
+
+/* Labels des champs */
+.form-label {
+  display: block;
+  margin-bottom: 0.5rem;
+  font-weight: 500;
+  color: #333;
+}
+
+/* Actions du formulaire */
+.form-actions {
+  display: flex;
+  gap: 0.5rem;
+  justify-content: flex-end;
+  margin-top: 1.5rem;
+}
+
+/* Boutons de soumission */
+.submit-btn {
+  min-width: 120px;
+}
+
+/* Boutons d'annulation */
+.cancel-btn {
+  min-width: 100px;
+}
+
+/* Responsive design pour les formulaires */
+@media (max-width: 768px) {
+  .agent-form,
+  .country-form,
+  .mission-form,
+  .mission-closure-form,
+  .kill-agent-form,
+  .message-form,
+  .agent-info-form {
+    max-width: 100%;
+    padding: 0 1rem;
+  }
+  
+  .form-actions {
+    flex-direction: column;
+    gap: 0.75rem;
+  }
+  
+  .submit-btn,
+  .cancel-btn {
+    min-width: 100%;
+  }
+}
+
+/* Styles spécifiques pour certains formulaires */
+.warning-message {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  padding: 1rem;
+  background-color: #fff3cd;
+  border: 1px solid #ffeaa7;
+  border-radius: 8px;
+  color: #856404;
+  font-size: 0.9rem;
+}
+
+/* Styles pour les formulaires avec des largeurs de boutons spécifiques */
+.kill-agent-form .submit-btn,
+.mission-closure-form .submit-btn {
+  min-width: 140px;
+}
+
+.message-form {
+  padding: 1rem;
+}
