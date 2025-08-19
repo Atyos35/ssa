@@ -5,7 +5,6 @@ namespace App\Domain\Entity;
 use ApiPlatform\Metadata\ApiResource;
 use Doctrine\ORM\Mapping as ORM;
 use Symfony\Component\Validator\Constraints as Assert;
-use Symfony\Component\Uid\Uuid;
 use Doctrine\Common\Collections\Collection;
 use Doctrine\Common\Collections\ArrayCollection;
 use Symfony\Component\Security\Core\User\PasswordAuthenticatedUserInterface;
@@ -31,14 +30,13 @@ use ApiPlatform\Metadata\Patch;
 class User implements UserInterface, PasswordAuthenticatedUserInterface
 {
     /**
-     * Identifiant unique de l'utilisateur (UUID)
+     * Identifiant unique de l'utilisateur (entier auto-incrémenté)
      */
     #[ORM\Id]
-    #[ORM\GeneratedValue(strategy: 'CUSTOM')]
-    #[ORM\Column(type: 'uuid', unique: true)]
-    #[ORM\CustomIdGenerator(class: 'doctrine.uuid_generator')]
+    #[ORM\GeneratedValue]
+    #[ORM\Column(type: 'integer')]
     #[Groups(['user:read', 'agent:read:collection', 'agent:read:item'])]
-    private ?Uuid $id = null;
+    private ?int $id = null;
 
     /**
      * Prénom de l'utilisateur
@@ -127,7 +125,7 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface
     {
     }
 
-    public function getId(): ?Uuid
+    public function getId(): ?int
     {
         return $this->id;
     }

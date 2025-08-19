@@ -8,12 +8,6 @@
         <div class="success-content">
           <h3>Inscription réussie !</h3>
           <p>Rendez-vous sur <a href="http://localhost:8025" target="_blank" class="auth-link">http://localhost:8025</a> pour valider votre email.</p>
-          <button 
-            @click="navigateTo('/login')" 
-            class="auth-button"
-          >
-            Aller à la page de connexion
-          </button>
         </div>
       </div>
 

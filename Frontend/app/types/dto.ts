@@ -177,3 +177,25 @@ export interface ApiResponseDto<T> {
   success: boolean
   message?: string
 }
+
+export interface UserDto {
+  id: number // Changé de string (UUID) à number
+  firstName: string
+  lastName: string
+  email: string
+  roles: string[]
+  emailVerified: boolean
+}
+
+export interface AgentDto {
+  id: number // Changé de string (UUID) à number
+  codeName: string
+  firstName: string
+  lastName: string
+  email: string
+  yearsOfExperience: number
+  status: string
+  enrolementDate: string
+  infiltratedCountry?: CountryDto
+  mentor?: AgentDto
+}
