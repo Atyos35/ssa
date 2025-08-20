@@ -6,13 +6,6 @@
          stopOnFailure="false"
          stopOnError="false">
     <testsuites>
-        <testsuite name="Unit">
-            <directory>tests/Unit</directory>
-        </testsuite>
-        <testsuite name="Integration">
-            <directory>tests/Integration</directory>
-        </testsuite>
-        <!-- Application Test Suite - combine Unit + Integration sans duplication -->
         <testsuite name="Application Test Suite">
             <directory>tests/Unit</directory>
             <directory>tests/Integration</directory>

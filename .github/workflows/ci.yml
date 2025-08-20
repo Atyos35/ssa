@@ -144,8 +144,8 @@ jobs:
         working-directory: Backend
         run: |
           export DATABASE_URL="postgresql://${{ secrets.POSTGRES_USER }}:${{ secrets.POSTGRES_PASSWORD }}@127.0.0.1:5432/${{ secrets.POSTGRES_DB }}?serverVersion=16&charset=utf8"
-          # Utiliser la configuration par défaut qui inclut TOUS les tests
-          ./vendor/bin/phpunit --coverage-text --coverage-clover=coverage.xml
+          # Utiliser explicitement la suite Application Test Suite pour éviter la duplication
+          ./vendor/bin/phpunit --testsuite="Application Test Suite" --coverage-text --coverage-clover=coverage.xml
 
       - name: Check Coverage Threshold
         working-directory: Backend
