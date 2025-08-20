@@ -130,7 +130,7 @@ fi
 # Lancer le serveur Backend
 echo "🚀 Lancement du serveur Backend..."
 cd public
-php -S localhost:8000 &
+php -S 127.0.0.1:8000 &
 BACKEND_PID=$!
 cd ..
 
@@ -160,9 +160,9 @@ echo "🎉 Application SSA installée et lancée avec succès !"
 echo "=================================================="
 echo ""
 echo "🌐 Frontend: http://localhost:3000/registration"
-echo "🔧 Backend API: http://localhost:8000"
-echo "📧 Mailhog: http://localhost:8025"
-echo "🗄️ Base de données: localhost:5432"
+echo "🔧 Backend API: http://127.0.0.1:8000"
+echo "📧 Mailhog: http://127.0.0.1:8025"
+echo "🗄️ Base de données: 127.0.0.1:5432"
 echo ""
 echo "🛑 Pour arrêter l'application:"
 echo "   - Ctrl+C pour arrêter ce script"
