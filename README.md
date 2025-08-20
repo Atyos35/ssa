@@ -5,91 +5,27 @@ Application complète de gestion d'agents secrets avec architecture CQS (Command
 ## 🏗️ Architecture
 
 - **Backend**: Symfony 7 + Architecture CQS + PostgreSQL
-- **Frontend**: Nuxt.js 3 + Vue 3 + Tailwind CSS
+- **Frontend**: Nuxt.js 3 + Vue 3 + Quasar
 - **Tests**: PHPUnit + Tests Unitaires et d'Intégration
 - **Base de données**: PostgreSQL avec Docker
-- **Email**: Mailhog pour le développement
+- **Email**: Mailhog pour l'inscription
 
 ## 🚀 Installation Rapide
 
-### Option 1: Script Automatique (Recommandé)
+Script Automatique
 
-#### Linux/macOS/Windows (Git Bash/WSL)
+#### AVEC GIT BASH
 ```bash
 chmod +x install.sh
 ./install.sh
 ```
-
-#### Windows (PowerShell - Alternative)
-```powershell
-# Installer Git Bash ou WSL pour utiliser le script .sh
-# Ou utiliser les commandes manuelles ci-dessous
-```
-
-### Option 2: Installation Manuelle
-
-#### Prérequis
-- Docker Desktop
-- Node.js 18+
-- PHP 8.2+
-- Composer
-
-#### Étapes
-1. **Cloner le projet**
-   ```bash
-   git clone <repository-url>
-   cd ssa
-   ```
-
-2. **Lancer le script d'installation automatique** (Recommandé)
-   ```bash
-   chmod +x install.sh
-   ./install.sh
-   ```
-   
-   **OU** installation manuelle :
-
-3. **Lancer les services Docker**
-   ```bash
-   cd Backend
-   docker-compose up -d
-   cd ..
-   ```
-
-4. **Configurer le Backend**
-   ```bash
-   cd Backend
-   # Le script install.sh crée automatiquement le .env
-   # Sinon, créez-le manuellement avec les variables ci-dessous
-   composer install
-   php bin/console doctrine:database:create
-   php bin/console doctrine:schema:create
-   php bin/console doctrine:fixtures:load
-   php -S localhost:8000 -t public
-   cd ..
-   ```
-
-5. **Configurer le Frontend**
-   ```bash
-   cd Frontend
-   # Le script install.sh crée automatiquement le .env
-   # Sinon, créez-le manuellement avec les variables ci-dessous
-   npm install
-   npm run dev
-   cd ..
-   ```
 
 ## 🌐 Accès à l'Application
 
 - **Frontend**: http://localhost:3000
 - **Backend API**: http://localhost:8000
 - **Mailhog**: http://localhost:8025
-- **Base de données**: localhost:5432
-
-## 👥 Comptes de Test
-
-- **Agent**: agent@ssa.com / password123
-- **Admin**: admin@ssa.com / password123
+- **Base de données**: postgresql://127.0.0.1:5432/ssa?serverVersion=16&charset=utf8 sur DBeaver par exemple
 
 ## 🔧 Variables d'Environnement
 
@@ -157,12 +93,6 @@ cd Backend
 ./vendor/bin/phpunit --testsuite="Application Test Suite" --coverage-text
 ```
 
-## 📚 Documentation
-
-- **Architecture CQS**: [Backend/ARCHITECTURE_CQS.md](Backend/ARCHITECTURE_CQS.md)
-- **Tests**: [Backend/TESTS_README.md](Backend/TESTS_README.md)
-- **Configuration**: [Backend/config/](Backend/config/)
-
 ## 🏛️ Structure du Projet
 
 ```
@@ -182,35 +112,6 @@ ssa/
 ├── install.sh              # Script d'installation automatique
 └── README.md               # Ce fichier
 ```
-
-## 🔧 Fonctionnalités
-
-### Backend (API)
-- ✅ Architecture CQS (Command Query Separation)
-- ✅ Gestion des agents secrets
-- ✅ Gestion des missions
-- ✅ Système d'authentification JWT
-- ✅ Validation des données
-- ✅ Tests unitaires et d'intégration
-- ✅ Base de données PostgreSQL
-- ✅ Fixtures de données de test
-
-### Frontend
-- ✅ Interface moderne avec Nuxt.js 3
-- ✅ Composants Vue 3 réutilisables
-- ✅ Design responsive avec Tailwind CSS
-- ✅ Gestion d'état avec composables
-- ✅ Intégration API complète
-- ✅ Formulaires validés
-
-## 🚀 Développement
-
-### Ajouter une nouvelle fonctionnalité
-1. Créer la Command/Query dans `Backend/src/Application/`
-2. Créer le Handler correspondant
-3. Ajouter la logique métier dans `Backend/src/Domain/Service/`
-4. Créer les tests unitaires
-5. Ajouter l'interface utilisateur dans `Frontend/`
 
 ### Structure CQS
 - **Commands**: Modifient l'état (CreateAgent, UpdateMission, etc.)

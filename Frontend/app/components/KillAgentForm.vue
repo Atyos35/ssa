@@ -73,7 +73,7 @@ const loadAgents = async () => {
     const response = await agentService.getAgents()
     if (response.success && response.data) {
       // Debug: afficher la structure des données
-      console.log('Structure des agents reçus:', response.data)
+      
       
       // Filtrer les agents qui ne sont pas déjà "Killed in Action"
       availableAgents.value = response.data

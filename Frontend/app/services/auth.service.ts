@@ -139,7 +139,7 @@ class AuthService {
       // Si le refresh réussit, stocker le nouveau token
       if (response.data) {
         localStorage.setItem('auth_token', response.data.token)
-        console.log('Token rafraîchi automatiquement')
+
       }
       
       return {
@@ -175,11 +175,11 @@ class AuthService {
     
     // Démarrer un nouvel intervalle
     this.refreshInterval = setInterval(async () => {
-      console.log('Refresh automatique du token...')
+      
       await this.refreshToken()
     }, this.REFRESH_INTERVAL_MS)
     
-    console.log(`Refresh automatique démarré - intervalle: ${this.REFRESH_INTERVAL_MS / 1000 / 60} minutes`)
+    
   }
 
   // Arrêter le refresh automatique
@@ -187,7 +187,7 @@ class AuthService {
     if (this.refreshInterval) {
       clearInterval(this.refreshInterval)
       this.refreshInterval = null
-      console.log('Refresh automatique arrêté')
+      
     }
   }
 
