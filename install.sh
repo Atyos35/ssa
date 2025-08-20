@@ -136,7 +136,7 @@ cd ..
 
 # Lancer le consommateur de messages asynchrones
 echo "🔄 Lancement du consommateur de messages asynchrones..."
-php bin/console messenger:consume async &
+nohup php bin/console messenger:consume async > /dev/null 2>&1 &
 MESSENGER_PID=$!
 
 # Installer les dépendances Frontend
