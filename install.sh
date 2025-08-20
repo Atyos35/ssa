@@ -141,7 +141,7 @@ MESSENGER_PID=$!
 
 # Installer les dépendances Frontend
 echo "📦 Installation des dépendances Frontend..."
-cd Frontend
+cd ../Frontend
 npm install
 
 # Lancer le serveur Frontend
