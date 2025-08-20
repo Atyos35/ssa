@@ -104,6 +104,7 @@ jobs:
           EOF
 
       - name: Install Composer dependencies
+        working-directory: Backend
         run: composer install --no-interaction --prefer-dist --optimize-autoloader
 
       - name: Wait for PostgreSQL
@@ -114,31 +115,37 @@ jobs:
           done
 
       - name: Create test database
+        working-directory: Backend
         run: |
           export DATABASE_URL="postgresql://${{ secrets.POSTGRES_USER }}:${{ secrets.POSTGRES_PASSWORD }}@127.0.0.1:5432/${{ secrets.POSTGRES_DB }}?serverVersion=16&charset=utf8"
           php bin/console doctrine:database:create --env=test --no-interaction
 
       - name: Create test schema
+        working-directory: Backend
         run: |
           export DATABASE_URL="postgresql://${{ secrets.POSTGRES_USER }}:${{ secrets.POSTGRES_PASSWORD }}@127.0.0.1:5432/${{ secrets.POSTGRES_DB }}?serverVersion=16&charset=utf8"
           php bin/console doctrine:schema:create --env=test --no-interaction
 
       - name: Run Unit Tests (Fast)
+        working-directory: Backend
         run: |
           export DATABASE_URL="postgresql://${{ secrets.POSTGRES_USER }}:${{ secrets.POSTGRES_PASSWORD }}@127.0.0.1:5432/${{ secrets.POSTGRES_DB }}?serverVersion=16&charset=utf8"
           ./vendor/bin/phpunit --testsuite=Unit --coverage-text
 
       - name: Run Integration Tests
+        working-directory: Backend
         run: |
           export DATABASE_URL="postgresql://${{ secrets.POSTGRES_USER }}:${{ secrets.POSTGRES_PASSWORD }}@127.0.0.1:5432/${{ secrets.POSTGRES_DB }}?serverVersion=16&charset=utf8"
           ./vendor/bin/phpunit -c phpunit.integration.xml --coverage-text
 
       - name: Run All Tests with Coverage Report
+        working-directory: Backend
         run: |
           export DATABASE_URL="postgresql://${{ secrets.POSTGRES_USER }}:${{ secrets.POSTGRES_PASSWORD }}@127.0.0.1:5432/${{ secrets.POSTGRES_DB }}?serverVersion=16&charset=utf8"
           ./vendor/bin/phpunit --coverage-text --coverage-clover=coverage.xml
 
       - name: Check Coverage Threshold
+        working-directory: Backend
         run: |
           COVERAGE=$(php -r '
             $xml = simplexml_load_file("coverage.xml");
