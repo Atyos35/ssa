@@ -22,9 +22,9 @@ chmod +x install.sh
 
 ## 🌐 Accès à l'Application
 
-- **Frontend**: http://localhost:3000/registration
-- **Backend API**: http://localhost:8000
-- **Mailhog**: http://localhost:8025
+- **Frontend**: http://127.0.0.1:3000/registration
+- **Backend API**: http://127.0.0.1:8000
+- **Mailhog**: http://127.0.0.1:8025
 - **Base de données**: postgresql://127.0.0.1:5432/ssa?serverVersion=16&charset=utf8 sur DBeaver par exemple
 
 ## 🔧 Variables d'Environnement
