@@ -97,7 +97,8 @@ cd ..
 
 # Attendre que PostgreSQL soit prêt
 echo "⏳ Attente que PostgreSQL soit prêt..."
-until docker exec ssa-database-1 pg_isready -U ssa; do
+# Attendre que le conteneur soit démarré et prêt
+until docker-compose -f Backend/compose.yaml exec -T database pg_isready -U ssa; do
     echo "⏳ PostgreSQL n'est pas encore prêt..."
     sleep 2
 done
