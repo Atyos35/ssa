@@ -18,6 +18,8 @@
         <exclude>
             <!-- Exclure les fichiers sans logique métier -->
             <directory>src/Shared/DataFixtures</directory>
+            <directory>src/Shared/Factory</directory>
+            <directory>src/Shared/Story</directory>
             <file>src/Shared/Kernel.php</file>
             <!-- Exclure les entités simples (getters/setters) -->
             <directory>src/Domain/Entity</directory>
@@ -25,6 +27,8 @@
             <directory>src/Presentation/Controller</directory>
             <directory>src/Security</directory>
             <directory>src/Infrastructure/Persistence/Repository</directory>
+            <!-- Exclure les DTOs (getters/setters) -->
+            <directory>src/Application/Dto</directory>
             <!-- Garder src/Message car on a des tests pour -->
         </exclude>
     </source>

@@ -144,8 +144,8 @@ jobs:
         working-directory: Backend
         run: |
           export DATABASE_URL="postgresql://${{ secrets.POSTGRES_USER }}:${{ secrets.POSTGRES_PASSWORD }}@127.0.0.1:5432/${{ secrets.POSTGRES_DB }}?serverVersion=16&charset=utf8"
-          # Utiliser explicitement la suite Application Test Suite pour éviter la duplication
-          ./vendor/bin/phpunit --testsuite="Application Test Suite" --coverage-text --coverage-clover=coverage.xml
+          # Utiliser explicitement la configuration avec exclusions pour la couverture
+          ./vendor/bin/phpunit -c phpunit.dist.xml --testsuite="Application Test Suite" --coverage-text --coverage-clover=coverage.xml
 
       - name: Check Coverage Threshold
         working-directory: Backend
@@ -164,11 +164,3 @@ jobs:
           else
             echo "✅ Test coverage is above 80% ($COVERAGE%)"
           fi
-
-      - name: Upload coverage to Codecov
-        uses: codecov/codecov-action@v3
-        with:
-          file: Backend/coverage.xml
-          flags: backend-cqs
-          name: Backend CQS Coverage
-          fail_ci_if_error: false 
