@@ -127,15 +127,17 @@ else
     echo "✅ Schéma de base de données existe déjà"
 fi
 
-# Charger les fixtures
-echo "🎭 Chargement des données de test..."
-php bin/console doctrine:fixtures:load --no-interaction
-
 # Lancer le serveur Backend
 echo "🚀 Lancement du serveur Backend..."
-php -S localhost:8000 -t public &
+cd public
+php -S localhost:8000 &
 BACKEND_PID=$!
 cd ..
+
+# Lancer le consommateur de messages asynchrones
+echo "🔄 Lancement du consommateur de messages asynchrones..."
+php bin/console messenger:consume async &
+MESSENGER_PID=$!
 
 # Installer les dépendances Frontend
 echo "📦 Installation des dépendances Frontend..."
@@ -157,18 +159,10 @@ echo ""
 echo "🎉 Application SSA installée et lancée avec succès !"
 echo "=================================================="
 echo ""
-echo "🌐 Frontend: http://localhost:3000"
+echo "🌐 Frontend: http://localhost:3000/registration"
 echo "🔧 Backend API: http://localhost:8000"
 echo "📧 Mailhog: http://localhost:8025"
 echo "🗄️ Base de données: localhost:5432"
-echo ""
-echo "👥 Comptes de test disponibles:"
-echo "   - Agent: agent@ssa.com / password123"
-echo "   - Admin: admin@ssa.com / password123"
-echo ""
-echo "📚 Documentation:"
-echo "   - Architecture CQS: Backend/ARCHITECTURE_CQS.md"
-echo "   - Tests: Backend/TESTS_README.md"
 echo ""
 echo "🛑 Pour arrêter l'application:"
 echo "   - Ctrl+C pour arrêter ce script"
@@ -180,6 +174,7 @@ cleanup() {
     echo ""
     echo "🛑 Arrêt de l'application..."
     kill $BACKEND_PID 2>/dev/null || true
+    kill $MESSENGER_PID 2>/dev/null || true
     kill $FRONTEND_PID 2>/dev/null || true
     cd Backend
     docker-compose down
