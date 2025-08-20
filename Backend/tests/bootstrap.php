@@ -22,6 +22,22 @@ if (getenv('APP_ENV') === 'test') {
     
     // Configuration de test par défaut si pas de base de données
     if (!getenv('DATABASE_URL')) {
-        putenv('DATABASE_URL=postgresql://postgres:password@127.0.0.1:5432/ssa_test?serverVersion=16&charset=utf8');
+        // Utiliser la base de données Docker par défaut
+        putenv('DATABASE_URL=postgresql://ssa:ssa@127.0.0.1:5432/ssa?serverVersion=16&charset=utf8');
+    }
+    
+    // Configuration JWT par défaut pour les tests
+    if (!getenv('JWT_SECRET_KEY')) {
+        putenv('JWT_SECRET_KEY=test_jwt_secret_key_very_long_for_testing');
+    }
+    
+    // Configuration mailer par défaut pour les tests
+    if (!getenv('MAILER_DSN')) {
+        putenv('MAILER_DSN=null://null');
+    }
+    
+    // Configuration messenger par défaut pour les tests
+    if (!getenv('MESSENGER_TRANSPORT_DSN')) {
+        putenv('MESSENGER_TRANSPORT_DSN=in-memory://');
     }
 }

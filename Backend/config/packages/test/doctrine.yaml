@@ -11,9 +11,6 @@ doctrine:
             # Désactiver la validation stricte pour les tests
             PDO::ATTR_ERRMODE: PDO::ERRMODE_EXCEPTION
             
-        # Gestion des erreurs de connexion
-        exception_on_missing_collection: false
-        
         # Configuration de fallback si pas de base de données
         # Les tests d'intégration échoueront mais les tests unitaires fonctionneront
         
@@ -35,6 +32,3 @@ doctrine:
         dql:
             string_functions:
                 # Fonctions personnalisées si nécessaire
-                
-        # Désactiver certaines fonctionnalités en test
-        enable_lazy_ghost_objects: false
