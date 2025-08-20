@@ -1,7 +1,7 @@
 import apiService from './api.service'
 import type { ApiResponseDto } from '~/types/dto'
 
-export class MissionService {
+const missionService = {
   /**
    * Créer une nouvelle mission
    */
@@ -32,7 +32,7 @@ export class MissionService {
         }
       }
     }
-  }
+  },
 
   /**
    * Récupérer toutes les missions avec leurs résultats
@@ -54,7 +54,7 @@ export class MissionService {
         }
       }
     }
-  }
+  },
 
   /**
    * Récupérer toutes les missions
@@ -76,7 +76,7 @@ export class MissionService {
         }
       }
     }
-  }
+  },
 
   /**
    * Récupérer une mission par son ID
@@ -98,7 +98,7 @@ export class MissionService {
         }
       }
     }
-  }
+  },
 
   /**
    * Mettre à jour une mission (mise à jour partielle avec PATCH)
@@ -131,7 +131,7 @@ export class MissionService {
         }
       }
     }
-  }
+  },
 
   /**
    * Supprimer une mission
@@ -155,4 +155,5 @@ export class MissionService {
   }
 }
 
-export const missionService = new MissionService()
+export { missionService }
+export default missionService

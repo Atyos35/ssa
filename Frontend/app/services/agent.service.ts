@@ -2,7 +2,7 @@
 import apiService from './api.service'
 import type { ApiResponseDto } from '~/types/dto'
 
-export class AgentService {
+const agentService = {
   /**
    * Récupérer tous les agents
    */
@@ -23,7 +23,7 @@ export class AgentService {
         }
       }
     }
-  }
+  },
 
   /**
    * Récupérer un agent par son ID
@@ -45,7 +45,7 @@ export class AgentService {
         }
       }
     }
-  }
+  },
 
   /**
    * Créer un nouvel agent
@@ -76,7 +76,7 @@ export class AgentService {
         }
       }
     }
-  }
+  },
 
   /**
    * Mettre à jour un agent
@@ -108,7 +108,7 @@ export class AgentService {
         }
       }
     }
-  }
+  },
 
   /**
    * Mettre à jour le statut d'un agent
@@ -130,7 +130,7 @@ export class AgentService {
         }
       }
     }
-  }
+  },
 
   /**
    * Supprimer un agent
@@ -151,10 +151,10 @@ export class AgentService {
         }
       }
     }
-  }
+  },
 
-  // Méthodes statiques pour la compatibilité avec AgentForm
-  static async getCountriesForSelect(): Promise<ApiResponseDto<any[]>> {
+  // Méthodes pour la compatibilité avec AgentForm
+  async getCountriesForSelect(): Promise<ApiResponseDto<any[]>> {
     try {
       const response = await apiService.get('/api/countries')
       let parsedData
@@ -193,34 +193,7 @@ export class AgentService {
       }
     }
   }
-
-  static async createAgent(agentData: {
-    codeName: string
-    firstName: string
-    lastName: string
-    email: string
-    password: string
-    yearsOfExperience: number
-    infiltratedCountryId: number
-    mentorId?: number
-  }): Promise<ApiResponseDto<any>> {
-    try {
-      const response = await apiService.post('/api/agents', agentData)
-      return {
-        success: true,
-        data: response.data,
-        message: 'Agent créé avec succès'
-      }
-    } catch (error: any) {
-      return {
-        success: false,
-        error: {
-          message: error.response?.data?.message || 'Erreur lors de la création de l\'agent',
-          status: error.response?.status || 500
-        }
-      }
-    }
-  }
 }
 
-export const agentService = new AgentService()
+export { agentService }
+export default agentService

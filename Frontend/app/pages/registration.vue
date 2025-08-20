@@ -148,7 +148,7 @@
 import { ref, reactive } from 'vue'
 import { validateRegistration, type RegistrationForm } from '../schemas/registration.schema'
 import { useAuth } from '../composables/useAuth'
-import type { CreateUserDto } from '~/types'
+import type { CreateUserDto } from '~/types/dto'
 
 // État du formulaire
 const form = reactive<RegistrationForm>({
@@ -237,13 +237,6 @@ const onSubmit = async () => {
     if (apiResult.success && apiResult.data) {
       // Succès
       success.value = true
-    } else if (apiResult.validationErrors) {
-      // Erreurs de validation côté serveur
-      Object.entries(apiResult.validationErrors).forEach(([field, message]) => {
-        if (field in errors) {
-          errors[field as keyof typeof errors] = message
-        }
-      })
     } else {
       // Erreur générale
       errors.general = `Inscription échouée ! ${apiResult.error}`
@@ -255,10 +248,4 @@ const onSubmit = async () => {
     loading.value = false
   }
 }
-
-// Fonction de navigation
-const navigateTo = (path: string) => {
-  window.location.href = path
-}
 </script>
-

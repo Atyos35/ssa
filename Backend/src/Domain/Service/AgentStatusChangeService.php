@@ -17,7 +17,7 @@ class AgentStatusChangeService
     }
 
     /**
-     * Vérifie si le statut d'un agent a changé et prend les actions appropriées
+     * Vérifie si le statut d'un agent a changé pour Killed in Action
      */
     public function handleStatusChange(Agent $agent, ?AgentStatus $previousStatus): void
     {

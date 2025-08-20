@@ -316,60 +316,10 @@ const formatDate = (dateString: string): string => {
   }
 }
 
-const formatDateTime = (dateString: string): string => {
-  if (!dateString) return 'Date inconnue'
-  
-  try {
-    const date = new Date(dateString)
-    return date.toLocaleString('fr-FR', {
-      day: '2-digit',
-      month: '2-digit',
-      year: 'numeric',
-      hour: '2-digit',
-      minute: '2-digit'
-    })
-  } catch {
-    return dateString
-  }
-}
+
 
 // Chargement initial
 onMounted(() => {
   loadAgents()
 })
 </script>
-
-<style scoped>
-.agent-info-form {
-  width: 100%;
-  max-width: 100%;
-}
-
-.agent-details {
-  max-height: 70vh;
-  overflow-y: auto;
-}
-
-.mission-item,
-.message-item {
-  transition: all 0.2s ease;
-  padding: 12px;
-}
-
-.mission-item:hover,
-.message-item:hover {
-  background-color: rgba(0, 0, 0, 0.02);
-}
-
-/* Responsive design */
-@media (max-width: 768px) {
-  .agent-info-form {
-    padding: 0 10px;
-  }
-  
-  .mission-item,
-  .message-item {
-    padding: 8px;
-  }
-}
-</style>

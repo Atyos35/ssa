@@ -4,13 +4,13 @@ import type {
   CreateCountryDto, 
   CreateCountryResponseDto,
   ApiResponseDto 
-} from '~/types'
+} from '~/types/dto'
 
-export class CountryService {
+const countryService = {
   /**
    * Créer un nouveau pays
    */
-  static async createCountry(countryData: CreateCountryDto): Promise<ApiResponseDto<CreateCountryResponseDto>> {
+  async createCountry(countryData: CreateCountryDto): Promise<ApiResponseDto<CreateCountryResponseDto>> {
     try {
       const response = await apiService.post('/api/countries', countryData)
       return {
@@ -28,12 +28,12 @@ export class CountryService {
         }
       }
     }
-  }
+  },
 
   /**
    * Récupérer un pays par son ID
    */
-  static async getCountryById(id: number): Promise<ApiResponseDto<CreateCountryResponseDto>> {
+  async getCountryById(id: number): Promise<ApiResponseDto<CreateCountryResponseDto>> {
     try {
       const response = await apiService.get(`/api/countries/${id}`)
       return {
@@ -50,12 +50,12 @@ export class CountryService {
         }
       }
     }
-  }
+  },
 
   /**
    * Récupérer la liste des pays (pour les listes déroulantes)
    */
-  static async getCountries(): Promise<ApiResponseDto<CreateCountryResponseDto[]>> {
+  async getCountries(): Promise<ApiResponseDto<CreateCountryResponseDto[]>> {
     try {
       // Utiliser un endpoint simple pour éviter les références circulaires
       const response = await apiService.get('/api/countries')
@@ -89,12 +89,12 @@ export class CountryService {
         }
       }
     }
-  }
+  },
 
   /**
    * Récupérer la liste des pays pour les listes déroulantes (sans relations)
    */
-  static async getCountriesForSelect(): Promise<ApiResponseDto<Array<{ label: string; value: number }>>> {
+  async getCountriesForSelect(): Promise<ApiResponseDto<Array<{ label: string; value: number }>>> {
     try {
       console.log('Tentative de récupération des pays via API...')
       
@@ -152,12 +152,12 @@ export class CountryService {
         }
       }
     }
-  }
+  },
 
   /**
    * Mettre à jour un pays
    */
-  static async updateCountry(id: number, countryData: Partial<CreateCountryDto>): Promise<ApiResponseDto<CreateCountryResponseDto>> {
+  async updateCountry(id: number, countryData: Partial<CreateCountryDto>): Promise<ApiResponseDto<CreateCountryResponseDto>> {
     try {
       const response = await apiService.put(`/api/countries/${id}`, countryData)
       return {
@@ -174,12 +174,12 @@ export class CountryService {
         }
       }
     }
-  }
+  },
 
   /**
    * Supprimer un pays
    */
-  static async deleteCountry(id: number): Promise<ApiResponseDto<void>> {
+  async deleteCountry(id: number): Promise<ApiResponseDto<void>> {
     try {
       await apiService.delete(`/api/countries/${id}`)
       return {
@@ -197,3 +197,6 @@ export class CountryService {
     }
   }
 }
+
+export { countryService }
+export default countryService

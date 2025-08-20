@@ -148,7 +148,7 @@ const handleSubmit = async () => {
   try {
     // Validation avec le schéma Zod
     const missionData: MissionClosureFormData = {
-      missionId: form.value.missionId!,
+      missionId: String(form.value.missionId!),
       status: form.value.status as 'Success' | 'Failure',
       summary: form.value.summary
     }
@@ -161,7 +161,7 @@ const handleSubmit = async () => {
     }
 
     // Mettre à jour la mission avec le nouveau statut et summary
-    const response = await missionService.updateMission(missionData.missionId, {
+    const response = await missionService.updateMission(Number(missionData.missionId), {
       status: missionData.status,
       missionResultSummary: missionData.summary
     })
@@ -193,25 +193,3 @@ onMounted(() => {
   loadMissions()
 })
 </script>
-
-<style scoped>
-.mission-closure-form {
-  max-width: 600px;
-  margin: 0 auto;
-}
-
-.form-actions {
-  display: flex;
-  gap: 0.5rem;
-  justify-content: flex-end;
-  margin-top: 1.5rem;
-}
-
-.submit-btn {
-  min-width: 140px;
-}
-
-.cancel-btn {
-  min-width: 100px;
-}
-</style>

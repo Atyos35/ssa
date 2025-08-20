@@ -5,7 +5,7 @@ namespace App\Domain\Service;
 use App\Domain\Entity\Agent;
 use App\Domain\Entity\Mission;
 
-final class MissionValidationService
+class MissionValidationService
 {
     /**
      * Valide qu'un agent peut participer à une mission

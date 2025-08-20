@@ -123,7 +123,7 @@
 <script setup lang="ts">
 import { ref, computed, onMounted } from 'vue'
 import { useNotification } from '~/composables/useNotification'
-import { missionService, CountryService, agentService } from '~/services'
+import { missionService, countryService, agentService } from '~/services'
 import { missionSchema, type MissionFormData } from '~/schemas/mission.schema'
 
 // Props et émissions
@@ -176,7 +176,7 @@ const isFormValid = computed(() => {
 // Charger les pays
 const loadCountries = async () => {
   try {
-    const response = await CountryService.getCountriesForSelect()
+    const response = await countryService.getCountriesForSelect()
     if (response.success && response.data) {
       countries.value = response.data
     }
@@ -303,25 +303,3 @@ onMounted(() => {
   loadAgents()
 })
 </script>
-
-<style scoped>
-.mission-form {
-  max-width: 600px;
-  margin: 0 auto;
-}
-
-.form-actions {
-  display: flex;
-  gap: 0.5rem;
-  justify-content: flex-end;
-  margin-top: 1.5rem;
-}
-
-.submit-btn {
-  min-width: 120px;
-}
-
-.cancel-btn {
-  min-width: 100px;
-}
-</style>

@@ -102,19 +102,9 @@ export interface CreateAgentResponseDto {
 // COMMON DTOs
 // ========================================
 
-export interface BaseResponseDto {
-  success: boolean
-  message: string
-}
-
-export interface ValidationErrorDto {
-  field: string
-  message: string
-}
-
 export interface ApiErrorDto {
   message: string
-  errors?: ValidationErrorDto[]
+  errors?: Record<string, string[]>
   status: number
 }
 
@@ -122,35 +112,11 @@ export interface ApiErrorDto {
 // FORM DTOs
 // ========================================
 
-export interface AgentFormDto {
-  codeName: string
-  firstName: string
-  lastName: string
-  email: string
-  password: string
-  yearsOfExperience: number
-  infiltratedCountryId: number
-}
 
-export interface CountryFormDto {
-  name: string
-}
-
-export interface UserFormDto {
-  firstName: string
-  lastName: string
-  email: string
-  password: string
-}
 
 // ========================================
 // SELECT OPTION DTOs
 // ========================================
-
-export interface SelectOptionDto {
-  label: string
-  value: number | string
-}
 
 export interface CountrySelectOptionDto {
   label: string
@@ -161,11 +127,7 @@ export interface CountrySelectOptionDto {
 // VALIDATION DTOs
 // ========================================
 
-export interface ValidationResultDto<T> {
-  success: boolean
-  data?: T
-  errors?: Record<string, string>
-}
+
 
 // ========================================
 // API RESPONSE DTOs
@@ -196,6 +158,6 @@ export interface AgentDto {
   yearsOfExperience: number
   status: string
   enrolementDate: string
-  infiltratedCountry?: CountryDto
+  infiltratedCountry?: CreateCountryResponseDto
   mentor?: AgentDto
 }

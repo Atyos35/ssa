@@ -16,7 +16,7 @@ class AgentPasswordHashProcessor implements ProcessorInterface
     private UserPasswordHasherInterface $passwordHasher;
     private EmailVerificationService $emailVerificationService;
 
-    // Injection des dépendances Doctrine et du hasher Symfony
+    // Injection de Doctrine et du hasher Symfony
     public function __construct(
         EntityManagerInterface $em, 
         UserPasswordHasherInterface $passwordHasher,

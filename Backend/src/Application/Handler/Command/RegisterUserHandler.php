@@ -7,6 +7,7 @@ use App\Application\Command\RegisterUserCommand;
 use App\Application\Handler\CommandHandlerInterface;
 use App\Domain\Entity\User;
 use App\Domain\Service\EmailVerificationService;
+use App\Infrastructure\Persistence\Repository\UserRepository;
 use Doctrine\ORM\EntityManagerInterface;
 use Symfony\Component\PasswordHasher\Hasher\UserPasswordHasherInterface;
 use Symfony\Component\Validator\Validator\ValidatorInterface;
@@ -18,7 +19,8 @@ class RegisterUserHandler implements CommandHandlerInterface
         private readonly EntityManagerInterface $entityManager,
         private readonly UserPasswordHasherInterface $passwordHasher,
         private readonly ValidatorInterface $validator,
-        private readonly EmailVerificationService $emailService
+        private readonly EmailVerificationService $emailService,
+        private readonly UserRepository $userRepository
     ) {}
 
     public function handle(CommandInterface $command): void
@@ -28,9 +30,7 @@ class RegisterUserHandler implements CommandHandlerInterface
         }
 
         // Vérifier si l'email existe déjà
-        $existingUser = $this->entityManager->getRepository(User::class)->findOneBy([
-            'email' => $command->email
-        ]);
+        $existingUser = $this->userRepository->findByEmail($command->email);
         
         if ($existingUser) {
             throw new \DomainException('Un utilisateur avec cet email existe déjà');

@@ -62,7 +62,7 @@
 </template>
 
 <script setup lang="ts">
-import { ref, reactive, computed } from 'vue'
+import { reactive, computed } from 'vue'
 import { useAuth } from '~/composables/useAuth'
 
 // Utiliser le composable d'authentification

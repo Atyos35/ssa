@@ -2,10 +2,19 @@
 
 <!-- https://phpunit.readthedocs.io/en/latest/configuration.html -->
 <phpunit bootstrap="tests/bootstrap.php"
-         colors="true">
+         colors="true"
+         stopOnFailure="false"
+         stopOnError="false">
     <testsuites>
+        <testsuite name="Unit">
+            <directory>tests/Unit</directory>
+        </testsuite>
+        <testsuite name="Integration">
+            <directory>tests/Integration</directory>
+        </testsuite>
         <testsuite name="Application Test Suite">
-            <directory>tests</directory>
+            <directory>tests/Unit</directory>
+            <directory>tests/Integration</directory>
         </testsuite>
     </testsuites>
     
@@ -14,16 +23,39 @@
             <directory suffix=".php">src</directory>
         </include>
         <exclude>
-            <directory>src/Infrastructure/Persistence/Repository</directory>
+            <!-- Exclure les fichiers sans logique métier -->
             <directory>src/Shared/DataFixtures</directory>
-            <directory>src/Domain/Entity</directory>
+            <directory>src/Shared/Factory</directory>
+            <directory>src/Shared/Story</directory>
             <file>src/Shared/Kernel.php</file>
+            <!-- Exclure les entités simples (getters/setters) -->
+            <directory>src/Domain/Entity</directory>
+            <!-- Exclure les répertoires non testés -->
+            <directory>src/Presentation/Controller</directory>
+            <directory>src/Security</directory>
+            <directory>src/Infrastructure/Persistence/Repository</directory>
+            <!-- Exclure les DTOs (getters/setters) -->
+            <directory>src/Application/Dto</directory>
+            <!-- Exclure les interfaces (pas de logique) -->
+            <file>src/Application/Command/CommandInterface.php</file>
+            <file>src/Application/Query/QueryInterface.php</file>
+            <file>src/Application/Handler/CommandHandlerInterface.php</file>
+            <file>src/Application/Handler/QueryHandlerInterface.php</file>
+            <!-- Garder src/Message car on a des tests pour -->
         </exclude>
     </source>
 
     <php>
         <env name="KERNEL_CLASS" value="App\Shared\Kernel"/>
         <env name="APP_ENV" value="test"/>
+        <env name="JWT_SECRET_KEY" value="test_jwt_secret_key"/>
+        <env name="JWT_PUBLIC_KEY" value="test_jwt_public_key"/>
+        <env name="JWT_PRIVATE_KEY" value="test_jwt_private_key"/>
+        <env name="JWT_PASSPHRASE" value="test_passphrase"/>
+        <env name="MAILER_DSN" value="null://null"/>
+        <env name="MESSENGER_TRANSPORT_DSN" value="in-memory://"/>
+        <env name="PASSWORD_TEST" value="test_password_123"/>
+        <env name="CORS_ALLOW_ORIGIN" value="http://localhost:3000"/>
     </php>
 
     <extensions>

@@ -10,14 +10,3 @@
     </q-toolbar>
   </q-header>
 </template>
-
-<script setup lang="ts">
-// Pas besoin d'imports, les composants Quasar sont globaux
-</script>
-
-<style scoped>
-.q-toolbar-title {
-  font-size: 1.2rem;
-  font-weight: 600;
-}
-</style>

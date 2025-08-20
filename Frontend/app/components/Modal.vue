@@ -59,13 +59,3 @@ const modalWidth = computed(() => {
   }
 })
 </script>
-
-<style scoped>
-.modal-card {
-  min-width: 400px;
-  max-width: 95vw;
-  max-height: 90vh;
-  overflow-y: auto;
-}
-</style>
-
