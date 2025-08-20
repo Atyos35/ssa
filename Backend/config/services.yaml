@@ -1,5 +1,5 @@
 # This file is the entry point to configure your own services.
-# Files in the packages/ subdirectory configure your dependencies.
+# Files in the packages/ directory configure your dependencies.
 
 # Put parameters here that don't need to change on each machine where the app is deployed
 # https://symfony.com/doc/current/best_practices.html#use-parameters-for-application-configuration
@@ -17,11 +17,27 @@ services:
         resource: '../src/'
         exclude:
             - '../src/DependencyInjection/'
-            - '../src/Domain/Entity/'
-            - '../src/Shared/Kernel.php'
+            - '../src/Entity/'
+            - '../src/Kernel.php'
 
     # add more service definitions when explicit configuration is needed
     # please note that last definitions always *replace* previous ones
+
+    # Repositories personnalisés
+    App\Infrastructure\Persistence\Repository\AgentRepository:
+        tags: ['doctrine.repository_service']
+
+    App\Infrastructure\Persistence\Repository\MissionRepository:
+        tags: ['doctrine.repository_service']
+
+    App\Infrastructure\Persistence\Repository\CountryRepository:
+        tags: ['doctrine.repository_service']
+
+    App\Infrastructure\Persistence\Repository\UserRepository:
+        tags: ['doctrine.repository_service']
+
+    App\Infrastructure\Persistence\Repository\MessageRepository:
+        tags: ['doctrine.repository_service']
 
     App\Application\Security\Processor\AgentPasswordHashProcessor:
         arguments:

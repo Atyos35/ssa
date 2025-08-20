@@ -7,6 +7,8 @@ use App\Application\Command\CreateAgentCommand;
 use App\Application\Handler\CommandHandlerInterface;
 use App\Domain\Entity\Agent;
 use App\Domain\Entity\Country;
+use App\Infrastructure\Persistence\Repository\CountryRepository;
+use App\Infrastructure\Persistence\Repository\AgentRepository;
 use Doctrine\ORM\EntityManagerInterface;
 use Symfony\Component\PasswordHasher\Hasher\UserPasswordHasherInterface;
 
@@ -14,7 +16,9 @@ class CreateAgentHandler implements CommandHandlerInterface
 {
     public function __construct(
         private readonly EntityManagerInterface $entityManager,
-        private readonly UserPasswordHasherInterface $passwordHasher
+        private readonly UserPasswordHasherInterface $passwordHasher,
+        private readonly CountryRepository $countryRepository,
+        private readonly AgentRepository $agentRepository
     ) {}
 
     public function handle(CommandInterface $command): void
@@ -41,7 +45,7 @@ class CreateAgentHandler implements CommandHandlerInterface
 
         // Définir le pays d'infiltration si fourni
         if ($command->infiltratedCountryId !== null) {
-            $country = $this->entityManager->getRepository(Country::class)->find($command->infiltratedCountryId);
+            $country = $this->countryRepository->find($command->infiltratedCountryId);
             if (!$country) {
                 throw new \DomainException('Country not found');
             }
@@ -50,7 +54,7 @@ class CreateAgentHandler implements CommandHandlerInterface
 
         // Définir le mentor si fourni
         if ($command->mentorId !== null) {
-            $mentor = $this->entityManager->getRepository(Agent::class)->find($command->mentorId);
+            $mentor = $this->agentRepository->find($command->mentorId);
             if (!$mentor) {
                 throw new \DomainException('Mentor not found');
             }

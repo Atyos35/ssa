@@ -6,12 +6,14 @@ use App\Domain\Entity\Country;
 use App\Domain\Entity\Mission;
 use App\Domain\Entity\MissionStatus;
 use App\Domain\Entity\DangerLevel;
+use App\Infrastructure\Persistence\Repository\MissionRepository;
 use Doctrine\ORM\EntityManagerInterface;
 
-final class CountryDangerLevelService
+class CountryDangerLevelService
 {
     public function __construct(
-        private EntityManagerInterface $entityManager
+        private EntityManagerInterface $entityManager,
+        private MissionRepository $missionRepository
     ) {
     }
 
@@ -32,23 +34,21 @@ final class CountryDangerLevelService
      */
     private function getHighestDangerLevelFromActiveMissions(Country $country): DangerLevel
     {
-        $activeMissions = $this->entityManager->getRepository(Mission::class)
-            ->createQueryBuilder('m')
-            ->where('m.country = :country')
-            ->andWhere('m.status = :status')
-            ->setParameter('country', $country)
-            ->setParameter('status', MissionStatus::InProgress)
-            ->getQuery()
-            ->getResult();
+        $activeMissions = $this->missionRepository->findByCountry($country->getId());
+        
+        // Filtrer seulement les missions en cours
+        $inProgressMissions = array_filter($activeMissions, function($mission) {
+            return $mission->getStatus() === MissionStatus::InProgress;
+        });
 
         //si pas de mission, danger à Low
-        if (empty($activeMissions)) {
+        if (empty($inProgressMissions)) {
             return DangerLevel::Low;
         }
 
         $highestLevel = DangerLevel::Low;
         
-        foreach ($activeMissions as $mission) {
+        foreach ($inProgressMissions as $mission) {
             $missionDanger = $mission->getDanger();
             if ($this->isDangerLevelHigher($missionDanger, $highestLevel)) {
                 $highestLevel = $missionDanger;

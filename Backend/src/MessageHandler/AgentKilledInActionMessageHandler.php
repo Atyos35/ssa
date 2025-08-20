@@ -5,6 +5,8 @@ namespace App\MessageHandler;
 use App\Domain\Entity\Agent;
 use App\Domain\Entity\Message;
 use App\Message\AgentKilledInActionMessage;
+use App\Infrastructure\Persistence\Repository\AgentRepository;
+use App\Infrastructure\Persistence\Repository\MessageRepository;
 use Doctrine\ORM\EntityManagerInterface;
 use Symfony\Component\Messenger\Attribute\AsMessageHandler;
 
@@ -12,7 +14,9 @@ use Symfony\Component\Messenger\Attribute\AsMessageHandler;
 final class AgentKilledInActionMessageHandler
 {
     public function __construct(
-        private readonly EntityManagerInterface $entityManager
+        private readonly EntityManagerInterface $entityManager,
+        private readonly AgentRepository $agentRepository,
+        private readonly MessageRepository $messageRepository
     ) {
     }
 
@@ -21,7 +25,7 @@ final class AgentKilledInActionMessageHandler
         $killedAgent = $message->getKilledAgent();
         
         // Récupérer l'agent tué depuis la bdd
-        $killedAgentFromDb = $this->entityManager->getRepository(Agent::class)->find($killedAgent->getId());
+        $killedAgentFromDb = $this->agentRepository->find($killedAgent->getId());
         if (!$killedAgentFromDb) {
             throw new \RuntimeException('Agent not found in database');
         }
@@ -30,7 +34,7 @@ final class AgentKilledInActionMessageHandler
         $this->deleteAgentMessages($killedAgentFromDb);
         
         // Récupérer tous les agents (sauf celui qui vient d'être tué)
-        $allAgents = $this->entityManager->getRepository(Agent::class)->findAll();
+        $allAgents = $this->agentRepository->findAll();
         
         foreach ($allAgents as $agent) {
             // Ne pas envoyer de message à l'agent tué
@@ -63,16 +67,7 @@ final class AgentKilledInActionMessageHandler
      */
     private function deleteAgentMessages(Agent $agent): void
     {
-        // Supprimer les messages reçus par l'agent (destinataire)
-        $receivedMessages = $this->entityManager->getRepository(Message::class)->findBy(['recipient' => $agent]);
-        foreach ($receivedMessages as $message) {
-            $this->entityManager->remove($message);
-        }
-        
-        // Supprimer les messages envoyés par l'agent (expéditeur)
-        $sentMessages = $this->entityManager->getRepository(Message::class)->findBy(['by' => $agent]);
-        foreach ($sentMessages as $message) {
-            $this->entityManager->remove($message);
-        }
+        // Utiliser le repository pour supprimer tous les messages de l'agent
+        $this->messageRepository->deleteAllByAgent($agent);
     }
 } 

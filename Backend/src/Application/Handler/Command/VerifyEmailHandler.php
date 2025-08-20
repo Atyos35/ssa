@@ -6,12 +6,14 @@ use App\Application\Command\CommandInterface;
 use App\Application\Command\VerifyEmailCommand;
 use App\Application\Handler\CommandHandlerInterface;
 use App\Domain\Entity\User;
+use App\Infrastructure\Persistence\Repository\UserRepository;
 use Doctrine\ORM\EntityManagerInterface;
 
 class VerifyEmailHandler implements CommandHandlerInterface
 {
     public function __construct(
-        private readonly EntityManagerInterface $entityManager
+        private readonly EntityManagerInterface $entityManager,
+        private readonly UserRepository $userRepository
     ) {}
 
     public function handle(CommandInterface $command): void
@@ -20,9 +22,7 @@ class VerifyEmailHandler implements CommandHandlerInterface
             throw new \InvalidArgumentException('Expected VerifyEmailCommand');
         }
 
-        $user = $this->entityManager->getRepository(User::class)->findOneBy([
-            'emailVerificationToken' => $command->token
-        ]);
+        $user = $this->userRepository->findByVerificationToken($command->token);
 
         if (!$user) {
             throw new \DomainException('Token invalide');

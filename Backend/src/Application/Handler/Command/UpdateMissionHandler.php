@@ -11,13 +11,19 @@ use App\Domain\Entity\Mission;
 use App\Domain\Entity\MissionResult;
 use App\Domain\Entity\MissionStatus;
 use App\Domain\Service\MissionValidationService;
+use App\Infrastructure\Persistence\Repository\MissionRepository;
+use App\Infrastructure\Persistence\Repository\CountryRepository;
+use App\Infrastructure\Persistence\Repository\AgentRepository;
 use Doctrine\ORM\EntityManagerInterface;
 
 class UpdateMissionHandler implements CommandHandlerInterface
 {
     public function __construct(
         private readonly EntityManagerInterface $entityManager,
-        private readonly MissionValidationService $missionValidationService
+        private readonly MissionValidationService $missionValidationService,
+        private readonly MissionRepository $missionRepository,
+        private readonly CountryRepository $countryRepository,
+        private readonly AgentRepository $agentRepository
     ) {}
 
     public function handle(CommandInterface $command): void
@@ -27,7 +33,7 @@ class UpdateMissionHandler implements CommandHandlerInterface
         }
 
         // Récupérer la mission
-        $mission = $this->entityManager->getRepository(Mission::class)->find($command->missionId);
+        $mission = $this->missionRepository->find($command->missionId);
         if (!$mission) {
             throw new \DomainException('Mission not found');
         }
@@ -54,7 +60,7 @@ class UpdateMissionHandler implements CommandHandlerInterface
 
         // Mettre à jour le pays si nécessaire
         if ($command->countryId !== null) {
-            $country = $this->entityManager->getRepository(Country::class)->find($command->countryId);
+            $country = $this->countryRepository->find($command->countryId);
             if (!$country) {
                 throw new \DomainException('Country not found');
             }
@@ -68,7 +74,7 @@ class UpdateMissionHandler implements CommandHandlerInterface
             
             // Ajouter les nouveaux agents
             foreach ($command->agentIds as $agentId) {
-                $agent = $this->entityManager->getRepository(Agent::class)->find($agentId);
+                $agent = $this->agentRepository->find($agentId);
                 if (!$agent) {
                     throw new \DomainException("Agent with id $agentId not found");
                 }

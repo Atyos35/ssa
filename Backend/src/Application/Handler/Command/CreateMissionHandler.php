@@ -10,6 +10,8 @@ use App\Domain\Entity\Country;
 use App\Domain\Entity\Mission;
 use App\Domain\Service\MissionCreationService;
 use App\Domain\Service\MissionValidationService;
+use App\Infrastructure\Persistence\Repository\CountryRepository;
+use App\Infrastructure\Persistence\Repository\AgentRepository;
 use Doctrine\ORM\EntityManagerInterface;
 
 class CreateMissionHandler implements CommandHandlerInterface
@@ -17,7 +19,9 @@ class CreateMissionHandler implements CommandHandlerInterface
     public function __construct(
         private readonly EntityManagerInterface $entityManager,
         private readonly MissionCreationService $missionCreationService,
-        private readonly MissionValidationService $missionValidationService
+        private readonly MissionValidationService $missionValidationService,
+        private readonly CountryRepository $countryRepository,
+        private readonly AgentRepository $agentRepository
     ) {}
 
     public function handle(CommandInterface $command): void
@@ -27,7 +31,7 @@ class CreateMissionHandler implements CommandHandlerInterface
         }
 
         // Récupérer le pays
-        $country = $this->entityManager->getRepository(Country::class)->find($command->countryId);
+        $country = $this->countryRepository->find($command->countryId);
         if (!$country) {
             throw new \DomainException('Country not found');
         }
@@ -45,7 +49,7 @@ class CreateMissionHandler implements CommandHandlerInterface
 
         // Ajouter les agents
         foreach ($command->agentIds as $agentId) {
-            $agent = $this->entityManager->getRepository(Agent::class)->find($agentId);
+            $agent = $this->agentRepository->find($agentId);
             if (!$agent) {
                 throw new \DomainException("Agent with id $agentId not found");
             }

@@ -7,7 +7,7 @@ use App\Message\MissionCreatedMessage;
 use Doctrine\ORM\EntityManagerInterface;
 use Symfony\Component\Messenger\MessageBusInterface;
 
-final class MissionCreationService
+class MissionCreationService
 {
     public function __construct(
         private readonly EntityManagerInterface $entityManager,

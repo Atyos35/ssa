@@ -7,13 +7,15 @@ use App\Application\Command\UpdateAgentStatusCommand;
 use App\Application\Handler\CommandHandlerInterface;
 use App\Domain\Entity\Agent;
 use App\Domain\Service\AgentStatusChangeService;
+use App\Infrastructure\Persistence\Repository\AgentRepository;
 use Doctrine\ORM\EntityManagerInterface;
 
 class UpdateAgentStatusHandler implements CommandHandlerInterface
 {
     public function __construct(
         private readonly EntityManagerInterface $entityManager,
-        private readonly AgentStatusChangeService $statusChangeService
+        private readonly AgentStatusChangeService $statusChangeService,
+        private readonly AgentRepository $agentRepository
     ) {}
 
     public function handle(CommandInterface $command): void
@@ -23,7 +25,7 @@ class UpdateAgentStatusHandler implements CommandHandlerInterface
         }
 
         // Récupérer l'agent
-        $agent = $this->entityManager->getRepository(Agent::class)->find($command->agentId);
+        $agent = $this->agentRepository->find($command->agentId);
         if (!$agent) {
             throw new \DomainException('Agent not found');
         }

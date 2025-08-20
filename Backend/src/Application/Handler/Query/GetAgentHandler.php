@@ -7,12 +7,12 @@ use App\Application\Handler\QueryHandlerInterface;
 use App\Application\Query\GetAgentQuery;
 use App\Application\Query\QueryInterface;
 use App\Domain\Entity\Agent;
-use Doctrine\ORM\EntityManagerInterface;
+use App\Infrastructure\Persistence\Repository\AgentRepository;
 
 class GetAgentHandler implements QueryHandlerInterface
 {
     public function __construct(
-        private readonly EntityManagerInterface $entityManager
+        private readonly AgentRepository $agentRepository
     ) {}
 
     public function handle(QueryInterface $query): AgentDetailDto
@@ -21,17 +21,7 @@ class GetAgentHandler implements QueryHandlerInterface
             throw new \InvalidArgumentException('Expected GetAgentQuery');
         }
 
-        $qb = $this->entityManager->createQueryBuilder();
-        $qb->select('a')
-           ->from(Agent::class, 'a')
-           ->leftJoin('a.infiltratedCountry', 'c')
-           ->leftJoin('a.mentor', 'm')
-           ->leftJoin('a.missions', 'missions')
-           ->leftJoin('a.messages', 'messages')
-           ->where('a.id = :agentId')
-           ->setParameter('agentId', $query->agentId);
-
-        $agent = $qb->getQuery()->getOneOrNullResult();
+        $agent = $this->agentRepository->findWithDetails($query->agentId);
         
         if (!$agent) {
             throw new \DomainException('Agent not found');

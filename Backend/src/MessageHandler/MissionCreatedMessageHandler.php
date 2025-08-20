@@ -5,6 +5,8 @@ namespace App\MessageHandler;
 use App\Domain\Entity\Agent;
 use App\Domain\Entity\Message;
 use App\Message\MissionCreatedMessage;
+use App\Infrastructure\Persistence\Repository\AgentRepository;
+use App\Infrastructure\Persistence\Repository\MissionRepository;
 use Doctrine\ORM\EntityManagerInterface;
 use Symfony\Component\Messenger\Attribute\AsMessageHandler;
 
@@ -12,7 +14,9 @@ use Symfony\Component\Messenger\Attribute\AsMessageHandler;
 final class MissionCreatedMessageHandler
 {
     public function __construct(
-        private readonly EntityManagerInterface $entityManager
+        private readonly EntityManagerInterface $entityManager,
+        private readonly AgentRepository $agentRepository,
+        private readonly MissionRepository $missionRepository
     ) {
     }
 
@@ -21,7 +25,7 @@ final class MissionCreatedMessageHandler
         $mission = $message->getMission();
         
         // Récupérer la mission depuis la base de données pour le contexte de persistance
-        $missionFromDb = $this->entityManager->getRepository(\App\Domain\Entity\Mission::class)->find($mission->getId());
+        $missionFromDb = $this->missionRepository->find($mission->getId());
         if (!$missionFromDb) {
             throw new \RuntimeException('Mission not found in database');
         }
@@ -34,9 +38,7 @@ final class MissionCreatedMessageHandler
         }
         
         // Récupérer tous les agents infiltrés dans ce pays
-        $agentsInCountry = $this->entityManager->getRepository(Agent::class)->findBy([
-            'infiltratedCountry' => $country
-        ]);
+        $agentsInCountry = $this->agentRepository->findByCountry($country->getId());
         
         // Récupérer les IDs des agents qui participent à la mission
         $participatingAgentIds = [];
