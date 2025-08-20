@@ -1,0 +1,20 @@
+framework:
+    test: true
+    session:
+        storage_factory_id: session.storage.factory.mock_file
+    mailer:
+        url: 'null://null'
+    messenger:
+        transports:
+            async: 'in-memory://'
+            failed: 'in-memory://'
+            sync: 'in-memory://'
+            
+    # Configuration pour les tests
+    profiler:
+        collect: false
+        
+    # Désactiver certaines fonctionnalités en test
+    cache:
+        app: cache.adapter.array
+        system: cache.adapter.array

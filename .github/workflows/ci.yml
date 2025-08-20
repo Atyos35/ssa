@@ -1,13 +1,24 @@
-name: Run PHPUnit Tests with Coverage
+name: Backend CQS Tests
 
 on:
   pull_request:
     branches:
       - main
+    paths:
+      - 'Backend/**'
+  push:
+    branches:
+      - main
+    paths:
+      - 'Backend/**'
 
 jobs:
   test:
     runs-on: ubuntu-latest
+    strategy:
+      matrix:
+        php-version: [8.3.19]
+        dependency-version: [prefer-stable]
 
     services:
       postgres:
@@ -46,16 +57,16 @@ jobs:
       - name: Setup PHP
         uses: shivammathur/setup-php@v2
         with:
-          php-version: 8.3.19
+          php-version: ${{ matrix.php-version }}
           extensions: mbstring, pdo, pdo_pgsql, apcu, intl, opcache, zip
           coverage: xdebug
+          tools: composer:v2
 
       - name: Change to Backend directory
         run: cd Backend
 
       - name: Create .env
         run: |
-          cd Backend
           cat <<EOF > .env
           APP_ENV=dev
           APP_SECRET=${{ secrets.APP_SECRET }}
@@ -73,14 +84,8 @@ jobs:
           DATABASE_URL=postgresql://${POSTGRES_USER}:${POSTGRES_PASSWORD}@127.0.0.1:5432/${POSTGRES_DB}?serverVersion=16&charset=utf8
           EOF
 
-      - name: Install Composer dependencies
-        run: |
-          cd Backend
-          composer install --no-interaction --prefer-dist
-
       - name: Create .env.test
         run: |
-          cd Backend
           cat <<EOF > .env.test
           APP_ENV=test
           APP_SECRET=${{ secrets.APP_SECRET }}
@@ -98,6 +103,9 @@ jobs:
           DATABASE_URL=postgresql://${POSTGRES_USER}:${POSTGRES_PASSWORD}@127.0.0.1:5432/${POSTGRES_DB}?serverVersion=16&charset=utf8
           EOF
 
+      - name: Install Composer dependencies
+        run: composer install --no-interaction --prefer-dist --optimize-autoloader
+
       - name: Wait for PostgreSQL
         run: |
           until pg_isready -h 127.0.0.1 -p 5432 -U ${{ secrets.POSTGRES_USER }}; do
@@ -107,24 +115,31 @@ jobs:
 
       - name: Create test database
         run: |
-          cd Backend
           export DATABASE_URL="postgresql://${{ secrets.POSTGRES_USER }}:${{ secrets.POSTGRES_PASSWORD }}@127.0.0.1:5432/${{ secrets.POSTGRES_DB }}?serverVersion=16&charset=utf8"
           php bin/console doctrine:database:create --env=test --no-interaction
 
       - name: Create test schema
         run: |
-          cd Backend
           export DATABASE_URL="postgresql://${{ secrets.POSTGRES_USER }}:${{ secrets.POSTGRES_PASSWORD }}@127.0.0.1:5432/${{ secrets.POSTGRES_DB }}?serverVersion=16&charset=utf8"
           php bin/console doctrine:schema:create --env=test --no-interaction
 
-      - name: Run PHPUnit with coverage
+      - name: Run Unit Tests (Fast)
         run: |
-          cd Backend
+          export DATABASE_URL="postgresql://${{ secrets.POSTGRES_USER }}:${{ secrets.POSTGRES_PASSWORD }}@127.0.0.1:5432/${{ secrets.POSTGRES_DB }}?serverVersion=16&charset=utf8"
+          ./vendor/bin/phpunit --testsuite=Unit --coverage-text
+
+      - name: Run Integration Tests
+        run: |
+          export DATABASE_URL="postgresql://${{ secrets.POSTGRES_USER }}:${{ secrets.POSTGRES_PASSWORD }}@127.0.0.1:5432/${{ secrets.POSTGRES_DB }}?serverVersion=16&charset=utf8"
+          ./vendor/bin/phpunit -c phpunit.integration.xml --coverage-text
+
+      - name: Run All Tests with Coverage Report
+        run: |
+          export DATABASE_URL="postgresql://${{ secrets.POSTGRES_USER }}:${{ secrets.POSTGRES_PASSWORD }}@127.0.0.1:5432/${{ secrets.POSTGRES_DB }}?serverVersion=16&charset=utf8"
           ./vendor/bin/phpunit --coverage-text --coverage-clover=coverage.xml
 
-      - name: Check coverage threshold
+      - name: Check Coverage Threshold
         run: |
-          cd Backend
           COVERAGE=$(php -r '
             $xml = simplexml_load_file("coverage.xml");
             $metrics = $xml->project->metrics;
@@ -132,8 +147,18 @@ jobs:
             $total = (int)$metrics["statements"];
             echo round(($covered / $total) * 100, 2);
           ')
-          echo "Coverage: $COVERAGE%"
-          if (( $(echo "$COVERAGE < 20" | bc -l) )); then
-            echo "Test coverage is below 80% ($COVERAGE%)"
+          echo "Test Coverage: $COVERAGE%"
+          if (( $(echo "$COVERAGE < 80" | bc -l) )); then
+            echo "❌ Test coverage is below 80% ($COVERAGE%)"
             exit 1
-          fi 
+          else
+            echo "✅ Test coverage is above 80% ($COVERAGE%)"
+          fi
+
+      - name: Upload coverage to Codecov
+        uses: codecov/codecov-action@v3
+        with:
+          file: Backend/coverage.xml
+          flags: backend-cqs
+          name: Backend CQS Coverage
+          fail_ci_if_error: false 
