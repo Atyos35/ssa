@@ -23,16 +23,16 @@
             <directory suffix=".php">src</directory>
         </include>
         <exclude>
-            <!-- Exclure seulement les fichiers sans logique métier -->
+            <!-- Exclure les fichiers sans logique métier -->
             <directory>src/Shared/DataFixtures</directory>
             <file>src/Shared/Kernel.php</file>
             <!-- Exclure les entités simples (getters/setters) -->
             <directory>src/Domain/Entity</directory>
-            <!-- Exclure les fichiers non testés pour une couverture réaliste -->
+            <!-- Exclure les répertoires non testés -->
             <directory>src/Presentation/Controller</directory>
             <directory>src/Security</directory>
-            <directory>src/Message</directory>
             <directory>src/Infrastructure/Persistence/Repository</directory>
+            <!-- Garder src/Message car on a des tests pour -->
         </exclude>
     </source>
 
