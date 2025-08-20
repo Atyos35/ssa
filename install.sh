@@ -110,9 +110,22 @@ cd Backend
 composer install --no-interaction --prefer-dist --optimize-autoloader
 
 # Créer la base de données et le schéma
-echo "🗄️ Création de la base de données..."
-php bin/console doctrine:database:create --no-interaction
-php bin/console doctrine:schema:create --no-interaction
+echo "🗄️ Vérification et création de la base de données..."
+# Vérifier si la base de données existe déjà
+if php bin/console doctrine:query:sql "SELECT 1" --no-interaction 2>/dev/null; then
+    echo "✅ Base de données 'ssa' existe déjà"
+else
+    echo "📝 Création de la base de données 'ssa'..."
+    php bin/console doctrine:database:create --no-interaction
+fi
+
+# Vérifier si le schéma existe déjà
+if php bin/console doctrine:query:sql "SELECT COUNT(*) FROM information_schema.tables WHERE table_schema = 'public'" --no-interaction 2>/dev/null | grep -q "0"; then
+    echo "📝 Création du schéma de base de données..."
+    php bin/console doctrine:schema:create --no-interaction
+else
+    echo "✅ Schéma de base de données existe déjà"
+fi
 
 # Charger les fixtures
 echo "🎭 Chargement des données de test..."
