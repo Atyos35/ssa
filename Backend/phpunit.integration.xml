@@ -16,10 +16,12 @@
             <directory suffix=".php">src</directory>
         </include>
         <exclude>
-            <directory>src/Infrastructure/Persistence/Repository</directory>
+            <!-- Exclure seulement les fichiers sans logique métier -->
             <directory>src/Shared/DataFixtures</directory>
-            <directory>src/Domain/Entity</directory>
             <file>src/Shared/Kernel.php</file>
+            <!-- Exclure les entités simples (getters/setters) -->
+            <directory>src/Domain/Entity</directory>
+            <!-- Garder les repositories pour la couverture d'intégration -->
         </exclude>
     </source>
 
