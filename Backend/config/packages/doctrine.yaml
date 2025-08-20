@@ -30,12 +30,6 @@ doctrine:
 when@test:
     doctrine:
         dbal:
-            # Configuration spécifique aux tests
-            driver: pdo_pgsql
-            server_version: '16'
-            charset: utf8
-            options:
-                PDO::ATTR_ERRMODE: PDO::ERRMODE_EXCEPTION
             # "TEST_TOKEN" is typically set by ParaTest
             dbname_suffix: '_test%env(default::TEST_TOKEN)%'
 
