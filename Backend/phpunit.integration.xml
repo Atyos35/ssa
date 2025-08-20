@@ -29,7 +29,12 @@
             <directory>src/Infrastructure/Persistence/Repository</directory>
             <!-- Exclure les DTOs (getters/setters) -->
             <directory>src/Application/Dto</directory>
-            <!-- Garder src/Message car on a des tests pour -->
+            <!-- Exclure les interfaces (pas de logique) -->
+            <file>src/Application/Command/CommandInterface.php</file>
+            <file>src/Application/Query/QueryInterface.php</file>
+            <file>src/Application/Handler/CommandHandlerInterface.php</file>
+            <file>src/Application/Handler/QueryHandlerInterface.php</file>
+            <!-- Garder src/Message car on a testés -->
         </exclude>
     </source>
 
