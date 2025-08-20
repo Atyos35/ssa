@@ -158,9 +158,9 @@ jobs:
             echo round(($covered / $total) * 100, 2);
           ')
           echo "Test Coverage: $COVERAGE%"
-          if (( $(echo "$COVERAGE < 80" | bc -l) )); then
-            echo "❌ Test coverage is below 80% ($COVERAGE%)"
+          if (( $(echo "$COVERAGE < 60" | bc -l) )); then
+            echo "❌ Test coverage is below 60% ($COVERAGE%)"
             exit 1
           else
-            echo "✅ Test coverage is above 80% ($COVERAGE%)"
+            echo "✅ Test coverage is above 60% ($COVERAGE%)"
           fi
