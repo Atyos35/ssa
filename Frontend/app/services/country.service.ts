@@ -96,16 +96,16 @@ const countryService = {
    */
   async getCountriesForSelect(): Promise<ApiResponseDto<Array<{ label: string; value: number }>>> {
     try {
-      console.log('Tentative de récupération des pays via API...')
+  
       
       // Utiliser l'endpoint standard maintenant que la référence circulaire est corrigée
       const response = await apiService.get('/api/countries')
-      console.log('Réponse API reçue:', response)
+      
       
       let parsedData
       try {
         parsedData = typeof response.data === 'string' ? JSON.parse(response.data) : response.data
-        console.log('Données parsées:', parsedData)
+
       } catch (e) {
         console.error('Erreur parsing JSON:', e)
         return {
@@ -119,7 +119,7 @@ const countryService = {
       
       // Extraire seulement les données essentielles
       const countries = parsedData.member || []
-      console.log('Pays extraits:', countries)
+      
       
       const formattedCountries = countries.map((country: any) => {
         if (!country.id || !country.name) {
@@ -133,7 +133,7 @@ const countryService = {
         }
       }).filter(Boolean)
       
-      console.log('Pays formatés:', formattedCountries)
+      
       
       return {
         success: true,
