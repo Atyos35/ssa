@@ -42,17 +42,14 @@ import type { CreateCountryDto } from '~/types/dto'
 import { countryService } from '~/services/country.service'
 import { useNotification } from '~/composables/useNotification'
 
-// Émettre des événements
 const emit = defineEmits<{
   cancel: []
   success: [data: any]
   error: [message: string]
 }>()
 
-// Utiliser le composable de notification
 const { showSuccess, showError } = useNotification()
 
-// État du formulaire
 const formData = reactive<CountryForm>({
   name: ''
 })
@@ -63,12 +60,10 @@ const errors = reactive({
 
 const isSubmitting = ref(false)
 
-// Validation d'un champ
 const validateField = (field: keyof CountryForm) => {
   const fieldValue = formData[field]
   const partialData = { [field]: fieldValue }
   
-  // Validation partielle avec Zod
   const result = validateCountry(partialData)
   
   if (!result.success && result.errors[field]) {
@@ -78,12 +73,10 @@ const validateField = (field: keyof CountryForm) => {
   }
 }
 
-// Validation complète du formulaire
 const validateForm = (): boolean => {
   const result = validateCountry(formData)
   
   if (!result.success) {
-    // Afficher les erreurs
     Object.keys(result.errors).forEach(key => {
       const errorMessage = result.errors[key]
       if (errorMessage) {
@@ -93,7 +86,6 @@ const validateForm = (): boolean => {
     return false
   }
   
-  // Réinitialiser les erreurs si validation réussie
   Object.keys(errors).forEach(key => {
     errors[key as keyof typeof errors] = ''
   })
@@ -101,7 +93,6 @@ const validateForm = (): boolean => {
   return true
 }
 
-// Soumission du formulaire
 const handleSubmit = async () => {
   if (!validateForm()) {
     return
@@ -110,7 +101,6 @@ const handleSubmit = async () => {
   isSubmitting.value = true
 
   try {
-    // Créer le DTO pour l'API
     const createCountryDto: CreateCountryDto = {
       name: formData.name.trim()
     }
@@ -123,19 +113,16 @@ const handleSubmit = async () => {
     
     const response = { data: result.data }
 
-    // Afficher la notification de succès
     showSuccess(`Le pays "${formData.name.trim()}" a été créé avec succès !`)
     
     emit('success', response.data)
     
-    // Réinitialiser le formulaire
     resetForm()
     
   } catch (error) {
     console.error('Erreur lors de la création du pays:', error)
     const errorMessage = error instanceof Error ? error.message : 'Erreur lors de la création du pays'
     
-    // Afficher la notification d'erreur
     showError(errorMessage)
     
     emit('error', errorMessage)
@@ -144,13 +131,11 @@ const handleSubmit = async () => {
   }
 }
 
-// Réinitialiser le formulaire
 const resetForm = () => {
   formData.name = ''
   errors.name = ''
 }
 
-// Exposer des méthodes pour le composant parent
 defineExpose({
   resetForm
 })

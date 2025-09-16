@@ -35,4 +35,4 @@ class SimpleQueryBus implements QueryBusInterface
             default => throw new \InvalidArgumentException('Unknown query: ' . get_class($query))
         };
     }
-} 
+}

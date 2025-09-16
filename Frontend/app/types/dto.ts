@@ -1,6 +1,3 @@
-// ========================================
-// REGISTRATION DTOs
-// ========================================
 
 export interface CreateUserDto {
   firstName: string
@@ -19,9 +16,6 @@ export interface CreateUserResponseDto {
   createdAt: string
 }
 
-// ========================================
-// COUNTRY DTOs
-// ========================================
 
 export interface CreateCountryDto {
   name: string
@@ -36,9 +30,6 @@ export interface CreateCountryResponseDto {
   agents: any[]
 }
 
-// ========================================
-// MISSION DTOs
-// ========================================
 
 export interface CreateMissionDto {
   name: string
@@ -65,9 +56,6 @@ export interface CreateMissionResponseDto {
   agentIds: number[]
 }
 
-// ========================================
-// AGENT DTOs
-// ========================================
 
 export interface CreateAgentDto {
   codeName: string
@@ -98,9 +86,6 @@ export interface CreateAgentResponseDto {
   }
 }
 
-// ========================================
-// COMMON DTOs
-// ========================================
 
 export interface ApiErrorDto {
   message: string
@@ -108,30 +93,14 @@ export interface ApiErrorDto {
   status: number
 }
 
-// ========================================
-// FORM DTOs
-// ========================================
 
-
-
-// ========================================
-// SELECT OPTION DTOs
-// ========================================
 
 export interface CountrySelectOptionDto {
   label: string
   value: number
 }
 
-// ========================================
-// VALIDATION DTOs
-// ========================================
 
-
-
-// ========================================
-// API RESPONSE DTOs
-// ========================================
 
 export interface ApiResponseDto<T> {
   data?: T

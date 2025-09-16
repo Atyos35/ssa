@@ -7,7 +7,6 @@ export const useDatabaseState = () => {
   const hasAgents = ref(false)
   const hasMissions = ref(false)
 
-  // Fonctionnalités disponibles selon l'état de la base
   const availableFeatures = computed(() => ({
     canCreateCountry: true, // Toujours disponible
     canCreateAgent: hasCountries.value,
@@ -18,12 +17,10 @@ export const useDatabaseState = () => {
     canCloseMission: hasMissions.value
   }))
 
-  // Vérifier si le parcours est complet
   const isComplete = computed(() => 
     hasCountries.value && hasAgents.value && hasMissions.value
   )
 
-  // Charger l'état de la base
   const loadDatabaseState = async () => {
     try {
       isLoading.value = true
@@ -33,19 +30,16 @@ export const useDatabaseState = () => {
       hasAgents.value = state.hasAgents
       hasMissions.value = state.hasMissions
     } catch (error) {
-      // Gérer l'erreur silencieusement
     } finally {
       isLoading.value = false
     }
   }
 
-  // Rafraîchir l'état (après une opération qui modifie la base)
   const refreshDatabaseState = async () => {
     databaseStateService.invalidateCache()
     await loadDatabaseState()
   }
 
-  // Charger l'état au montage du composant
   onMounted(() => {
     loadDatabaseState()
   })

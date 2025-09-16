@@ -28,10 +28,8 @@ final class MissionEventListener
             return;
         }
         
-        // Mettre à jour le niveau de danger du pays
         $this->countryDangerLevelService->updateCountryDangerLevelAfterMissionCreation($entity);
         
-        // Envoyer le message pour notifier les agents
         $this->messageBus->dispatch(new MissionCreatedMessage($entity));
     }
 
@@ -42,12 +40,10 @@ final class MissionEventListener
             return;
         }
         
-        // Si le danger change, on met à jour immédiatement
         if ($args->hasChangedField('danger')) {
             $this->countryDangerLevelService->updateCountryDangerLevelAfterMissionCreation($entity);
         }
         
-        // Si le statut change vers Success ou Failure, créer un résultat de mission
         if ($args->hasChangedField('status')) {
             $this->missionResultService->createMissionResult($entity);
         }
@@ -60,7 +56,6 @@ final class MissionEventListener
             return;
         }
         
-        // Si le statut change, on met à jour après flush
         $this->countryDangerLevelService->updateCountryDangerLevelAfterMissionStatusChange($entity);
     }
-} 
+}

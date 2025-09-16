@@ -36,7 +36,6 @@ class VerifyEmailHandler implements CommandHandlerInterface
             throw new \DomainException('Email déjà vérifié');
         }
 
-        // Vérifier l'email
         $user->setEmailVerified(true);
         $user->setEmailVerificationToken(null);
         $user->setEmailVerificationExpiresAt(null);
@@ -44,4 +43,4 @@ class VerifyEmailHandler implements CommandHandlerInterface
         $this->entityManager->persist($user);
         $this->entityManager->flush();
     }
-} 
+}

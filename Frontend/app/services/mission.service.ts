@@ -2,9 +2,6 @@ import apiService from './api.service'
 import type { ApiResponseDto } from '~/types/dto'
 
 const missionService = {
-  /**
-   * Créer une nouvelle mission
-   */
   async createMission(missionData: {
     name: string
     description: string
@@ -34,9 +31,6 @@ const missionService = {
     }
   },
 
-  /**
-   * Récupérer toutes les missions avec leurs résultats
-   */
   async getMissionsWithResults(): Promise<ApiResponseDto<any[]>> {
     try {
       const response = await apiService.get('/api/missions')
@@ -56,9 +50,6 @@ const missionService = {
     }
   },
 
-  /**
-   * Récupérer toutes les missions
-   */
   async getMissions(): Promise<ApiResponseDto<any[]>> {
     try {
       const response = await apiService.get('/api/missions')
@@ -78,9 +69,6 @@ const missionService = {
     }
   },
 
-  /**
-   * Récupérer une mission par son ID
-   */
   async getMission(id: number): Promise<ApiResponseDto<any>> {
     try {
       const response = await apiService.get(`/api/missions/${id}`)
@@ -100,9 +88,6 @@ const missionService = {
     }
   },
 
-  /**
-   * Mettre à jour une mission (mise à jour partielle avec PATCH)
-   */
   async updateMission(id: number, missionData: Partial<{
     name: string
     description: string
@@ -133,9 +118,6 @@ const missionService = {
     }
   },
 
-  /**
-   * Supprimer une mission
-   */
   async deleteMission(id: number): Promise<ApiResponseDto<void>> {
     try {
       await apiService.delete(`/api/missions/${id}`)

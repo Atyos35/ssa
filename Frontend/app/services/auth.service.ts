@@ -1,4 +1,3 @@
-// Service d'authentification
 import apiService from './api.service'
 
 export interface LoginRequest {
@@ -33,8 +32,7 @@ interface ApiResult<T> {
 
 class AuthService {
   private refreshInterval: NodeJS.Timeout | null = null
-  private readonly REFRESH_INTERVAL_MS = 25 * 60 * 1000 // 25 minutes
-  // Inscription d'un nouvel utilisateur
+  private readonly REFRESH_INTERVAL_MS = 25 * 60 * 1000
   async register(data: RegisterRequest): Promise<ApiResult<RegisterResponse>> {
     try {
       const requestData = {
@@ -58,18 +56,14 @@ class AuthService {
     }
   }
 
-  // Connexion d'un utilisateur
   async login(data: LoginRequest): Promise<ApiResult<LoginResponse>> {
     try {
       const response = await apiService.post<LoginResponse>('/api/login', data)
       
-      // Si la connexion réussit, stocker le token
       if (response.data) {
-        // Stocker le token ET le refresh_token
         localStorage.setItem('auth_token', response.data.token)
         localStorage.setItem('refresh_token', response.data.refresh_token)
         
-        // Démarrer le refresh automatique
         this.startAutoRefresh()
       }
       
@@ -88,22 +82,17 @@ class AuthService {
     }
   }
 
-  // Déconnexion
   logout(): void {
-    // Arrêter le refresh automatique
     this.stopAutoRefresh()
     
-    // Nettoyer le localStorage
     localStorage.removeItem('auth_token')
     localStorage.removeItem('refresh_token')
   }
 
-  // Vérifier si l'utilisateur est connecté
   isAuthenticated(): boolean {
     const token = this.getToken()
     const isAuth = !!token
     
-    // Si l'utilisateur est authentifié et qu'il n'y a pas d'intervalle de refresh, le redémarrer
     if (isAuth && !this.refreshInterval) {
       this.startAutoRefresh()
     }
@@ -111,13 +100,11 @@ class AuthService {
     return isAuth
   }
 
-  // Récupérer le token actuel
   getToken(): string | null {
     const token = localStorage.getItem('auth_token')
     return token
   }
 
-  // Rafraîchir le token
   async refreshToken(): Promise<ApiResult<{ token: string }>> {
     try {
       const refreshToken = localStorage.getItem('refresh_token')
@@ -136,7 +123,6 @@ class AuthService {
         refresh_token: refreshToken
       })
       
-      // Si le refresh réussit, stocker le nouveau token
       if (response.data) {
         localStorage.setItem('auth_token', response.data.token)
 
@@ -149,11 +135,9 @@ class AuthService {
     } catch (error) {
       console.error('Échec du refresh automatique:', error)
       
-      // Si le refresh échoue, arrêter l'intervalle et rediriger vers login
       this.stopAutoRefresh()
       this.logout()
       
-      // Rediriger vers la page de connexion
       if (typeof window !== 'undefined') {
         window.location.href = '/login'
       }
@@ -168,21 +152,16 @@ class AuthService {
     }
   }
 
-  // Démarrer le refresh automatique
   private startAutoRefresh(): void {
-    // Arrêter l'intervalle existant s'il y en a un
     this.stopAutoRefresh()
     
-    // Démarrer un nouvel intervalle
     this.refreshInterval = setInterval(async () => {
       
       await this.refreshToken()
     }, this.REFRESH_INTERVAL_MS)
-    
-    
+
   }
 
-  // Arrêter le refresh automatique
   private stopAutoRefresh(): void {
     if (this.refreshInterval) {
       clearInterval(this.refreshInterval)
@@ -191,7 +170,6 @@ class AuthService {
     }
   }
 
-  // Récupérer les informations de l'utilisateur connecté
   async getCurrentUser(): Promise<ApiResult<any>> {
     try {
       const token = this.getToken()
@@ -223,6 +201,5 @@ class AuthService {
   }
 }
 
-// Instance singleton
 export const authService = new AuthService()
 export default authService

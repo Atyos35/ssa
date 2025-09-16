@@ -1,6 +1,5 @@
 import { z } from 'zod'
 
-// Schéma de validation pour l'inscription
 export const registrationSchema = z.object({
   firstName: z
     .string()
@@ -32,10 +31,8 @@ export const registrationSchema = z.object({
     .regex(/[!@#$%^&*()_+\-=\[\]{};':"\\|,.<>\/?].*[!@#$%^&*()_+\-=\[\]{};':"\\|,.<>\/?]/, 'Le mot de passe doit contenir au moins 2 caractères spéciaux')
 })
 
-// Type TypeScript généré automatiquement
 export type RegistrationForm = z.infer<typeof registrationSchema>
 
-// Fonction de validation
 export const validateRegistration = (data: unknown): { success: true; data: RegistrationForm } | { success: false; errors: Record<string, string> } => {
   const result = registrationSchema.safeParse(data)
   
@@ -43,7 +40,6 @@ export const validateRegistration = (data: unknown): { success: true; data: Regi
     return { success: true, data: result.data }
   }
   
-  // Transformer les erreurs Zod en format utilisable
   const errors: Record<string, string> = {}
   result.error.issues.forEach(issue => {
     const field = issue.path[0] as string

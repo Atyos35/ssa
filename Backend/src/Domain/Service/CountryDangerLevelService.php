@@ -17,9 +17,6 @@ class CountryDangerLevelService
     ) {
     }
 
-    /**
-     * Met à jour le niveau de danger d'un pays basé sur les missions actives
-     */
     public function updateCountryDangerLevel(Country $country): void
     {
         $highestDangerLevel = $this->getHighestDangerLevelFromActiveMissions($country);
@@ -29,19 +26,14 @@ class CountryDangerLevelService
         $this->entityManager->flush();
     }
 
-    /**
-     * Récupère le niveau de danger le plus élevé parmi les missions actives d'un pays
-     */
     private function getHighestDangerLevelFromActiveMissions(Country $country): DangerLevel
     {
         $activeMissions = $this->missionRepository->findByCountry($country->getId());
         
-        // Filtrer seulement les missions en cours
         $inProgressMissions = array_filter($activeMissions, function($mission) {
             return $mission->getStatus() === MissionStatus::InProgress;
         });
 
-        //si pas de mission, danger à Low
         if (empty($inProgressMissions)) {
             return DangerLevel::Low;
         }
@@ -58,9 +50,6 @@ class CountryDangerLevelService
         return $highestLevel;
     }
 
-    /**
-     * Compare deux niveaux de danger et retourne true si le premier est plus élevé
-     */
     private function isDangerLevelHigher(DangerLevel $level1, DangerLevel $level2): bool
     {
         $dangerHierarchy = [
@@ -73,9 +62,6 @@ class CountryDangerLevelService
         return $dangerHierarchy[$level1->value] > $dangerHierarchy[$level2->value];
     }
 
-    /**
-     * Met à jour le niveau de danger d'un pays après la création d'une mission
-     */
     public function updateCountryDangerLevelAfterMissionCreation(Mission $mission): void
     {
         $country = $mission->getCountry();
@@ -83,13 +69,9 @@ class CountryDangerLevelService
             return;
         }
 
-        // Recalcule le niveau de danger basé sur toutes les missions actives
         $this->updateCountryDangerLevel($country);
     }
 
-    /**
-     * Met à jour le niveau de danger d'un pays après le changement de statut d'une mission
-     */
     public function updateCountryDangerLevelAfterMissionStatusChange(Mission $mission): void
     {
         $country = $mission->getCountry();
@@ -99,4 +81,4 @@ class CountryDangerLevelService
 
         $this->updateCountryDangerLevel($country);
     }
-} 
+}

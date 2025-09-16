@@ -7,4 +7,4 @@ class GetAgentQuery implements QueryInterface
     public function __construct(
         public readonly string $agentId
     ) {}
-} 
+}

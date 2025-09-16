@@ -31,4 +31,4 @@ class GetMissionsHandler implements QueryHandlerInterface
 
         return array_map(fn(Mission $mission) => MissionDto::fromEntity($mission), $missions);
     }
-} 
+}

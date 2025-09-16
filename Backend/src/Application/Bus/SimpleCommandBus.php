@@ -43,4 +43,4 @@ class SimpleCommandBus implements CommandBusInterface
             default => throw new \InvalidArgumentException('Unknown command: ' . get_class($command))
         };
     }
-} 
+}

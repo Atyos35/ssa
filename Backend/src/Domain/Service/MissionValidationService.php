@@ -7,10 +7,6 @@ use App\Domain\Entity\Mission;
 
 class MissionValidationService
 {
-    /**
-     * Valide qu'un agent peut participer à une mission
-     * Un agent ne peut participer que s'il est infiltré dans le pays de la mission
-     */
     public function validateAgentForMission(Agent $agent, Mission $mission): void
     {
         if ($agent->getInfiltratedCountry() !== $mission->getCountry()) {
@@ -23,9 +19,6 @@ class MissionValidationService
         }
     }
 
-    /**
-     * Valide tous les agents d'une mission
-     */
     public function validateMissionAgents(Mission $mission): void
     {
         foreach ($mission->getAgents() as $agent) {
@@ -33,11 +26,8 @@ class MissionValidationService
         }
     }
 
-    /**
-     * Valide qu'un agent peut être ajouté à une mission
-     */
     public function validateAgentAddition(Agent $agent, Mission $mission): void
     {
         $this->validateAgentForMission($agent, $mission);
     }
-} 
+}

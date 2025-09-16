@@ -1,6 +1,5 @@
 import { z } from 'zod'
 
-// Schéma de validation pour la création d'agents
 export const agentSchema = z.object({
   codeName: z
     .string()
@@ -55,10 +54,8 @@ export const agentSchema = z.object({
     })
 })
 
-// Type TypeScript généré automatiquement
 export type AgentForm = z.infer<typeof agentSchema>
 
-// Fonction de validation
 export const validateAgent = (data: unknown): { success: true; data: AgentForm } | { success: false; errors: Record<string, string> } => {
   const result = agentSchema.safeParse(data)
   
@@ -66,7 +63,6 @@ export const validateAgent = (data: unknown): { success: true; data: AgentForm }
     return { success: true, data: result.data }
   }
   
-  // Transformer les erreurs Zod en format utilisable
   const errors: Record<string, string> = {}
   result.error.issues.forEach(issue => {
     const field = issue.path[0] as string

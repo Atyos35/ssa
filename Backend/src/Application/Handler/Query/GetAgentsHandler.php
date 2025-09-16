@@ -30,4 +30,4 @@ class GetAgentsHandler implements QueryHandlerInterface
 
         return array_map(fn(Agent $agent) => AgentDto::fromEntity($agent), $agents);
     }
-} 
+}

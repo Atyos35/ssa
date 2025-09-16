@@ -40,4 +40,4 @@ class AgentDetailDto
             messages: array_map(fn(\App\Domain\Entity\Message $message) => MessageDto::fromEntity($message), $agent->getMessages()->toArray())
         );
     }
-} 
+}

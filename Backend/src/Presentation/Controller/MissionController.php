@@ -60,7 +60,6 @@ class MissionController extends AbstractController
         $data = json_decode($request->getContent(), true);
 
         try {
-            // Extraire les IDs des références API Platform
             $countryId = null;
             if (isset($data['country'])) {
                 if (is_string($data['country']) && strpos($data['country'], '/api/countries/') === 0) {
@@ -115,7 +114,6 @@ class MissionController extends AbstractController
         $data = json_decode($request->getContent(), true);
 
         try {
-            // Extraire les IDs des références API Platform
             $countryId = null;
             if (isset($data['country'])) {
                 if (is_string($data['country']) && strpos($data['country'], '/api/countries/') === 0) {
@@ -166,4 +164,4 @@ class MissionController extends AbstractController
             return $this->json(['error' => 'Internal server error'], Response::HTTP_INTERNAL_SERVER_ERROR);
         }
     }
-} 
+}

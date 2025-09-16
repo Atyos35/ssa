@@ -47,7 +47,6 @@ const closeModal = () => {
   emit('update:modelValue', false)
 }
 
-// Calculer la largeur en fonction de la taille
 const modalWidth = computed(() => {
   switch (props.size) {
     case 'sm': return '400px'

@@ -15,12 +15,9 @@ class MissionCreationService
     ) {
     }
 
-    /**
-     * Gère la création d'une mission
-     */
     public function handleMissionCreation(Mission $mission): void
     {
         $this->entityManager->persist($mission);
         $this->entityManager->flush();
     }
-} 
+}

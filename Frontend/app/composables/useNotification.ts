@@ -18,7 +18,6 @@ export interface NotificationOptions {
 }
 
 export const useNotification = () => {
-  // Notification de succès
   const showSuccess = (message: string, options?: Partial<NotificationOptions>) => {
     Notify.create({
       type: 'positive',
@@ -39,7 +38,6 @@ export const useNotification = () => {
     })
   }
 
-  // Notification d'erreur
   const showError = (message: string, options?: Partial<NotificationOptions>) => {
     Notify.create({
       type: 'negative',
@@ -60,7 +58,6 @@ export const useNotification = () => {
     })
   }
 
-  // Notification d'avertissement
   const showWarning = (message: string, options?: Partial<NotificationOptions>) => {
     Notify.create({
       type: 'warning',
@@ -81,7 +78,6 @@ export const useNotification = () => {
     })
   }
 
-  // Notification d'information
   const showInfo = (message: string, options?: Partial<NotificationOptions>) => {
     Notify.create({
       type: 'info',
@@ -102,7 +98,6 @@ export const useNotification = () => {
     })
   }
 
-  // Notification personnalisée
   const showNotification = (options: NotificationOptions) => {
     Notify.create({
       position: 'top-right',
@@ -118,7 +113,6 @@ export const useNotification = () => {
     })
   }
 
-  // Notification basée sur le résultat d'une API
   const showApiResult = (result: { success: boolean; data?: any; error?: { message: string } }) => {
     if (result.success) {
       showSuccess('Opération réussie !')

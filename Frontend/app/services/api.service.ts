@@ -19,7 +19,6 @@ class ApiService {
       'Content-Type': 'application/ld+json',
     }
 
-    // Récupérer le token directement depuis localStorage
     if (typeof window !== 'undefined') {
       const token = localStorage.getItem('auth_token')
       if (token) {
@@ -50,12 +49,9 @@ class ApiService {
       
       const response = await fetch(fullUrl, config)
       
-      // Si on a une erreur 401 (Unauthorized), essayer de rafraîchir le token
       if (response.status === 401) {
         try {
           const refreshResult = await this.refreshToken()
-          if (refreshResult.success && refreshResult.data) {
-            // Token rafraîchi, réessayer la requête originale
             const newHeaders = this.getAuthHeaders()
             const newConfig: RequestInit = {
               method: options.method,
@@ -90,8 +86,6 @@ class ApiService {
               statusText: retryResponse.statusText,
             }
           }
-        } catch (refreshError) {
-          // Si le refresh échoue, rediriger vers la page de connexion
           console.error('Token refresh failed:', refreshError)
           this.handleAuthFailure()
           throw new Error('Authentication failed')
@@ -122,7 +116,6 @@ class ApiService {
     }
   }
 
-  // Méthodes utilitaires pour les requêtes courantes
   async get<T = any>(url: string, headers?: Record<string, string>): Promise<ApiResponse<T>> {
     return this.request<T>({ method: 'GET', url, headers })
   }
@@ -143,7 +136,6 @@ class ApiService {
     return this.request<T>({ method: 'DELETE', url, headers })
   }
 
-  // Rafraîchir le token d'authentification
   private async refreshToken(): Promise<{ success: boolean; data?: { token: string } }> {
     try {
       const refreshToken = localStorage.getItem('refresh_token')
@@ -164,7 +156,6 @@ class ApiService {
       
       if (response.ok) {
         const data = await response.json()
-        // Stocker le nouveau token
         localStorage.setItem('auth_token', data.token)
         return { success: true, data }
       }
@@ -176,13 +167,10 @@ class ApiService {
     }
   }
 
-  // Gérer l'échec de l'authentification
   private handleAuthFailure(): void {
-    // Nettoyer les tokens
     localStorage.removeItem('auth_token')
     localStorage.removeItem('refresh_token')
     
-    // Rediriger vers la page de connexion si on est dans le navigateur
     if (typeof window !== 'undefined') {
       window.location.href = '/login'
     }

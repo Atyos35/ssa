@@ -1,7 +1,7 @@
 <template>
   <div class="mission-closure-form">
     <q-form @submit="handleSubmit" class="q-gutter-md">
-      <!-- Sélection de la mission -->
+      
       <q-select
         v-model="form.missionId"
         :options="availableMissions"
@@ -14,7 +14,6 @@
         @update:model-value="onMissionChange"
       />
 
-      <!-- Statut de la mission -->
       <q-select
         v-model="form.status"
         :options="missionStatuses"
@@ -26,7 +25,6 @@
         map-options
       />
 
-      <!-- Summary de la mission -->
       <q-input
         v-model="form.summary"
         label="Résumé de la mission *"
@@ -40,7 +38,6 @@
         rows="4"
       />
 
-      <!-- Boutons d'action -->
       <div class="form-actions">
         <q-btn
           type="submit"
@@ -68,46 +65,38 @@ import { useNotification } from '~/composables/useNotification'
 import { missionService } from '~/services'
 import { missionClosureSchema, type MissionClosureFormData, type MissionClosureFormRawData } from '~/schemas/mission-closure.schema'
 
-// Props et émissions
 const emit = defineEmits<{
   success: []
   error: [string]
   cancel: []
 }>()
 
-// Composables
 const { showSuccess, showError } = useNotification()
 
-// État du formulaire
 const loading = ref(false)
 const availableMissions = ref<Array<{ label: string; value: string }>>([])
 
-// Formulaire
 const form = ref<MissionClosureFormRawData>({
   missionId: null,
   status: '',
   summary: ''
 })
 
-// Statuts de mission disponibles
 const missionStatuses = [
   { label: 'Succès', value: 'Success' },
   { label: 'Échec', value: 'Failure' }
 ]
 
-// Validation du formulaire
 const isFormValid = computed(() => {
   return form.value.missionId != null &&
          form.value.status &&
          form.value.summary
 })
 
-// Charger les missions disponibles
 const loadMissions = async () => {
   try {
     const response = await missionService.getMissions()
     if (response.success && response.data) {
-      // Filtrer les missions qui ne sont pas encore clôturées
       availableMissions.value = response.data
         .filter((mission: any) => mission.status === 'InProgress')
         .map((mission: any) => ({
@@ -118,10 +107,8 @@ const loadMissions = async () => {
   } catch (error: any) {
     console.error('Erreur lors du chargement des missions:', error)
     
-    // Vérifier si c'est une erreur d'authentification
     if (error.response?.status === 401) {
       showError('Session expirée. Veuillez vous reconnecter.')
-      // Rediriger vers la page de connexion
       if (typeof window !== 'undefined') {
         window.location.href = '/login'
       }
@@ -131,13 +118,10 @@ const loadMissions = async () => {
   }
 }
 
-// Gestion du changement de mission
 const onMissionChange = () => {
-  // Réinitialiser le summary quand on change de mission
   form.value.summary = ''
 }
 
-// Soumission du formulaire
 const handleSubmit = async () => {
   if (!isFormValid.value) {
     return
@@ -146,7 +130,6 @@ const handleSubmit = async () => {
   loading.value = true
 
   try {
-    // Validation avec le schéma Zod
     const missionData: MissionClosureFormData = {
       missionId: String(form.value.missionId!),
       status: form.value.status as 'Success' | 'Failure',
@@ -160,7 +143,6 @@ const handleSubmit = async () => {
       return
     }
 
-    // Mettre à jour la mission avec le nouveau statut et summary
     const response = await missionService.updateMission(Number(missionData.missionId), {
       status: missionData.status,
       missionResultSummary: missionData.summary
@@ -188,7 +170,6 @@ const handleSubmit = async () => {
   }
 }
 
-// Chargement initial
 onMounted(() => {
   loadMissions()
 })

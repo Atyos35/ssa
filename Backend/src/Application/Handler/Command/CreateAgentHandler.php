@@ -27,7 +27,6 @@ class CreateAgentHandler implements CommandHandlerInterface
             throw new \InvalidArgumentException('Expected CreateAgentCommand');
         }
 
-        // Créer l'agent
         $agent = new Agent();
         $agent->setCodeName($command->codeName);
         $agent->setFirstName($command->firstName);
@@ -39,11 +38,9 @@ class CreateAgentHandler implements CommandHandlerInterface
         $agent->setEmailVerified(true);
         $agent->setRoles(['ROLE_USER']);
 
-        // Hasher le mot de passe
         $hashedPassword = $this->passwordHasher->hashPassword($agent, $command->password);
         $agent->setPassword($hashedPassword);
 
-        // Définir le pays d'infiltration si fourni
         if ($command->infiltratedCountryId !== null) {
             $country = $this->countryRepository->find($command->infiltratedCountryId);
             if (!$country) {
@@ -52,7 +49,6 @@ class CreateAgentHandler implements CommandHandlerInterface
             $agent->setInfiltratedCountry($country);
         }
 
-        // Définir le mentor si fourni
         if ($command->mentorId !== null) {
             $mentor = $this->agentRepository->find($command->mentorId);
             if (!$mentor) {
@@ -61,8 +57,7 @@ class CreateAgentHandler implements CommandHandlerInterface
             $agent->setMentor($mentor);
         }
 
-        // Persister l'agent
         $this->entityManager->persist($agent);
         $this->entityManager->flush();
     }
-} 
+}

@@ -10,4 +10,4 @@ class UpdateAgentStatusCommand implements CommandInterface
         public readonly string $agentId,
         public readonly AgentStatus $status
     ) {}
-} 
+}

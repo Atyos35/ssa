@@ -29,53 +29,35 @@ use ApiPlatform\Metadata\Patch;
 #[ORM\DiscriminatorMap(['user' => User::class, 'agent' => Agent::class])]
 class User implements UserInterface, PasswordAuthenticatedUserInterface
 {
-    /**
-     * Identifiant unique de l'utilisateur (entier auto-incrémenté)
-     */
     #[ORM\Id]
     #[ORM\GeneratedValue]
     #[ORM\Column(type: 'integer')]
     #[Groups(['user:read', 'agent:read:collection', 'agent:read:item'])]
     private ?int $id = null;
 
-    /**
-     * Prénom de l'utilisateur
-     */
     #[ORM\Column(type: 'string', length: 50)]
     #[Assert\NotBlank]
     #[Assert\Length(min: 2, max: 50)]
     #[Groups(['user:read', 'user:write', 'agent:read:item', 'agent:write'])]
     private string $firstName;
 
-    /**
-     * Nom de famille de l'utilisateur
-     */
     #[ORM\Column(type: 'string', length: 50)]
     #[Assert\NotBlank]
     #[Assert\Length(min: 2, max: 50)]
     #[Groups(['user:read', 'user:write', 'agent:read:item', 'agent:write'])]
     private string $lastName;
 
-    /**
-     * Rôles de l'utilisateur
-     */
     #[ORM\Column(type: 'json')]
     #[Assert\NotNull]
     #[Groups(['user:read', 'user:write', 'agent:read:collection', 'agent:read:item'])]
     private array $roles = [];
 
-    /**
-     * Adresse email de l'utilisateur
-     */
     #[ORM\Column(type: 'string', length: 180, unique: true)]
     #[Assert\NotBlank]
     #[Assert\Email]
     #[Groups(['user:read', 'user:write', 'agent:read:item'])]
     private string $email;
 
-    /**
-     * Mot de passe de l'utilisateur (hashé)
-     */
     #[ORM\Column(type: 'string', length: 255)]
     #[Assert\NotBlank]
     #[Assert\Length(min: 12, max: 255)]
@@ -102,21 +84,12 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface
     #[Groups(['user:write'])]
     private string $password;
 
-    /**
-     * Token de vérification d'email
-     */
     #[ORM\Column(type: 'string', length: 255, nullable: true)]
     private ?string $emailVerificationToken = null;
 
-    /**
-     * Date d'expiration du token de vérification
-     */
     #[ORM\Column(type: 'datetime_immutable', nullable: true)]
     private ?\DateTimeImmutable $emailVerificationExpiresAt = null;
 
-    /**
-     * Email vérifié ou non
-     */
     #[ORM\Column(type: 'boolean')]
     #[Groups(['user:read'])]
     private bool $emailVerified = false;
@@ -192,8 +165,6 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface
 
     public function eraseCredentials(): void
     {
-        // Si vous stockez des données temporaires sensibles sur l'utilisateur, effacez-les ici
-        // $this->plainPassword = null;
     }
 
     public function getEmailVerificationToken(): ?string

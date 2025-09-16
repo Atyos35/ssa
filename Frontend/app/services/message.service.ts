@@ -1,11 +1,7 @@
-// Service pour la gestion des messages
 import apiService from './api.service'
 import type { ApiResponseDto } from '~/types/dto'
 
 export class MessageService {
-  /**
-   * Récupérer tous les messages
-   */
   async getMessages(): Promise<ApiResponseDto<any[]>> {
     try {
       const response = await apiService.get('/api/messages')
@@ -25,9 +21,6 @@ export class MessageService {
     }
   }
 
-  /**
-   * Créer un nouveau message
-   */
   async createMessage(messageData: {
     title: string
     body: string

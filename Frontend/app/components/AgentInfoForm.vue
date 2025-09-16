@@ -2,8 +2,7 @@
   <div class="agent-info-form">
     <div class="q-pa-md">
       <div class="text-h6 q-mb-md">Informations de l'agent</div>
-      
-      <!-- Sélection de l'agent -->
+
       <div class="q-mb-lg">
         <q-select
           v-model="selectedAgent"
@@ -16,13 +15,11 @@
         />
       </div>
 
-      <!-- Loading state -->
       <div v-if="loading" class="text-center q-pa-lg">
         <q-spinner-dots size="50px" color="primary" />
         <div class="q-mt-sm">Chargement des informations...</div>
       </div>
 
-      <!-- Error state -->
       <div v-else-if="error" class="text-center q-pa-lg">
         <q-icon name="error" size="50px" color="negative" />
         <div class="q-mt-sm text-negative">{{ error }}</div>
@@ -34,9 +31,8 @@
         />
       </div>
 
-      <!-- Informations de l'agent -->
       <div v-else-if="agentInfo" class="agent-details">
-        <!-- Informations générales -->
+        
         <q-card class="q-mb-md">
           <q-card-section>
             <div class="text-h6 text-primary q-mb-md">
@@ -97,7 +93,6 @@
           </q-card-section>
         </q-card>
 
-        <!-- Missions -->
         <q-card class="q-mb-md">
           <q-card-section>
             <div class="text-h6 text-primary q-mb-md">
@@ -146,7 +141,6 @@
           </q-card-section>
         </q-card>
 
-        <!-- Messages -->
         <q-card>
           <q-card-section>
             <div class="text-h6 text-primary q-mb-md">
@@ -179,7 +173,6 @@
         </q-card>
       </div>
 
-      <!-- État initial -->
       <div v-else class="text-center q-pa-lg">
         <q-icon name="person_search" size="50px" color="grey-5" />
         <div class="q-mt-sm text-grey-6">Sélectionnez un agent pour voir ses informations</div>
@@ -192,14 +185,12 @@
 import { ref, onMounted } from 'vue'
 import { agentService } from '~/services'
 
-// État du composant
 const loading = ref(false)
 const error = ref<string | null>(null)
 const selectedAgent = ref<{ label: string; value: string | number } | null>(null)
 const availableAgents = ref<Array<{ label: string; value: string | number }>>([])
 const agentInfo = ref<any>(null)
 
-// Charger la liste des agents
 const loadAgents = async () => {
   try {
     const response = await agentService.getAgents()
@@ -226,7 +217,6 @@ const loadAgents = async () => {
   }
 }
 
-// Charger les informations d'un agent
 const loadAgentInfo = async () => {
   if (!selectedAgent.value) {
     agentInfo.value = null
@@ -260,7 +250,6 @@ const loadAgentInfo = async () => {
   }
 }
 
-// Utilitaires pour l'affichage
 const getStatusColor = (status: string): string => {
   switch (status) {
     case 'Available': return 'positive'
@@ -316,9 +305,6 @@ const formatDate = (dateString: string): string => {
   }
 }
 
-
-
-// Chargement initial
 onMounted(() => {
   loadAgents()
 })

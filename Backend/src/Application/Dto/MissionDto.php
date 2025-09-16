@@ -37,4 +37,4 @@ class MissionDto
             missionResult: $mission->getMissionResult() ? MissionResultDto::fromEntity($mission->getMissionResult()) : null
         );
     }
-} 
+}

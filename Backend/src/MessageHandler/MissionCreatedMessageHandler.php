@@ -24,7 +24,6 @@ final class MissionCreatedMessageHandler
     {
         $mission = $message->getMission();
         
-        // Récupérer la mission depuis la base de données pour le contexte de persistance
         $missionFromDb = $this->missionRepository->find($mission->getId());
         if (!$missionFromDb) {
             throw new \RuntimeException('Mission not found in database');
@@ -32,27 +31,21 @@ final class MissionCreatedMessageHandler
         
         $country = $missionFromDb->getCountry();
         if (!$country) {
-            // Si la mission n'a pas de pays, on ne peut pas notifier les agents
-            // On log l'information et on arrête le traitement
             return;
         }
         
-        // Récupérer tous les agents infiltrés dans ce pays
         $agentsInCountry = $this->agentRepository->findByCountry($country->getId());
         
-        // Récupérer les IDs des agents qui participent à la mission
         $participatingAgentIds = [];
         foreach ($missionFromDb->getAgents() as $participatingAgent) {
             $participatingAgentIds[] = $participatingAgent->getId();
         }
         
         foreach ($agentsInCountry as $agent) {
-            // Ne pas envoyer de message aux agents qui participent à la mission
             if (in_array($agent->getId(), $participatingAgentIds)) {
                 continue;
             }
             
-            // Créer un message de notification pour chaque agent
             $notificationMessage = new Message();
             $notificationMessage->setTitle('Nouvelle Mission Créée');
             $notificationMessage->setBody(
@@ -68,7 +61,6 @@ final class MissionCreatedMessageHandler
                 )
             );
             $notificationMessage->setRecipient($agent);
-            // Pas d'expéditeur spécifique pour les notifications de mission
             $notificationMessage->setBy(null);
             
             $this->entityManager->persist($notificationMessage);
@@ -76,4 +68,4 @@ final class MissionCreatedMessageHandler
         
         $this->entityManager->flush();
     }
-} 
+}

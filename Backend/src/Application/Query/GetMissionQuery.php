@@ -7,4 +7,4 @@ class GetMissionQuery implements QueryInterface
     public function __construct(
         public readonly int $missionId
     ) {}
-} 
+}

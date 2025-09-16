@@ -4,9 +4,6 @@ namespace App\Message;
 
 use App\Domain\Entity\Mission;
 
-/**
- * Message envoyé quand une nouvelle mission est créée
- */
 final class MissionCreatedMessage
 {
     public function __construct(
@@ -18,4 +15,4 @@ final class MissionCreatedMessage
     {
         return $this->mission;
     }
-} 
+}

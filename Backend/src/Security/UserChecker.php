@@ -24,6 +24,5 @@ class UserChecker implements UserCheckerInterface
 
     public function checkPostAuth(UserInterface $user): void
     {
-        // Pas de vérification post-authentification nécessaire
     }
-} 
+}

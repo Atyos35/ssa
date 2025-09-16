@@ -71,34 +71,27 @@ import { messageService } from '~/services/message.service'
 import { agentService } from '~/services/agent.service'
 import { useNotification } from '~/composables/useNotification'
 
-// Émettre les événements
 const emit = defineEmits<{
   success: []
   error: [message: string]
   cancel: []
 }>()
 
-// Composables
 const { user } = useAuth()
 const { showSuccess, showError } = useNotification()
 
-// État du formulaire
 const formData = ref({
   recipient: '',
   title: '',
   body: ''
 })
 
-// État des erreurs
 const errors = ref<Record<string, string>>({})
 
-// État de soumission
 const isSubmitting = ref(false)
 
-// Options pour le destinataire
 const recipientOptions = ref<Array<{ label: string; value: string }>>([])
 
-// Charger la liste des agents (sauf l'agent connecté)
 const loadAgents = async () => {
   try {
     const response = await agentService.getAgents()
@@ -115,7 +108,6 @@ const loadAgents = async () => {
   }
 }
 
-// Validation des champs
 const validateField = (field: string) => {
   const value = formData.value[field as keyof typeof formData.value]
   
@@ -152,7 +144,6 @@ const validateField = (field: string) => {
   }
 }
 
-// Validation complète du formulaire
 const validateForm = (): boolean => {
   validateField('recipient')
   validateField('title')
@@ -161,7 +152,6 @@ const validateForm = (): boolean => {
   return Object.keys(errors.value).length === 0
 }
 
-// Soumission du formulaire
 const handleSubmit = async () => {
   if (!validateForm()) {
     return
@@ -183,7 +173,6 @@ const handleSubmit = async () => {
       showSuccess('Message envoyé avec succès')
       emit('success')
       
-      // Réinitialiser le formulaire
       formData.value = {
         recipient: '',
         title: '',
@@ -203,7 +192,6 @@ const handleSubmit = async () => {
   }
 }
 
-// Charger les agents au montage du composant
 onMounted(() => {
   loadAgents()
 })

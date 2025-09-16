@@ -1,4 +1,3 @@
-// Service pour la gestion des pays
 import apiService from './api.service'
 import type { 
   CreateCountryDto, 
@@ -7,9 +6,6 @@ import type {
 } from '~/types/dto'
 
 const countryService = {
-  /**
-   * Créer un nouveau pays
-   */
   async createCountry(countryData: CreateCountryDto): Promise<ApiResponseDto<CreateCountryResponseDto>> {
     try {
       const response = await apiService.post('/api/countries', countryData)
@@ -30,9 +26,6 @@ const countryService = {
     }
   },
 
-  /**
-   * Récupérer un pays par son ID
-   */
   async getCountryById(id: number): Promise<ApiResponseDto<CreateCountryResponseDto>> {
     try {
       const response = await apiService.get(`/api/countries/${id}`)
@@ -52,15 +45,10 @@ const countryService = {
     }
   },
 
-  /**
-   * Récupérer la liste des pays (pour les listes déroulantes)
-   */
   async getCountries(): Promise<ApiResponseDto<CreateCountryResponseDto[]>> {
     try {
-      // Utiliser un endpoint simple pour éviter les références circulaires
       const response = await apiService.get('/api/countries')
       
-      // Parser la réponse JSON si nécessaire
       let parsedData
       try {
         parsedData = typeof response.data === 'string' ? JSON.parse(response.data) : response.data
@@ -91,17 +79,11 @@ const countryService = {
     }
   },
 
-  /**
-   * Récupérer la liste des pays pour les listes déroulantes (sans relations)
-   */
   async getCountriesForSelect(): Promise<ApiResponseDto<Array<{ label: string; value: number }>>> {
     try {
-  
-      
-      // Utiliser l'endpoint standard maintenant que la référence circulaire est corrigée
+
       const response = await apiService.get('/api/countries')
-      
-      
+
       let parsedData
       try {
         parsedData = typeof response.data === 'string' ? JSON.parse(response.data) : response.data
@@ -117,10 +99,8 @@ const countryService = {
         }
       }
       
-      // Extraire seulement les données essentielles
       const countries = parsedData.member || []
-      
-      
+
       const formattedCountries = countries.map((country: any) => {
         if (!country.id || !country.name) {
           console.warn('Pays avec données incomplètes:', country)
@@ -132,9 +112,7 @@ const countryService = {
           value: country.id
         }
       }).filter(Boolean)
-      
-      
-      
+
       return {
         success: true,
         data: formattedCountries,
@@ -154,9 +132,6 @@ const countryService = {
     }
   },
 
-  /**
-   * Mettre à jour un pays
-   */
   async updateCountry(id: number, countryData: Partial<CreateCountryDto>): Promise<ApiResponseDto<CreateCountryResponseDto>> {
     try {
       const response = await apiService.put(`/api/countries/${id}`, countryData)
@@ -176,9 +151,6 @@ const countryService = {
     }
   },
 
-  /**
-   * Supprimer un pays
-   */
   async deleteCountry(id: number): Promise<ApiResponseDto<void>> {
     try {
       await apiService.delete(`/api/countries/${id}`)

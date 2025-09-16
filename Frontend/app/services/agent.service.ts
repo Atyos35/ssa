@@ -1,11 +1,7 @@
-// Service pour la gestion des agents
 import apiService from './api.service'
 import type { ApiResponseDto } from '~/types/dto'
 
 const agentService = {
-  /**
-   * Récupérer tous les agents
-   */
   async getAgents(): Promise<ApiResponseDto<any[]>> {
     try {
       const response = await apiService.get('/api/agents')
@@ -25,9 +21,6 @@ const agentService = {
     }
   },
 
-  /**
-   * Récupérer un agent par son ID
-   */
   async getAgent(id: number): Promise<ApiResponseDto<any>> {
     try {
       const response = await apiService.get(`/api/agents/${id}`)
@@ -47,9 +40,6 @@ const agentService = {
     }
   },
 
-  /**
-   * Créer un nouvel agent
-   */
   async createAgent(agentData: {
     codeName: string
     firstName: string
@@ -78,9 +68,6 @@ const agentService = {
     }
   },
 
-  /**
-   * Mettre à jour un agent
-   */
   async updateAgent(id: number, agentData: Partial<{
     codeName: string
     firstName: string
@@ -110,9 +97,6 @@ const agentService = {
     }
   },
 
-  /**
-   * Mettre à jour le statut d'un agent
-   */
   async updateAgentStatus(id: number, status: string): Promise<ApiResponseDto<any>> {
     try {
       const response = await apiService.patch(`/api/agents/${id}/status`, { status })
@@ -132,9 +116,6 @@ const agentService = {
     }
   },
 
-  /**
-   * Supprimer un agent
-   */
   async deleteAgent(id: number): Promise<ApiResponseDto<void>> {
     try {
       await apiService.delete(`/api/agents/${id}`)
@@ -153,7 +134,6 @@ const agentService = {
     }
   },
 
-  // Méthodes pour la compatibilité avec AgentForm
   async getCountriesForSelect(): Promise<ApiResponseDto<any[]>> {
     try {
       const response = await apiService.get('/api/countries')
@@ -171,7 +151,6 @@ const agentService = {
         }
       }
       
-      // Formater les pays pour le composant q-select
       const countriesData = parsedData.member || []
       const formattedCountries = countriesData.map((country: any) => ({
         label: country.name,

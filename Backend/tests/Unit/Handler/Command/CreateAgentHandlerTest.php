@@ -153,4 +153,3 @@ class CreateAgentHandlerTest extends TestCase
         $this->handler->handle($command);
     }
 }
-

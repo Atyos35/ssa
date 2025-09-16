@@ -30,13 +30,11 @@ class CreateMissionHandler implements CommandHandlerInterface
             throw new \InvalidArgumentException('Expected CreateMissionCommand');
         }
 
-        // Récupérer le pays
         $country = $this->countryRepository->find($command->countryId);
         if (!$country) {
             throw new \DomainException('Country not found');
         }
 
-        // Créer la mission
         $mission = new Mission();
         $mission->setName($command->name);
         $mission->setDescription($command->description);
@@ -47,7 +45,6 @@ class CreateMissionHandler implements CommandHandlerInterface
         $mission->setEndDate($command->endDate);
         $mission->setCountry($country);
 
-        // Ajouter les agents
         foreach ($command->agentIds as $agentId) {
             $agent = $this->agentRepository->find($agentId);
             if (!$agent) {
@@ -56,10 +53,8 @@ class CreateMissionHandler implements CommandHandlerInterface
             $mission->addAgent($agent);
         }
 
-        // Valider les agents
         $this->missionValidationService->validateMissionAgents($mission);
 
-        // Créer la mission
         $this->missionCreationService->handleMissionCreation($mission);
     }
-} 
+}

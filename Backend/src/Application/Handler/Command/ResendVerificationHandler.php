@@ -35,7 +35,6 @@ class ResendVerificationHandler implements CommandHandlerInterface
             throw new \DomainException('Email déjà vérifié');
         }
 
-        // Générer un nouveau token de vérification
         $token = Uuid::v4()->toRfc4122();
         $user->setEmailVerificationToken($token);
         $user->setEmailVerificationExpiresAt(new \DateTimeImmutable('+24 hours'));
@@ -43,7 +42,6 @@ class ResendVerificationHandler implements CommandHandlerInterface
         $this->entityManager->persist($user);
         $this->entityManager->flush();
 
-        // Envoyer l'email de vérification
         $this->emailVerificationService->sendVerificationEmail($user, $token);
     }
-} 
+}

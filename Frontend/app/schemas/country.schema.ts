@@ -1,6 +1,5 @@
 import { z } from 'zod'
 
-// Schéma de validation pour la création de pays
 export const countrySchema = z.object({
   name: z
     .string()
@@ -10,10 +9,8 @@ export const countrySchema = z.object({
     .regex(/^[a-zA-ZÀ-ÿ\s'-]+$/, 'Le nom du pays ne peut contenir que des lettres, espaces, tirets et apostrophes')
 })
 
-// Type TypeScript généré automatiquement
 export type CountryForm = z.infer<typeof countrySchema>
 
-// Fonction de validation
 export const validateCountry = (data: unknown): { success: true; data: CountryForm } | { success: false; errors: Record<string, string> } => {
   const result = countrySchema.safeParse(data)
   
@@ -21,7 +18,6 @@ export const validateCountry = (data: unknown): { success: true; data: CountryFo
     return { success: true, data: result.data }
   }
   
-  // Transformer les erreurs Zod en format utilisable
   const errors: Record<string, string> = {}
   result.error.issues.forEach(issue => {
     const field = issue.path[0] as string

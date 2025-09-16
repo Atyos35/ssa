@@ -11,4 +11,4 @@ class RegisterUserCommand implements CommandInterface
         public readonly string $password,
         public readonly array $roles = ['ROLE_USER']
     ) {}
-} 
+}

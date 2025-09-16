@@ -1,15 +1,12 @@
-// https://nuxt.com/docs/api/configuration/nuxt-config
 export default defineNuxtConfig({
   compatibilityDate: '2025-07-15',
   devtools: { enabled: true },
   
-  // Configuration TypeScript
   typescript: {
     strict: true,
-    typeCheck: false  // Désactivé temporairement pour éviter les conflits
+    typeCheck: false
   },
 
-  // Configuration Vite
   vite: {
     build: {
       target: 'esnext'
@@ -23,12 +20,10 @@ export default defineNuxtConfig({
     }
   },
 
-  // Configuration Quasar avec nuxt-quasar-ui
   modules: [
     'nuxt-quasar-ui'
   ],
 
-  // Configuration Quasar
   quasar: {
     extras: {
       fontIcons: ['material-icons']
@@ -36,7 +31,6 @@ export default defineNuxtConfig({
     plugins: ['Notify']
   },
 
-  // Configuration CSS pour Quasar
   css: [
     '@quasar/extras/material-icons/material-icons.css',
     '@quasar/extras/roboto-font/roboto-font.css',

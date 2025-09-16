@@ -105,4 +105,4 @@ class AgentController extends AbstractController
             return $this->json(['error' => 'Internal server error'], Response::HTTP_INTERNAL_SERVER_ERROR);
         }
     }
-} 
+}

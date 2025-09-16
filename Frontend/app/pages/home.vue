@@ -1,6 +1,6 @@
 <template>
   <q-page class="home-page">
-    <!-- Header avec bouton de déconnexion -->
+    
     <div class="home-header">
       <div class="header-content">
         <div class="header-top">
@@ -20,15 +20,13 @@
       </div>
     </div>
 
-    <!-- Contenu principal -->
     <div class="home-content">
-      <!-- Indicateur de chargement de l'état de la base -->
+      
       <div v-if="isLoading" class="loading-section q-mb-lg">
         <q-spinner-dots size="2em" color="primary" />
         <span class="q-ml-sm">Chargement de l'état de la base...</span>
       </div>
-      
-            <!-- Message informatif sur la progression -->
+
       <div v-if="!isLoading && !isComplete" class="info-section q-mb-lg">
         <q-banner class="bg-info text-white">
           <template v-slot:avatar>
@@ -47,7 +45,7 @@
       </div>
       
       <div class="actions-grid">
-        <!-- 1. Créer un pays - Toujours disponible -->
+        
         <q-card class="action-card" @click="openCreateCountryModal">
           <q-card-section class="text-center">
             <q-icon name="public" size="48px" color="warning" class="q-mb-md" />
@@ -55,8 +53,7 @@
             <div class="text-caption text-grey-6">Ajouter une nouvelle zone d'opération</div>
           </q-card-section>
         </q-card>
-        
-        <!-- 2. Créer un agent - Disponible seulement s'il y a des pays -->
+
         <q-card 
           v-if="availableFeatures.canCreateAgent"
           class="action-card" 
@@ -68,8 +65,7 @@
             <div class="text-caption text-grey-6">Recruter de nouveaux membres</div>
           </q-card-section>
         </q-card>
-        
-        <!-- 3. Créer une mission - Disponible seulement s'il y a des agents -->
+
         <q-card 
           v-if="availableFeatures.canCreateMission"
           class="action-card" 
@@ -81,8 +77,7 @@
             <div class="text-caption text-grey-6">Planifier de nouvelles opérations</div>
           </q-card-section>
         </q-card>
-        
-        <!-- 4. Voir les informations d'un agent - Disponible seulement s'il y a des agents -->
+
         <q-card 
           v-if="availableFeatures.canViewAgentInfo"
           class="action-card" 
@@ -94,8 +89,7 @@
             <div class="text-caption text-grey-6">Consulter les détails, missions et messages d'un agent</div>
           </q-card-section>
         </q-card>
-        
-        <!-- 5. Tuer un agent - Disponible seulement s'il y a des agents -->
+
         <q-card 
           v-if="availableFeatures.canKillAgent"
           class="action-card" 
@@ -107,8 +101,7 @@
             <div class="text-caption text-grey-6">Déclarer un agent comme tué en action</div>
           </q-card-section>
         </q-card>
-        
-        <!-- 6. Voir la liste des missions - Disponible seulement s'il y a des missions -->
+
         <q-card 
           v-if="availableFeatures.canViewMissionList"
           class="action-card" 
@@ -120,8 +113,7 @@
             <div class="text-caption text-grey-6">Consulter toutes les missions et leurs résultats</div>
           </q-card-section>
         </q-card>
-        
-        <!-- 7. Clôturer une mission - Disponible seulement s'il y a des missions -->
+
         <q-card 
           v-if="availableFeatures.canCloseMission"
           class="action-card" 
@@ -134,7 +126,6 @@
           </q-card-section>
         </q-card>
 
-        <!-- 8. Créer un nouveau message - Disponible seulement s'il y a des agents -->
         <q-card 
           v-if="availableFeatures.canCreateAgent"
           class="action-card" 
@@ -149,7 +140,6 @@
       </div>
     </div>
 
-    <!-- Modal de création de pays -->
     <Modal v-model="showCreateCountryModal" title="Créer un nouveau pays">
       <CountryForm
         @success="handleCountryCreated"
@@ -158,7 +148,6 @@
       />
     </Modal>
 
-    <!-- Modal de création d'agent -->
     <Modal v-model="showCreateAgentModal" title="Créer un nouvel agent">
       <AgentForm
         @success="handleAgentCreated"
@@ -167,7 +156,6 @@
       />
     </Modal>
 
-    <!-- Modal de création de mission -->
     <Modal v-model="showCreateMissionModal" title="Créer une nouvelle mission">
       <MissionForm
         @success="handleMissionCreated"
@@ -176,7 +164,6 @@
       />
     </Modal>
 
-    <!-- Modal de création de message -->
     <Modal v-model="showCreateMessageModal" title="Créer un nouveau message">
       <MessageForm
         @success="handleMessageCreated"
@@ -185,7 +172,6 @@
       />
     </Modal>
 
-    <!-- Modal de clôture de mission -->
     <Modal v-model="showMissionClosureModal" title="Clôturer une mission">
       <MissionClosureForm
         @success="handleMissionClosureSuccess"
@@ -194,17 +180,14 @@
       />
     </Modal>
 
-    <!-- Modal de liste des missions -->
     <Modal v-model="showMissionListModal" title="Liste des missions et leurs résultats" size="lg">
       <MissionList />
     </Modal>
 
-    <!-- Modal d'informations d'agent -->
     <Modal v-model="showAgentInfoModal" title="Informations de l'agent" size="lg">
       <AgentInfoForm />
     </Modal>
 
-    <!-- Modal pour tuer un agent -->
     <Modal v-model="showKillAgentModal" title="Tuer un agent">
       <KillAgentForm
         @success="handleAgentKilled"
@@ -212,7 +195,6 @@
         @cancel="handleAgentKillModalCancel"
       />
     </Modal>
-
 
   </q-page>
 </template>
@@ -233,14 +215,11 @@ import MessageForm from '~/components/MessageForm.vue'
 import { authService } from '~/services/auth.service'
 import { useNotification } from '~/composables/useNotification'
 
-// Composables
 const { logout, initUser } = useAuth()
 const { isLoading, availableFeatures, isComplete, refreshDatabaseState } = useDatabaseState()
 
-// Utiliser le composable de notification
 const { showError, showSuccess } = useNotification()
 
-// État de la modal
 const showCreateCountryModal = ref(false)
 const showCreateAgentModal = ref(false)
 const showCreateMissionModal = ref(false)
@@ -250,47 +229,38 @@ const showMissionListModal = ref(false)
 const showAgentInfoModal = ref(false)
 const showKillAgentModal = ref(false)
 
-// Ouvrir la modal de création de pays
 const openCreateCountryModal = () => {
   showCreateCountryModal.value = true
 }
 
-// Ouvrir la modal de création d'agent
 const openCreateAgentModal = () => {
   showCreateAgentModal.value = true
 }
 
-// Ouvrir la modal de création de mission
 const openCreateMissionModal = () => {
   showCreateMissionModal.value = true
 }
 
-// Ouvrir la modal de création de message
 const openCreateMessageModal = () => {
   showCreateMessageModal.value = true
 }
 
-// Ouvrir la modal de clôture de mission
 const openMissionClosureModal = () => {
   showMissionClosureModal.value = true
 }
 
-// Ouvrir la modal de liste des missions
 const openMissionListModal = () => {
   showMissionListModal.value = true
 }
 
-// Ouvrir la modal d'informations d'agent
 const openAgentInfoModal = () => {
   showAgentInfoModal.value = true
 }
 
-// Ouvrir la modal de mise à mort d'agent
 const openKillAgentModal = () => {
   showKillAgentModal.value = true
 }
 
-// Gestion de la déconnexion
 const handleLogout = () => {
   logout()
   if (typeof window !== 'undefined') {
@@ -298,15 +268,12 @@ const handleLogout = () => {
   }
 }
 
-// Gestion des événements du CountryForm
 const handleCountryCreated = async () => {
   showCreateCountryModal.value = false
   
-  // Rafraîchir l'état de la base pour débloquer les fonctionnalités
   await refreshDatabaseState()
 }
 
-// Afficher un message d'erreur à l'utilisateur
 const handleCountryError = () => {
   showError('Erreur lors de la création du pays.')
 }
@@ -315,15 +282,12 @@ const handleCountryModalCancel = () => {
   showCreateCountryModal.value = false
 }
 
-// Gestion des événements du AgentForm
 const handleAgentCreated = async () => {
   showCreateAgentModal.value = false
   
-  // Rafraîchir l'état de la base pour débloquer les fonctionnalités
   await refreshDatabaseState()
 }
 
-// Afficher un message d'erreur à l'utilisateur
 const handleAgentError = () => {
   showError('Erreur lors de la création de l\'agent.')
 }
@@ -332,15 +296,12 @@ const handleAgentModalCancel = () => {
   showCreateAgentModal.value = false
 }
 
-// Gestion des événements du MissionForm
 const handleMissionCreated = async () => {
   showCreateMissionModal.value = false
   
-  // Rafraîchir l'état de la base pour débloquer les fonctionnalités
   await refreshDatabaseState()
 }
 
-// Afficher un message d'erreur à l'utilisateur
 const handleMissionError = () => {
   showError('Erreur lors de la création de la mission.')
 }
@@ -349,15 +310,12 @@ const handleMissionModalCancel = () => {
   showCreateMissionModal.value = false
 }
 
-// Gestion des événements du MissionClosureForm
 const handleMissionClosureSuccess = async () => {
   showMissionClosureModal.value = false
   
-  // Rafraîchir l'état de la base
   await refreshDatabaseState()
 }
 
-// Afficher un message d'erreur à l'utilisateur
 const handleMissionClosureError = () => {
   showError('Erreur lors de la clôture de la mission.')
 }
@@ -366,11 +324,9 @@ const handleMissionClosureModalCancel = () => {
   showMissionClosureModal.value = false
 }
 
-// Gestion des événements du KillAgentModal
 const handleAgentKilled = async () => {
   showKillAgentModal.value = false
   
-  // Rafraîchir l'état de la base
   await refreshDatabaseState()
 }
 
@@ -382,12 +338,10 @@ const handleAgentKillModalCancel = () => {
   showKillAgentModal.value = false
 }
 
-// Gestion des événements du MessageForm
 const handleMessageCreated = async () => {
   showCreateMessageModal.value = false
   showSuccess('Message envoyé avec succès')
 }
-
 
 const handleMessageError = () => {
   showError('Erreur lors de l\'envoi du message.')
@@ -397,18 +351,14 @@ const handleMessageModalCancel = () => {
   showCreateMessageModal.value = false
 }
 
-// Vérifier l'authentification au chargement
 onMounted(async () => {
-  // Vérifier directement si l'utilisateur est authentifié
   if (!authService.isAuthenticated()) {
     if (typeof window !== 'undefined') {
       window.location.href = '/login'
     }
   } else {
-    // Initialiser l'utilisateur dans le composable useAuth
     await initUser()
   }
 })
-
 
 </script>

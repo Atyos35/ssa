@@ -24,25 +24,20 @@ final class AgentKilledInActionMessageHandler
     {
         $killedAgent = $message->getKilledAgent();
         
-        // Récupérer l'agent tué depuis la bdd
         $killedAgentFromDb = $this->agentRepository->find($killedAgent->getId());
         if (!$killedAgentFromDb) {
             throw new \RuntimeException('Agent not found in database');
         }
         
-        // Supprimer tous les messages de l'agent tué
         $this->deleteAgentMessages($killedAgentFromDb);
         
-        // Récupérer tous les agents (sauf celui qui vient d'être tué)
         $allAgents = $this->agentRepository->findAll();
         
         foreach ($allAgents as $agent) {
-            // Ne pas envoyer de message à l'agent tué
             if ($agent->getId() === $killedAgentFromDb->getId()) {
                 continue;
             }
             
-            // Créer un message de notification pour chaque agent
             $notificationMessage = new Message();
             $notificationMessage->setTitle('Agent Killed in Action');
             $notificationMessage->setBody(
@@ -54,7 +49,7 @@ final class AgentKilledInActionMessageHandler
                 )
             );
             $notificationMessage->setRecipient($agent);
-            $notificationMessage->setBy($killedAgentFromDb); // L'agent tué est l'expéditeur symbolique
+            $notificationMessage->setBy($killedAgentFromDb);
             
             $this->entityManager->persist($notificationMessage);
         }
@@ -62,12 +57,8 @@ final class AgentKilledInActionMessageHandler
         $this->entityManager->flush();
     }
 
-    /**
-     * Supprime tous les messages liés à l'agent tué
-     */
     private function deleteAgentMessages(Agent $agent): void
     {
-        // Utiliser le repository pour supprimer tous les messages de l'agent
         $this->messageRepository->deleteAllByAgent($agent);
     }
-} 
+}

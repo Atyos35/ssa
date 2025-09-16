@@ -36,7 +36,6 @@
           </span>
         </div>
 
-        <!-- Message d'erreur général -->
         <div v-if="authError" class="error-alert">
           {{ authError }}
         </div>
@@ -65,31 +64,24 @@
 import { reactive, computed } from 'vue'
 import { useAuth } from '~/composables/useAuth'
 
-// Utiliser le composable d'authentification
 const { login, loading, error } = useAuth()
 
-// Données du formulaire
 const formData = reactive({
   email: '',
   password: ''
 })
 
-// Erreurs de validation
 const validationErrors = reactive({
   email: '',
   password: ''
 })
 
-// Erreur d'authentification
 const authError = computed(() => error.value)
 
-// Gestion de la soumission du formulaire
 const handleLogin = async () => {
-  // Réinitialiser les erreurs
   validationErrors.email = ''
   validationErrors.password = ''
 
-  // Validation côté client
   let hasErrors = false
   
   if (!formData.email) {
@@ -109,18 +101,14 @@ const handleLogin = async () => {
     return
   }
 
-  // Tentative de connexion
   const result = await login({
     email: formData.email,
     password: formData.password
   })
 
   if (result.success) {
-    // Redirection vers la page d'accueil
     await navigateTo('/home')
   } else {
-    // L'erreur est déjà gérée par le composable useAuth
-    // et sera affichée via authError
     console.error('Erreur de connexion:', result.error?.message)
   }
 }

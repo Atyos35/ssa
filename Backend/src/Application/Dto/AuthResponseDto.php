@@ -8,4 +8,4 @@ class AuthResponseDto
         public readonly string $message,
         public readonly ?UserDto $user = null
     ) {}
-} 
+}

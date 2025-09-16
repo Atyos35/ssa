@@ -29,4 +29,4 @@ class GetAgentHandler implements QueryHandlerInterface
 
         return AgentDetailDto::fromEntity($agent);
     }
-} 
+}

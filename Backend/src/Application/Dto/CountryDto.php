@@ -22,4 +22,4 @@ class CountryDto
             numberOfAgents: $country->getAgents()->count()
         );
     }
-} 
+}

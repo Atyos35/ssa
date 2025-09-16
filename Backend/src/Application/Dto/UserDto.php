@@ -26,4 +26,4 @@ class UserDto
             emailVerified: $user->isEmailVerified()
         );
     }
-} 
+}

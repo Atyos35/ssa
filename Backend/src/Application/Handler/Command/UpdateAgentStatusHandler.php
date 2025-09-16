@@ -24,7 +24,6 @@ class UpdateAgentStatusHandler implements CommandHandlerInterface
             throw new \InvalidArgumentException('Expected UpdateAgentStatusCommand');
         }
 
-        // Récupérer l'agent
         $agent = $this->agentRepository->find($command->agentId);
         if (!$agent) {
             throw new \DomainException('Agent not found');
@@ -32,14 +31,11 @@ class UpdateAgentStatusHandler implements CommandHandlerInterface
 
         $previousStatus = $agent->getStatus();
 
-        // Mettre à jour le statut
         $agent->setStatus($command->status);
 
-        // Persister les changements
         $this->entityManager->persist($agent);
         $this->entityManager->flush();
 
-        // Traiter le changement de statut
         $this->statusChangeService->handleStatusChange($agent, $previousStatus);
     }
-} 
+}

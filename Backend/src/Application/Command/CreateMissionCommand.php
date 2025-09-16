@@ -18,4 +18,4 @@ class CreateMissionCommand implements CommandInterface
         public readonly int $countryId,
         public readonly array $agentIds = []
     ) {}
-} 
+}

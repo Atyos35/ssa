@@ -24,4 +24,4 @@ class AgentDto
             infiltratedCountry: $agent->getInfiltratedCountry() ? CountryDto::fromEntity($agent->getInfiltratedCountry()) : null
         );
     }
-} 
+}

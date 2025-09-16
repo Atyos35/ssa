@@ -32,33 +32,21 @@ use ApiPlatform\Metadata\GetCollection;
 #[ORM\Entity]
 class MissionResult
 {
-    /**
-     * Identifiant unique du résultat
-     */
     #[ORM\Id]
     #[ORM\GeneratedValue]
     #[ORM\Column(type: 'integer')]
     private ?int $id = null;
 
-    /**
-     * Statut du résultat de la mission
-     */
     #[ORM\Column(enumType: MissionStatus::class)]
     #[Assert\NotNull]
     #[Groups(['missionresult:read', 'mission:read:item', 'missionresult:write'])]
     private MissionStatus $status;
 
-    /**
-     * Résumé du résultat
-     */
     #[ORM\Column(type: 'string', length: 500, nullable: true)]
     #[Assert\Length(max: 500)]
     #[Groups(['missionresult:read', 'mission:read:item', 'missionresult:write'])]
     private ?string $summary = null;
 
-    /**
-     * Mission associée à ce résultat
-     */
     #[ORM\OneToOne(inversedBy: 'missionResult', targetEntity: Mission::class)]
     #[ORM\JoinColumn(nullable: false)]
     #[Groups(['missionresult:read', 'mission:read:item', 'missionresult:write'])]

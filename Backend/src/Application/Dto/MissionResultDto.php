@@ -20,4 +20,4 @@ class MissionResultDto
             summary: $missionResult->getSummary()
         );
     }
-} 
+}

@@ -122,17 +122,14 @@ import type { CreateAgentDto, CountrySelectOptionDto } from '~/types/dto'
 import { agentService } from '~/services/agent.service'
 import { useNotification } from '~/composables/useNotification'
 
-// Émettre des événements
 const emit = defineEmits<{
   cancel: []
   success: [data: any]
   error: [message: string]
 }>()
 
-// Utiliser le composable de notification
 const { showSuccess, showError } = useNotification()
 
-// État du formulaire
 const formData = reactive<AgentForm>({
   codeName: '',
   firstName: '',
@@ -143,10 +140,7 @@ const formData = reactive<AgentForm>({
   infiltratedCountryId: undefined
 })
 
-// Liste des pays pour la sélection
 const countries = ref<CountrySelectOptionDto[]>([])
-
-
 
 const errors = reactive({
   codeName: '',
@@ -160,7 +154,6 @@ const errors = reactive({
 
 const isSubmitting = ref(false)
 
-// Récupérer la liste des pays
 const fetchCountries = async () => {
   try {
     const result = await agentService.getCountriesForSelect()
@@ -175,17 +168,14 @@ const fetchCountries = async () => {
   }
 }
 
-// Charger les pays au montage du composant
 onMounted(() => {
   fetchCountries()
 })
 
-// Validation d'un champ
 const validateField = (field: keyof AgentForm) => {
   const fieldValue = formData[field]
   const partialData = { [field]: fieldValue }
   
-  // Validation partielle avec Zod
   const result = validateAgent(partialData)
   
   if (!result.success && result.errors[field]) {
@@ -195,12 +185,10 @@ const validateField = (field: keyof AgentForm) => {
   }
 }
 
-// Validation complète du formulaire
 const validateForm = (): boolean => {
   const result = validateAgent(formData)
   
   if (!result.success) {
-    // Afficher les erreurs
     Object.keys(result.errors).forEach(key => {
       const errorMessage = result.errors[key]
       if (errorMessage) {
@@ -210,7 +198,6 @@ const validateForm = (): boolean => {
     return false
   }
   
-  // Réinitialiser les erreurs si validation réussie
   Object.keys(errors).forEach(key => {
     errors[key as keyof typeof errors] = ''
   })
@@ -218,7 +205,6 @@ const validateForm = (): boolean => {
   return true
 }
 
-// Soumission du formulaire
 const handleSubmit = async () => {
   if (!validateForm()) {
     return
@@ -227,12 +213,10 @@ const handleSubmit = async () => {
   isSubmitting.value = true
 
             try {
-        // Extraire l'ID du pays si un objet est sélectionné
         const countryId = formData.infiltratedCountryId && typeof formData.infiltratedCountryId === 'object' 
           ? (formData.infiltratedCountryId as { value: number }).value 
           : formData.infiltratedCountryId
 
-        // Créer le DTO pour l'API
         const createAgentDto: CreateAgentDto = {
           codeName: formData.codeName.trim(),
           firstName: formData.firstName.trim(),
@@ -251,19 +235,16 @@ const handleSubmit = async () => {
         
         const response = { data: result.data }
 
-    // Afficher la notification de succès
     showSuccess(`L'agent "${formData.codeName.trim()}" a été créé avec succès !`)
     
     emit('success', response.data)
     
-    // Réinitialiser le formulaire
     resetForm()
     
   } catch (error) {
     console.error('Erreur lors de la création de l\'agent:', error)
     const errorMessage = error instanceof Error ? error.message : 'Erreur lors de la création de l\'agent'
     
-    // Afficher la notification d'erreur
     showError(errorMessage)
     
     emit('error', errorMessage)
@@ -272,7 +253,6 @@ const handleSubmit = async () => {
   }
 }
 
-// Réinitialiser le formulaire
 const resetForm = () => {
   formData.codeName = ''
   formData.firstName = ''
@@ -282,13 +262,11 @@ const resetForm = () => {
   formData.yearsOfExperience = 0
   formData.infiltratedCountryId = 0
   
-  // Réinitialiser les erreurs
   Object.keys(errors).forEach(key => {
     errors[key as keyof typeof errors] = ''
   })
 }
 
-// Exposer des méthodes pour le composant parent
 defineExpose({
   resetForm
 })

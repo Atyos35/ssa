@@ -2,8 +2,7 @@
   <div class="auth-container">
     <div class="auth-card">
       <h1 class="auth-title">Inscription</h1>
-      
-      <!-- Message de succès -->
+
       <div v-if="success" class="success-alert">
         <div class="success-content">
           <h3>Inscription réussie !</h3>
@@ -11,7 +10,6 @@
         </div>
       </div>
 
-      <!-- Formulaire d'inscription -->
       <form v-else @submit.prevent="onSubmit" class="auth-form">
         <div class="form-group">
           <label for="firstName" class="form-label">Prénom</label>
@@ -81,7 +79,6 @@
           </span>
         </div>
 
-        <!-- Indicateurs de force du mot de passe -->
         <div class="password-strength">
           <div class="strength-label">Force du mot de passe :</div>
           <div class="strength-chips">
@@ -120,7 +117,6 @@
           </div>
         </div>
 
-        <!-- Erreur générale -->
         <div v-if="errors.general" class="error-alert">
           {{ errors.general }}
         </div>
@@ -150,7 +146,6 @@ import { validateRegistration, type RegistrationForm } from '../schemas/registra
 import { useAuth } from '../composables/useAuth'
 import type { CreateUserDto } from '~/types/dto'
 
-// État du formulaire
 const form = reactive<RegistrationForm>({
   firstName: '',
   lastName: '',
@@ -158,7 +153,6 @@ const form = reactive<RegistrationForm>({
   password: ''
 })
 
-// État de l'interface
 const loading = ref(false)
 const success = ref(false)
 const errors = reactive({
@@ -166,10 +160,9 @@ const errors = reactive({
   lastName: '',
   email: '',
   password: '',
-  general: '' // Erreur générale du formulaire
+  general: ''
 })
 
-// Validation des champs (pour les indicateurs visuels)
 const countUppercase = (str: string): number => {
   return (str.match(/[A-Z]/g) || []).length
 }
@@ -182,12 +175,10 @@ const countSpecialChars = (str: string): number => {
   return (str.match(/[!@#$%^&*()_+\-=\[\]{};':"\\|,.<>\/?]/g) || []).length
 }
 
-// Validation d'un champ spécifique (utilisée pour la validation en temps réel)
 const validateField = (fieldName: keyof RegistrationForm) => {
   const fieldValue = form[fieldName]
   const partialData = { [fieldName]: fieldValue }
   
-  // Validation partielle avec Zod
   const result = validateRegistration(partialData)
   
   if (!result.success && result.errors[fieldName]) {
@@ -197,16 +188,13 @@ const validateField = (fieldName: keyof RegistrationForm) => {
   }
 }
 
-// Soumission du formulaire
 const onSubmit = async () => {
   loading.value = true
   
   try {
-    // Validation complète avec Zod
     const result = validateRegistration(form)
     
     if (!result.success) {
-      // Afficher les erreurs
       Object.keys(result.errors).forEach(key => {
         const errorMessage = result.errors[key]
         if (errorMessage) {
@@ -216,12 +204,10 @@ const onSubmit = async () => {
       return
     }
     
-    // Réinitialiser les erreurs
     Object.keys(errors).forEach(key => {
       errors[key as keyof typeof errors] = ''
     })
     
-    // Créer le DTO pour l'API
     const createUserDto: CreateUserDto = {
       firstName: result.data.firstName,
       lastName: result.data.lastName,
@@ -230,15 +216,12 @@ const onSubmit = async () => {
       roles: ['ROLE_USER']
     }
 
-    // Appel API via le composable
     const { register } = useAuth()
     const apiResult = await register(createUserDto)
     
     if (apiResult.success && apiResult.data) {
-      // Succès
       success.value = true
     } else {
-      // Erreur générale
       errors.general = `Inscription échouée ! ${apiResult.error}`
     }
     

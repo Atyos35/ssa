@@ -1,7 +1,7 @@
 <template>
   <div class="mission-form">
     <q-form @submit="handleSubmit" class="q-gutter-md">
-      <!-- Nom de la mission -->
+      
       <q-input
         v-model="form.name"
         label="Nom de la mission *"
@@ -10,7 +10,6 @@
         dense
       />
 
-      <!-- Description -->
       <q-input
         v-model="form.description"
         label="Description *"
@@ -21,7 +20,6 @@
         rows="3"
       />
 
-      <!-- Objectifs -->
       <q-input
         v-model="form.objectives"
         label="Objectifs *"
@@ -32,7 +30,6 @@
         rows="3"
       />
 
-      <!-- Niveau de danger -->
       <q-select
         v-model="form.danger"
         :options="dangerLevels"
@@ -44,7 +41,6 @@
         map-options
       />
 
-             <!-- Date de début (automatiquement aujourd'hui) -->
        <q-input
          v-model="form.startDate"
          label="Date de début *"
@@ -56,7 +52,6 @@
          disable
        />
 
-             <!-- Date de fin -->
        <q-input
          v-model="form.endDate"
          label="Date de fin"
@@ -66,7 +61,6 @@
          dense
        />
 
-      <!-- Pays -->
       <q-select
         v-model="form.countryId"
         :options="countries"
@@ -79,7 +73,6 @@
         @update:model-value="onCountryChange"
       />
 
-             <!-- Agents -->
        <q-select
          v-model="form.agentIds"
          :options="availableAgents"
@@ -93,12 +86,10 @@
          @update:model-value="validateAgentCountry"
        />
 
-      <!-- Message d'erreur pour les agents -->
       <div v-if="agentCountryError" class="text-negative text-caption q-mt-xs">
         {{ agentCountryError }}
       </div>
 
-      <!-- Boutons d'action -->
       <div class="form-actions">
         <q-btn
           type="submit"
@@ -126,35 +117,30 @@ import { useNotification } from '~/composables/useNotification'
 import { missionService, countryService, agentService } from '~/services'
 import { missionSchema, type MissionFormData } from '~/schemas/mission.schema'
 
-// Props et émissions
 const emit = defineEmits<{
   success: []
   error: [string]
   cancel: []
 }>()
 
-// Composables
 const { showSuccess, showError } = useNotification()
 
-// État du formulaire
 const loading = ref(false)
 const countries = ref<Array<{ label: string; value: number }>>([])
 const availableAgents = ref<Array<{ label: string; value: number; countryId: number }>>([])
 const agentCountryError = ref('')
 
-// Formulaire
 const form = ref({
   name: '',
   description: '',
   objectives: '',
   danger: '' as 'Low' | 'Medium' | 'High' | 'Critical' | '',
-  startDate: new Date().toISOString().split('T')[0], // Date d'aujourd'hui par défaut
+  startDate: new Date().toISOString().split('T')[0],
   endDate: '',
   countryId: null as number | null,
   agentIds: [] as number[]
 })
 
-// Niveaux de danger
 const dangerLevels = [
   { label: 'Faible', value: 'Low' },
   { label: 'Moyen', value: 'Medium' },
@@ -162,7 +148,6 @@ const dangerLevels = [
   { label: 'Critique', value: 'Critical' }
 ]
 
-// Validation du formulaire
 const isFormValid = computed(() => {
   return form.value.name &&
          form.value.description &&
@@ -173,7 +158,6 @@ const isFormValid = computed(() => {
          !agentCountryError.value
 })
 
-// Charger les pays
 const loadCountries = async () => {
   try {
     const response = await countryService.getCountriesForSelect()
@@ -186,12 +170,10 @@ const loadCountries = async () => {
   }
 }
 
-// Charger les agents
 const loadAgents = async () => {
   try {
     const response = await agentService.getAgents()
     if (response.success && response.data) {
-      // Filtrer les agents qui ont un pays infiltré défini
       availableAgents.value = response.data
         .filter((agent: any) => agent.infiltratedCountry != null)
         .map((agent: any) => ({
@@ -206,13 +188,11 @@ const loadAgents = async () => {
   }
 }
 
-// Gestion du changement de pays
 const onCountryChange = () => {
   form.value.agentIds = []
   agentCountryError.value = ''
 }
 
-// Validation des agents par rapport au pays sélectionné
 const validateAgentCountry = () => {
   if (!form.value.countryId || form.value.agentIds.length === 0) {
     agentCountryError.value = ''
@@ -223,7 +203,6 @@ const validateAgentCountry = () => {
     const agent = availableAgents.value.find(a => a.value === agentId)
     if (!agent) return false
     
-    // Conversion explicite en nombre pour la comparaison
     const agentCountryId = Number(agent.countryId)
     const selectedCountryId = Number(form.value.countryId)
     
@@ -242,7 +221,6 @@ const validateAgentCountry = () => {
   }
 }
 
-// Soumission du formulaire
 const handleSubmit = async () => {
   if (!isFormValid.value) {
     return
@@ -251,7 +229,6 @@ const handleSubmit = async () => {
   loading.value = true
 
   try {
-    // Validation avec le schéma Zod
          const missionData: MissionFormData = {
        name: form.value.name,
        description: form.value.description,
@@ -297,7 +274,6 @@ const handleSubmit = async () => {
   }
 }
 
-// Chargement initial
 onMounted(() => {
   loadCountries()
   loadAgents()

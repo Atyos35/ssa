@@ -29,14 +29,12 @@ class RegisterUserHandler implements CommandHandlerInterface
             throw new \InvalidArgumentException('Expected RegisterUserCommand');
         }
 
-        // Vérifier si l'email existe déjà
         $existingUser = $this->userRepository->findByEmail($command->email);
         
         if ($existingUser) {
             throw new \DomainException('Un utilisateur avec cet email existe déjà');
         }
 
-        // Créer un nouvel utilisateur
         $user = new User();
         $user->setFirstName($command->firstName);
         $user->setLastName($command->lastName);
@@ -44,7 +42,6 @@ class RegisterUserHandler implements CommandHandlerInterface
         $user->setRoles($command->roles);
         $user->setEmailVerified(false); // Email non vérifié par défaut
 
-        // Valider le mot de passe original avant de le hasher
         $user->setPassword($command->password); // Temporairement pour la validation
         $errors = $this->validator->validate($user);
         if (count($errors) > 0) {
@@ -55,20 +52,16 @@ class RegisterUserHandler implements CommandHandlerInterface
             throw new \DomainException('Erreurs de validation: ' . implode(', ', $errorMessages));
         }
 
-        // Hasher le mot de passe après validation
         $hashedPassword = $this->passwordHasher->hashPassword($user, $command->password);
         $user->setPassword($hashedPassword);
 
-        // Générer un token de vérification d'email
         $verificationToken = Uuid::v4()->toRfc4122();
         $user->setEmailVerificationToken($verificationToken);
         $user->setEmailVerificationExpiresAt(new \DateTimeImmutable('+24 hours'));
 
-        // Sauvegarder l'utilisateur
         $this->entityManager->persist($user);
         $this->entityManager->flush();
 
-        // Envoyer l'email de vérification
         $this->emailService->sendVerificationEmail($user, $verificationToken);
     }
-} 
+}

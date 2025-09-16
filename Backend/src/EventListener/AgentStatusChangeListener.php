@@ -27,14 +27,11 @@ class AgentStatusChangeListener
             return;
         }
         
-        // Vérifier si le statut a changé
         if ($args->hasChangedField('status')) {
             $previousStatus = $args->getOldValue('status');
             $currentStatus = $args->getNewValue('status');
             
-            // Si le statut est passé à "Killed in Action"
             if ($currentStatus === AgentStatus::KilledInAction && $previousStatus !== AgentStatus::KilledInAction) {
-                // Stocker l'agent pour traitement post-update
                 $args->getObjectManager()->getUnitOfWork()->setOriginalEntityData(
                     $entity,
                     ['status' => $previousStatus]
@@ -53,7 +50,6 @@ class AgentStatusChangeListener
         
         $currentStatus = $entity->getStatus();
         
-        // Si le statut est "Killed in Action", vérifier s'il vient de changer
         if ($currentStatus === AgentStatus::KilledInAction) {
             $previousStatus = $this->statusChangeService->getPreviousStatus($entity);
             
@@ -62,4 +58,4 @@ class AgentStatusChangeListener
             }
         }
     }
-} 
+}

@@ -34,4 +34,4 @@ class UserProvider implements UserProviderInterface
     {
         return User::class === $class || is_subclass_of($class, User::class);
     }
-} 
+}

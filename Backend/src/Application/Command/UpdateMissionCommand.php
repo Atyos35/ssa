@@ -20,4 +20,4 @@ class UpdateMissionCommand implements CommandInterface
         public readonly ?array $agentIds = null,
         public readonly ?string $missionResultSummary = null
     ) {}
-} 
+}

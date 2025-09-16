@@ -29,4 +29,4 @@ class GetMissionHandler implements QueryHandlerInterface
 
         return MissionDto::fromEntity($mission);
     }
-} 
+}

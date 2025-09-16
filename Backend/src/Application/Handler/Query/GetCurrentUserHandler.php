@@ -29,4 +29,4 @@ class GetCurrentUserHandler implements QueryHandlerInterface
 
         return UserDto::fromEntity($user);
     }
-} 
+}

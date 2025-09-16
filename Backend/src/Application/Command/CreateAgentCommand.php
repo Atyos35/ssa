@@ -18,4 +18,4 @@ class CreateAgentCommand implements CommandInterface
         public readonly ?int $infiltratedCountryId = null,
         public readonly ?string $mentorId = null
     ) {}
-} 
+}

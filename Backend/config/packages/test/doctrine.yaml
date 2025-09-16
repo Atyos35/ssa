@@ -1,6 +1,5 @@
 doctrine:
     dbal:
-        # Configuration spécifique aux tests
         driver: pdo_pgsql
         server_version: '16'
         charset: utf8

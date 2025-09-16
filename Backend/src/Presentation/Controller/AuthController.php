@@ -26,7 +26,6 @@ class AuthController extends AbstractController
     #[Route('/api/login', name: 'api_login', methods: ['POST'])]
     public function login(): JsonResponse
     {
-        // Obligé de générer cette route manuellement, je n'arrive pas à la générer automatiquement avec le firewall
         return new JsonResponse([
             'message' => 'Utilisez POST /api/login avec email et password dans le body JSON'
         ]);
@@ -41,7 +40,6 @@ class AuthController extends AbstractController
             return $this->json(['error' => 'Données JSON invalides'], Response::HTTP_BAD_REQUEST);
         }
 
-        // Vérifier les champs requis
         $requiredFields = ['firstName', 'lastName', 'email', 'password'];
         foreach ($requiredFields as $field) {
             if (!isset($data[$field]) || empty($data[$field])) {
@@ -60,7 +58,6 @@ class AuthController extends AbstractController
 
             $this->commandBus->dispatch($command);
 
-            // Récupérer l'utilisateur créé pour le retourner
             $user = $this->entityManager->getRepository(\App\Domain\Entity\User::class)->findOneBy(['email' => $data['email']]);
             
             if (!$user) {
@@ -80,14 +77,9 @@ class AuthController extends AbstractController
         }
     }
 
-    /**
-     * Récupère les informations de l'utilisateur connecté
-     * Utilisé par le frontend pour récupérer les données utilisateur après authentification
-     */
     #[Route('/api/me', name: 'api_me', methods: ['GET'])]
     public function me(): JsonResponse
     {
-        // Récupérer l'utilisateur connecté via le token JWT
         $user = $this->getUser();
 
         if (!$user) {
@@ -105,4 +97,4 @@ class AuthController extends AbstractController
             return $this->json(['error' => 'Internal server error'], Response::HTTP_INTERNAL_SERVER_ERROR);
         }
     }
-} 
+}

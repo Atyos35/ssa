@@ -1,20 +1,16 @@
-// Composable d'authentification
 import { ref, computed } from 'vue'
 import { authService } from '~/services/auth.service'
 import type { LoginRequest, RegisterRequest } from '~/services/auth.service'
 import type { UserDto } from '~/types/dto'
 
 export const useAuth = () => {
-  // État réactif
   const user = ref<UserDto | null>(null)
   const loading = ref(false)
   const error = ref<string | null>(null)
 
-  // Computed properties
   const isAuthenticated = computed(() => !!user.value)
   const isAdmin = computed(() => user.value?.roles?.includes('ROLE_ADMIN') || false)
 
-  // Inscription
   const register = async (data: RegisterRequest) => {
     loading.value = true
     error.value = null
@@ -23,7 +19,6 @@ export const useAuth = () => {
       const result = await authService.register(data)
       
       if (result.success && result.data) {
-        // Connexion automatique après inscription
         await login({
           email: data.email,
           password: data.password
@@ -47,7 +42,6 @@ export const useAuth = () => {
     }
   }
 
-  // Connexion
   const login = async (data: LoginRequest) => {
     loading.value = true
     error.value = null
@@ -56,7 +50,6 @@ export const useAuth = () => {
       const result = await authService.login(data)
       
       if (result.success && result.data) {
-        // Mettre à jour l'état utilisateur avec les données de la requête
         user.value = {
           id: 'user_from_token',
           email: data.email,
@@ -84,19 +77,16 @@ export const useAuth = () => {
     }
   }
 
-  // Déconnexion
   const logout = () => {
     authService.logout()
     user.value = null
     error.value = null
   }
 
-  // Récupérer le token d'authentification
   const getAuthToken = () => {
     return authService.getToken()
   }
 
-  // Initialiser l'utilisateur au montage si un token existe
   const initUser = async () => {
     try {
       const response = await authService.getCurrentUser()
@@ -110,13 +100,11 @@ export const useAuth = () => {
   }
 
   return {
-    // État
     user,
     loading,
     error,
     isAuthenticated,
     isAdmin,
-    // Méthodes
     register,
     login,
     logout,

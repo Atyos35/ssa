@@ -4,7 +4,7 @@ import type { ApiResponseDto } from '~/types/dto'
 export class DatabaseStateService {
   private static instance: DatabaseStateService
   private cache: Map<string, { data: any; timestamp: number }> = new Map()
-  private readonly CACHE_DURATION = 30000 // 30 secondes
+  private readonly CACHE_DURATION = 30000
 
   static getInstance(): DatabaseStateService {
     if (!DatabaseStateService.instance) {
@@ -37,7 +37,6 @@ export class DatabaseStateService {
     try {
       const response = await apiService.get('/api/countries')
       
-      // L'API retourne une chaîne JSON, il faut la parser
       let parsedData
       try {
         parsedData = typeof response.data === 'string' ? JSON.parse(response.data) : response.data
@@ -45,7 +44,6 @@ export class DatabaseStateService {
         return false
       }
       
-      // Vérifier différentes structures possibles
       const hasCountries = (
         (parsedData && parsedData.totalItems > 0) ||
         (parsedData && parsedData.member && parsedData.member.length > 0) ||
@@ -69,7 +67,6 @@ export class DatabaseStateService {
     try {
       const response = await apiService.get('/api/agents')
       
-      // L'API retourne une chaîne JSON, il faut la parser
       let parsedData
       try {
         parsedData = typeof response.data === 'string' ? JSON.parse(response.data) : response.data
@@ -77,7 +74,6 @@ export class DatabaseStateService {
         return false
       }
       
-      // Vérifier différentes structures possibles
       const hasAgents = (
         (parsedData && parsedData.totalItems > 0) ||
         (parsedData && parsedData.member && parsedData.member.length > 0) ||
@@ -101,7 +97,6 @@ export class DatabaseStateService {
     try {
       const response = await apiService.get('/api/missions')
       
-      // L'API retourne une chaîne JSON, il faut la parser
       let parsedData
       try {
         parsedData = typeof response.data === 'string' ? JSON.parse(response.data) : response.data
@@ -109,7 +104,6 @@ export class DatabaseStateService {
         return false
       }
       
-      // Vérifier différentes structures possibles
       const hasMissions = (
         (parsedData && parsedData.totalItems > 0) ||
         (parsedData && parsedData.member && parsedData.member.length > 0) ||
@@ -124,12 +118,10 @@ export class DatabaseStateService {
     }
   }
 
-  // Invalider le cache après une opération qui modifie la base
   invalidateCache(): void {
     this.cache.clear()
   }
 
-  // Vérifier l'état complet de la base
   async getDatabaseState(): Promise<{
     hasCountries: boolean
     hasAgents: boolean
